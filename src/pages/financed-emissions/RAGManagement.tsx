@@ -446,7 +446,7 @@ export default function RAGManagementPage() {
             <strong>Connection Error:</strong> {error}
             <br />
             <small>
-              Make sure your backend is running at: {import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}
+              Make sure your backend is running at: {':42069'}
             </small>
           </AlertDescription>
         </Alert>
