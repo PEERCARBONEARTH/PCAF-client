@@ -39,6 +39,7 @@ interface SearchResult {
 export default function RAGManagementPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,27 +49,66 @@ export default function RAGManagementPage() {
 
   useEffect(() => {
     document.title = 'RAG Management — Financed Emissions';
-    loadCollections();
+    fetchCollections();
   }, []);
 
-  const loadCollections = async () => {
+  const testConnection = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/health`);
+      
+      if (response.ok) {
+        toast({
+          title: 'Connection Successful',
+          description: '✅ Backend connection successful!',
+        });
+        fetchCollections();
+      } else {
+        toast({
+          title: 'Connection Failed',
+          description: `❌ Backend connection failed: ${response.status}`,
+          variant: 'destructive'
+        });
+      }
+    } catch (err) {
+      toast({
+        title: 'Connection Error',
+        description: `❌ Connection error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const fetchCollections = async () => {
     try {
       setLoading(true);
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiBaseUrl}/api/v1/rag/collections`, {
+      setError(null);
+
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/v1/rag/collections`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to load collections');
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      setCollections(data.data.collections);
-    } catch (error) {
-      console.error('Failed to load collections:', error);
+      
+      if (data.success) {
+        setCollections(data.data?.collections || []);
+      } else {
+        throw new Error(data.error || 'Failed to fetch collections');
+      }
+    } catch (err) {
+      console.error('Failed to fetch collections:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      setCollections([]);
       toast({
         title: 'Error',
         description: 'Failed to load RAG collections',
@@ -91,8 +131,8 @@ export default function RAGManagementPage() {
         formData.append('documents', file);
       });
 
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiBaseUrl}/api/v1/rag/upload`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/v1/rag/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
@@ -112,7 +152,7 @@ export default function RAGManagementPage() {
       });
 
       // Refresh collections
-      await loadCollections();
+      await fetchCollections();
       
       // Clear file input
       event.target.value = '';
@@ -133,8 +173,8 @@ export default function RAGManagementPage() {
 
     try {
       setSearching(true);
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiBaseUrl}/api/v1/rag/search`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/v1/rag/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -189,17 +229,41 @@ export default function RAGManagementPage() {
       {/* Header */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <Brain className="h-8 w-8 text-primary" />
-            <div>
-              <CardTitle className="text-2xl">RAG Knowledge Base Management</CardTitle>
-              <CardDescription>
-                Upload and manage documents for AI-powered insights and recommendations
-              </CardDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Brain className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl">RAG Knowledge Base Management</CardTitle>
+                <CardDescription>
+                  Upload and manage documents for AI-powered insights and recommendations
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={testConnection} variant="outline">
+                Test Connection
+              </Button>
+              <Button onClick={fetchCollections} variant="outline">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
             </div>
           </div>
         </CardHeader>
       </Card>
+
+      {error && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-red-800">
+            <strong>Connection Error:</strong> {error}
+            <br />
+            <small>
+              Make sure your backend is running at: {import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}
+            </small>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Tabs defaultValue="upload" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
@@ -384,7 +448,7 @@ export default function RAGManagementPage() {
           {/* Collections Management */}
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">Knowledge Base Collections</h2>
-            <Button onClick={loadCollections} disabled={loading}>
+            <Button onClick={fetchCollections} disabled={loading}>
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
