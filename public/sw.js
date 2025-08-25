@@ -210,7 +210,11 @@ async function syncPortfolioUploads() {
     
     for (const upload of pendingUploads) {
       try {
-        const response = await fetch('/api/loans/bulk-intake', {
+        // Get API base URL from the main thread or use relative path for same-origin
+        const apiBaseUrl = self.location.origin.includes('vercel.app') 
+          ? 'https://pcaf-server-production.up.railway.app' 
+          : '';
+        const response = await fetch(`${apiBaseUrl}/api/loans/bulk-intake`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -251,7 +255,11 @@ async function syncCalculationRequests() {
     
     for (const calculation of pendingCalculations) {
       try {
-        const response = await fetch('/api/loans/batch-calculate', {
+        // Get API base URL from the main thread or use relative path for same-origin
+        const apiBaseUrl = self.location.origin.includes('vercel.app') 
+          ? 'https://pcaf-server-production.up.railway.app' 
+          : '';
+        const response = await fetch(`${apiBaseUrl}/api/loans/batch-calculate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

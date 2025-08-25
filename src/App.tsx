@@ -80,7 +80,7 @@ const LandingPage = () => {
       <div className="fixed top-4 right-4 z-50">
         <ModeToggle />
       </div>
-      
+
       {/* Moving Glass Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 backdrop-blur-md rounded-full animate-[float-background_25s_ease-in-out_infinite] opacity-60" />
@@ -91,10 +91,10 @@ const LandingPage = () => {
 
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5" />
-      
+
       {/* Network background overlay */}
       <NetworkBackground />
-      
+
       {/* Billboard Layout - Left/Right Split */}
       <div className="relative z-10 min-h-screen flex">
         {/* Left Side - Hero & Platform Selection (60%) */}
@@ -118,7 +118,7 @@ const LandingPage = () => {
 // Component to handle financed emissions routing with new layout
 const FinancedEmissionsRoutes = () => {
   const { setPlatform } = usePlatform();
-  
+
   // Auto-set platform to financed-emissions when accessing these routes
   useEffect(() => {
     setPlatform('financed-emissions');
@@ -181,7 +181,7 @@ const PlatformRoutes = () => {
             <Route path="/green-finance/alerts-risk" element={<AlertsRisk />} />
             <Route path="/green-finance/compliance" element={<ComplianceVault />} />
             <Route path="/green-finance/users" element={<UserAccess />} />
-            
+
             <Route path="/green-finance/tasks" element={<TaskCenter />} />
             <Route path="/green-finance/workflows" element={<WorkflowCenter />} />
             <Route path="/green-finance/marketplace" element={<Marketplace />} />
@@ -195,7 +195,7 @@ const PlatformRoutes = () => {
             <Route path="/green-finance/varl" element={<VARLDashboard />} />
           </>
         )}
-        
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PlatformLayout>
@@ -213,7 +213,7 @@ function App() {
     if (user) {
       realTimeService.connect();
     }
-    
+
     return () => {
       if (user) {
         realTimeService.disconnect();
@@ -296,93 +296,93 @@ function App() {
     );
   }
 
-return (
-  <DealPipelineProvider>
-    <QueryClientProvider client={queryClient}>
-      <PortfolioProvider>
-        <ThemeProvider defaultTheme="system" storageKey="peercarbon-ui-theme">
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <PWAInstallPrompt />
-            <BrowserRouter>
-              <Routes>
-                {/* Public route for authentication */}
-                <Route path="/auth" element={<Auth />} />
-                
-                {/* Approval status check for authenticated users */}
-                
-                {/* Protected routes */}
-                <Route 
-                  path="/financed-emissions/*" 
-                  element={
-                    <ProtectedRoute>
-                      <PlatformProvider>
-                        {/* AssumptionsProvider wraps FE routes to make data available */}
-                        <AssumptionsProvider>
-                          <FinancedEmissionsRoutes />
-                        </AssumptionsProvider>
-                      </PlatformProvider>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/platform-selection" 
-                  element={
-                    <ProtectedRoute>
-                      <PlatformProvider>
-                        <PlatformSelection />
-                      </PlatformProvider>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/pcaf-asset-class" 
-                  element={
-                    <ProtectedRoute>
-                      <PlatformProvider>
-                        <PCAFAssetClassSelection />
-                      </PlatformProvider>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/amortization-settings" 
-                  element={
-                    <ProtectedRoute>
-                      <Suspense fallback={<div className="min-h-[120px] flex items-center justify-center">Loading…</div>}>
-                        <AmortizationSettings />
-                      </Suspense>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Root and authenticated routes */}
-                <Route 
-                  path="/*" 
-                  element={
-                    user ? (
+  return (
+    <DealPipelineProvider>
+      <QueryClientProvider client={queryClient}>
+        <PortfolioProvider>
+          <ThemeProvider defaultTheme="system" storageKey="peercarbon-ui-theme">
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <PWAInstallPrompt />
+              <BrowserRouter>
+                <Routes>
+                  {/* Public route for authentication */}
+                  <Route path="/auth" element={<Auth />} />
+
+                  {/* Approval status check for authenticated users */}
+
+                  {/* Protected routes */}
+                  <Route
+                    path="/financed-emissions/*"
+                    element={
                       <ProtectedRoute>
                         <PlatformProvider>
-                          <PlatformRoutes />
+                          {/* AssumptionsProvider wraps FE routes to make data available */}
+                          <AssumptionsProvider>
+                            <FinancedEmissionsRoutes />
+                          </AssumptionsProvider>
                         </PlatformProvider>
                       </ProtectedRoute>
-                    ) : (
-                      <LandingPage />
-                    )
-                  } 
-                />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </PortfolioProvider>
-    </QueryClientProvider>
-  </DealPipelineProvider>
-);
+                    }
+                  />
+
+                  <Route
+                    path="/platform-selection"
+                    element={
+                      <ProtectedRoute>
+                        <PlatformProvider>
+                          <PlatformSelection />
+                        </PlatformProvider>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/pcaf-asset-class"
+                    element={
+                      <ProtectedRoute>
+                        <PlatformProvider>
+                          <PCAFAssetClassSelection />
+                        </PlatformProvider>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/amortization-settings"
+                    element={
+                      <ProtectedRoute>
+                        <Suspense fallback={<div className="min-h-[120px] flex items-center justify-center">Loading…</div>}>
+                          <AmortizationSettings />
+                        </Suspense>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Root and authenticated routes */}
+                  <Route
+                    path="/*"
+                    element={
+                      user ? (
+                        <ProtectedRoute>
+                          <PlatformProvider>
+                            <PlatformRoutes />
+                          </PlatformProvider>
+                        </ProtectedRoute>
+                      ) : (
+                        <LandingPage />
+                      )
+                    }
+                  />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </ThemeProvider>
+        </PortfolioProvider>
+      </QueryClientProvider>
+    </DealPipelineProvider>
+  );
 }
 
 export default App;

@@ -120,7 +120,7 @@ class PortfolioService {
   }): Promise<{ loans: LoanData[]; summary: PortfolioSummary }> {
     try {
       // Call the backend portfolio endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}api/v1/loans/portfolio`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/loans/portfolio`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

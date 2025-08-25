@@ -31,7 +31,7 @@ export interface AuthResponse {
 export class AuthService {
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly USER_KEY = 'auth_user';
-  private static readonly API_BASE_URL = import.meta.env.DEV ? '' : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001');
+  private static readonly API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
   static async register(userData: RegisterData): Promise<AuthResponse> {
     try {
@@ -44,7 +44,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.user && data.accessToken) {
         localStorage.setItem(this.TOKEN_KEY, data.accessToken);
         localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
@@ -71,7 +71,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.user && data.accessToken) {
         localStorage.setItem(this.TOKEN_KEY, data.accessToken);
         localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
@@ -123,7 +123,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.user) {
         localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
         return { user: data.user };
@@ -187,7 +187,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.user) {
         localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
       }
@@ -289,7 +289,7 @@ export class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.accessToken) {
         localStorage.setItem(this.TOKEN_KEY, data.accessToken);
         if (data.user) {

@@ -54,7 +54,8 @@ export default function RAGManagementPage() {
   const loadCollections = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/v1/rag/collections', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiBaseUrl}/api/v1/rag/collections`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
@@ -90,7 +91,8 @@ export default function RAGManagementPage() {
         formData.append('documents', file);
       });
 
-      const response = await fetch('/api/v1/rag/upload', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiBaseUrl}/api/v1/rag/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
@@ -131,7 +133,8 @@ export default function RAGManagementPage() {
 
     try {
       setSearching(true);
-      const response = await fetch('/api/v1/rag/search', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiBaseUrl}/api/v1/rag/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
