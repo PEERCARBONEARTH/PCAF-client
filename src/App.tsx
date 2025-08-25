@@ -314,6 +314,10 @@ function App() {
 
                   {/* Protected routes */}
                   <Route
+                    path="/financed-emissions"
+                    element={<Navigate to="/financed-emissions/overview" replace />}
+                  />
+                  <Route
                     path="/financed-emissions/*"
                     element={
                       <ProtectedRoute>

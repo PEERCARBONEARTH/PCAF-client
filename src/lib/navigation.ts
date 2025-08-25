@@ -37,8 +37,8 @@ export class NavigationService {
       // Use replace to avoid back button issues
       window.location.replace(redirectUrl);
     } else {
-      // Default redirect to financed emissions platform
-      window.location.replace('/financed-emissions');
+      // Default redirect to financed emissions overview page
+      window.location.replace('/financed-emissions/overview');
     }
   }
 
