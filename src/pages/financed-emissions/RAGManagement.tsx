@@ -118,6 +118,8 @@ export default function RAGManagementPage() {
       setError(null);
 
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      console.log('Fetching collections from:', `${apiUrl}/api/v1/rag/collections`);
+
       const response = await fetch(`${apiUrl}/api/v1/rag/collections`, {
         method: 'GET',
         headers: {
@@ -127,16 +129,56 @@ export default function RAGManagementPage() {
         credentials: 'include',
       });
 
+      console.log('Collections response status:', response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Collections API error:', errorText);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('Collections API response:', data);
 
-      if (data.success) {
-        setCollections(data.data?.collections || []);
+      // Handle different possible response formats
+      let collections = [];
+
+      if (data.success && data.data?.collections) {
+        collections = data.data.collections;
+      } else if (data.collections) {
+        collections = data.collections;
+      } else if (Array.isArray(data)) {
+        collections = data;
+      } else if (data.success === false) {
+        throw new Error(data.error || data.message || 'Failed to fetch collections');
       } else {
-        throw new Error(data.error || 'Failed to fetch collections');
+        // Try to extract collections from any nested structure
+        const possibleCollections = data.data || data.result || data;
+        if (Array.isArray(possibleCollections)) {
+          collections = possibleCollections;
+        }
+      }
+
+      console.log('Processed collections:', collections);
+
+      // Ensure collections have required properties
+      const processedCollections = collections.map((collection: any) => ({
+        name: collection.name || collection.collection_name || collection.id || 'Unknown',
+        documentCount: collection.documentCount || collection.document_count || collection.count || 0,
+        lastUpdated: collection.lastUpdated || collection.last_updated || collection.updated_at || new Date().toISOString(),
+        error: collection.error || null
+      }));
+
+      setCollections(processedCollections);
+
+      if (processedCollections.length === 0) {
+        console.log('No collections found in response');
+        toast({
+          title: 'No Collections',
+          description: 'No document collections found. Upload some documents to get started.',
+        });
+      } else {
+        console.log(`Found ${processedCollections.length} collections`);
       }
     } catch (err) {
       console.error('Failed to fetch collections:', err);
@@ -144,7 +186,7 @@ export default function RAGManagementPage() {
       setCollections([]);
       toast({
         title: 'Error',
-        description: 'Failed to load RAG collections',
+        description: 'Failed to load RAG collections. Check console for details.',
         variant: 'destructive'
       });
     } finally {
@@ -432,7 +474,25 @@ export default function RAGManagementPage() {
               </Button>
               <Button onClick={fetchCollections} variant="outline" disabled={loading}>
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                Refresh Collections
+              </Button>
+              <Button
+                onClick={async () => {
+                  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+                  try {
+                    const response = await fetch(`${apiUrl}/api/v1/rag/collections`);
+                    const data = await response.json();
+                    console.log('Raw API Response:', data);
+                    alert(`Raw API Response (check console): ${JSON.stringify(data, null, 2)}`);
+                  } catch (err) {
+                    console.error('Debug API call failed:', err);
+                    alert(`API Error: ${err}`);
+                  }
+                }}
+                variant="ghost"
+                size="sm"
+              >
+                Debug API
               </Button>
             </div>
           </div>
@@ -474,8 +534,8 @@ export default function RAGManagementPage() {
             <CardContent className="space-y-4">
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${uploading
-                    ? 'border-primary/50 bg-primary/5'
-                    : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5'
+                  ? 'border-primary/50 bg-primary/5'
+                  : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5'
                   }`}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -759,11 +819,50 @@ export default function RAGManagementPage() {
                   <Database className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-medium mb-2">No Collections Found</h3>
                   <p className="text-muted-foreground mb-4">
-                    Upload some documents to create your first knowledge base collection
+                    {error
+                      ? 'There was an error loading collections. Check the API connection.'
+                      : 'Upload some documents to create your first knowledge base collection'
+                    }
                   </p>
-                  <Button onClick={() => (document.querySelector('[value="upload"]') as HTMLElement)?.click()}>
-                    Upload Documents
-                  </Button>
+                  <div className="flex gap-2 justify-center">
+                    <Button onClick={() => (document.querySelector('[value="upload"]') as HTMLElement)?.click()}>
+                      Upload Documents
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={async () => {
+                        // Try alternative endpoints that might exist
+                        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+                        const endpoints = [
+                          '/api/v1/rag/collections',
+                          '/api/rag/collections',
+                          '/rag/collections',
+                          '/collections',
+                          '/api/v1/collections'
+                        ];
+
+                        for (const endpoint of endpoints) {
+                          try {
+                            console.log(`Trying endpoint: ${apiUrl}${endpoint}`);
+                            const response = await fetch(`${apiUrl}${endpoint}`);
+                            if (response.ok) {
+                              const data = await response.json();
+                              console.log(`Success with ${endpoint}:`, data);
+                              toast({
+                                title: 'Found Working Endpoint',
+                                description: `${endpoint} returned data. Check console.`,
+                              });
+                              break;
+                            }
+                          } catch (err) {
+                            console.log(`Failed ${endpoint}:`, err);
+                          }
+                        }
+                      }}
+                    >
+                      Test Endpoints
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
