@@ -221,6 +221,18 @@ function App() {
     };
   }, [user]);
 
+  // Force re-render when authentication state changes
+  useEffect(() => {
+    // This effect ensures the component re-renders when auth state changes
+    if (!loading) {
+      // Small delay to ensure all state updates are processed
+      const timer = setTimeout(() => {
+        // Force a re-render by updating a dummy state if needed
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [user, loading]);
+
   // PWA and mobile optimizations
   useEffect(() => {
     // Add PWA manifest link

@@ -165,4 +165,145 @@ export class AuthService {
     const user = this.getStoredUser();
     return user?.role === role;
   }
+
+  static async updateProfile(updates: {
+    firstName?: string;
+    lastName?: string;
+    organization?: string;
+  }): Promise<AuthResponse> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        return { success: false, message: 'Not authenticated' };
+      }
+
+      const response = await fetch(`${this.API_BASE_URL}/api/v1/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates),
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.user) {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.'
+      };
+    }
+  }
+
+  static async requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/api/v1/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      return {
+        success: data.success || false,
+        message: data.message || 'Password reset request failed'
+      };
+    } catch (error) {
+      console.error('Password reset request error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.'
+      };
+    }
+  }
+
+  static async resetPassword(token: string, password: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/api/v1/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, password }),
+      });
+
+      const data = await response.json();
+      return {
+        success: data.success || false,
+        message: data.message || 'Password reset failed'
+      };
+    } catch (error) {
+      console.error('Password reset error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.'
+      };
+    }
+  }
+
+  static async verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/api/v1/auth/verify-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await response.json();
+      return {
+        success: data.success || false,
+        message: data.message || 'Email verification failed'
+      };
+    } catch (error) {
+      console.error('Email verification error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.'
+      };
+    }
+  }
+
+  static async refreshToken(): Promise<AuthResponse> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        return { success: false, message: 'No token to refresh' };
+      }
+
+      const response = await fetch(`${this.API_BASE_URL}/api/v1/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.accessToken) {
+        localStorage.setItem(this.TOKEN_KEY, data.accessToken);
+        if (data.user) {
+          localStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
+        }
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      return {
+        success: false,
+        message: 'Network error. Please try again.'
+      };
+    }
+  }
 }

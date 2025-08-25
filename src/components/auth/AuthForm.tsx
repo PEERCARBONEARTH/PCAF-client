@@ -113,7 +113,15 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
           // Switch to sign in tab
           setFormType('signin');
         } else {
-          onSuccess?.();
+          // Use navigation service for reliable redirect
+          setTimeout(() => {
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              // Force navigation to ensure proper state sync
+              window.location.href = '/financed-emissions';
+            }
+          }, 100);
         }
       }
     } catch (error) {

@@ -1,8 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from './AuthForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Shield } from 'lucide-react';
+import { NavigationService } from '@/lib/navigation';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -18,6 +19,13 @@ export function ProtectedRoute({
   fallback 
 }: ProtectedRouteProps) {
   const { user, loading, hasRole, hasAnyRole } = useAuth();
+
+  // Store current URL for redirect after authentication
+  useEffect(() => {
+    if (!loading && !user) {
+      NavigationService.storeRedirectUrl();
+    }
+  }, [user, loading]);
 
   // Show loading spinner while checking authentication
   if (loading) {
