@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PCAF Engine" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="icon" href="/peercarbon-logo-transparent.png" type="image/png">
+    <link rel="apple-touch-icon" href="/peercarbon-logo-transparent.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <title>PCAF Emissions Engine</title>
+    <meta name="description" content="Professional PCAF-compliant financed emissions tracking and reporting platform with AI-powered insights." />
+    <meta name="author" content="Peercarbon" />
+    <meta name="keywords" content="PCAF, financed emissions, carbon accounting, climate risk, ESG reporting, financial institutions" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="PCAF Emissions Engine" />
+    <meta property="og:description" content="Professional PCAF-compliant financed emissions tracking and reporting platform with AI-powered insights." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/peercarbon-logo-transparent.png" />
+    <meta property="og:site_name" content="PCAF Emissions Engine" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PCAF Emissions Engine" />
+    <meta name="twitter:description" content="Professional PCAF-compliant financed emissions tracking and reporting platform." />
+    <meta name="twitter:image" content="/peercarbon-logo-transparent.png" />
+    
+    <!-- CSS for safe area insets (notched devices) -->
+    <style>
+      :root {
+        --safe-area-inset-top: env(safe-area-inset-top);
+        --safe-area-inset-right: env(safe-area-inset-right);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        --safe-area-inset-left: env(safe-area-inset-left);
+      }
+      
+      body {
+        padding-top: var(--safe-area-inset-top);
+        padding-right: var(--safe-area-inset-right);
+        padding-bottom: var(--safe-area-inset-bottom);
+        padding-left: var(--safe-area-inset-left);
+      }
+      
+      /* Prevent zoom on input focus (iOS) */
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+      
+      /* Smooth scrolling for mobile */
+      html {
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Disable text selection on mobile for better UX */
+      .no-select {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
