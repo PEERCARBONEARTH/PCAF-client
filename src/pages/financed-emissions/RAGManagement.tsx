@@ -45,6 +45,7 @@ export default function RAGManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedCollection, setSelectedCollection] = useState('methodology');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -52,30 +53,62 @@ export default function RAGManagementPage() {
     fetchCollections();
   }, []);
 
+  const [testingConnection, setTestingConnection] = useState(false);
+
   const testConnection = async () => {
     try {
+      setTestingConnection(true);
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/health`);
 
-      if (response.ok) {
+      // Test multiple endpoints to ensure RAG service is fully operational
+      const healthResponse = await fetch(`${apiUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+
+      if (!healthResponse.ok) {
+        throw new Error(`Health check failed: ${healthResponse.status}`);
+      }
+
+      // Test RAG-specific endpoint
+      const ragResponse = await fetch(`${apiUrl}/api/v1/rag/collections`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+
+      if (ragResponse.ok) {
         toast({
           title: 'Connection Successful',
-          description: '✅ Backend connection successful!',
+          description: '✅ Backend and RAG service are operational!',
         });
         fetchCollections();
+      } else if (ragResponse.status === 401) {
+        toast({
+          title: 'Authentication Required',
+          description: '🔐 Please sign in to access RAG features',
+          variant: 'destructive'
+        });
       } else {
         toast({
-          title: 'Connection Failed',
-          description: `❌ Backend connection failed: ${response.status}`,
+          title: 'RAG Service Issue',
+          description: `⚠️ RAG service not available: ${ragResponse.status}`,
           variant: 'destructive'
         });
       }
     } catch (err) {
+      console.error('Connection test failed:', err);
       toast({
         title: 'Connection Error',
-        description: `❌ Connection error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        description: `❌ ${err instanceof Error ? err.message : 'Network connection failed'}`,
         variant: 'destructive'
       });
+    } finally {
+      setTestingConnection(false);
     }
   };
 
@@ -119,48 +152,147 @@ export default function RAGManagementPage() {
     }
   };
 
+  const validateFiles = (files: FileList): { valid: File[], invalid: { file: File, reason: string }[] } => {
+    const valid: File[] = [];
+    const invalid: { file: File, reason: string }[] = [];
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'text/plain',
+      'text/markdown'
+    ];
+    const allowedExtensions = ['.pdf', '.docx', '.doc', '.txt', '.md'];
+
+    Array.from(files).forEach(file => {
+      if (file.size > maxSize) {
+        invalid.push({ file, reason: `File size exceeds 50MB limit (${Math.round(file.size / 1024 / 1024)}MB)` });
+      } else if (!allowedTypes.includes(file.type) && !allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+        invalid.push({ file, reason: 'Unsupported file type. Please use PDF, DOCX, TXT, or MD files.' });
+      } else {
+        valid.push(file);
+      }
+    });
+
+    return { valid, invalid };
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
+    // Validate files first
+    const { valid, invalid } = validateFiles(files);
+
+    // Show validation errors
+    if (invalid.length > 0) {
+      invalid.forEach(({ file, reason }) => {
+        toast({
+          title: 'File Validation Error',
+          description: `${file.name}: ${reason}`,
+          variant: 'destructive'
+        });
+      });
+    }
+
+    // If no valid files, return early
+    if (valid.length === 0) {
+      event.target.value = '';
+      return;
+    }
+
     try {
       setUploading(true);
-      const formData = new FormData();
+      setError(null);
 
-      Array.from(files).forEach(file => {
+      // Show upload progress
+      toast({
+        title: 'Upload Started',
+        description: `Uploading ${valid.length} file(s)...`,
+      });
+
+      const formData = new FormData();
+      valid.forEach(file => {
         formData.append('documents', file);
       });
 
+      // Add metadata
+      formData.append('metadata', JSON.stringify({
+        uploadedAt: new Date().toISOString(),
+        source: 'rag-management-ui',
+        fileCount: valid.length
+      }));
+
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+
+      // Use AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
+
       const response = await fetch(`${apiUrl}/api/v1/rag/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
-        body: formData
+        body: formData,
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
 
+      if (!data.success) {
+        throw new Error(data.error || 'Upload processing failed');
+      }
+
+      const processedCount = data.data?.processed || valid.length;
+      const failedCount = data.data?.failed || 0;
+
       toast({
         title: 'Upload Successful',
-        description: `Processed ${data.data.processed} documents`,
+        description: `Successfully processed ${processedCount} document(s)${failedCount > 0 ? `, ${failedCount} failed` : ''}`,
       });
+
+      // Show detailed results if available
+      if (data.data?.results) {
+        console.log('Upload results:', data.data.results);
+      }
 
       // Refresh collections
       await fetchCollections();
 
-      // Clear file input
+      // Clear file input and selected files
       event.target.value = '';
+      setSelectedFiles([]);
     } catch (error) {
       console.error('Upload failed:', error);
+
+      let errorMessage = 'Failed to upload and process documents';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Upload timed out. Please try with smaller files or fewer documents.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      setError(errorMessage);
       toast({
         title: 'Upload Failed',
-        description: 'Failed to upload and process documents',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -169,11 +301,24 @@ export default function RAGManagementPage() {
   };
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      toast({
+        title: 'Search Query Required',
+        description: 'Please enter a search query',
+        variant: 'destructive'
+      });
+      return;
+    }
 
     try {
       setSearching(true);
+      setError(null);
+
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${apiUrl}/api/v1/rag/search`, {
         method: 'POST',
         headers: {
@@ -181,28 +326,63 @@ export default function RAGManagementPage() {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({
-          query: searchQuery,
+          query: searchQuery.trim(),
           collectionType: selectedCollection,
-          limit: 10
-        })
+          limit: 10,
+          includeMetadata: true
+        }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error('Search failed');
+        let errorMessage = 'Search failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || `HTTP ${response.status}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      setSearchResults(data.data.results);
+
+      if (!data.success) {
+        throw new Error(data.error || 'Search processing failed');
+      }
+
+      const results = data.data?.results || [];
+      setSearchResults(results);
 
       toast({
         title: 'Search Complete',
-        description: `Found ${data.data.results.length} relevant documents`,
+        description: `Found ${results.length} relevant document${results.length !== 1 ? 's' : ''}`,
       });
+
+      if (results.length === 0) {
+        toast({
+          title: 'No Results Found',
+          description: 'Try different keywords or check if documents are uploaded',
+        });
+      }
     } catch (error) {
       console.error('Search failed:', error);
+
+      let errorMessage = 'Failed to search documents';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Search timed out. Please try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      setError(errorMessage);
       toast({
         title: 'Search Failed',
-        description: 'Failed to search documents',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -242,11 +422,16 @@ export default function RAGManagementPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={testConnection} variant="outline">
+              <Button onClick={testConnection} variant="outline" disabled={testingConnection}>
+                {testingConnection ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Shield className="h-4 w-4 mr-2" />
+                )}
                 Test Connection
               </Button>
-              <Button onClick={fetchCollections} variant="outline">
-                <RefreshCw className="h-4 w-4 mr-2" />
+              <Button onClick={fetchCollections} variant="outline" disabled={loading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
             </div>
@@ -287,29 +472,90 @@ export default function RAGManagementPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <div className="space-y-2">
-                  <h3 className="text-lg font-medium">Drop files here or click to browse</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Supports PDF, DOCX, TXT, and MD files (max 50MB each)
-                  </p>
-                </div>
-                <Input
-                  type="file"
-                  multiple
-                  accept=".pdf,.docx,.txt,.md"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="mt-4 cursor-pointer"
-                />
-                {uploading && (
-                  <div className="flex items-center justify-center gap-2 mt-4">
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                    <span>Processing documents...</span>
+              <div
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${uploading
+                    ? 'border-primary/50 bg-primary/5'
+                    : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5'
+                  }`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.add('border-primary', 'bg-primary/10');
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-primary', 'bg-primary/10');
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-primary', 'bg-primary/10');
+                  const files = e.dataTransfer.files;
+                  if (files.length > 0) {
+                    const event = { target: { files, value: '' } } as React.ChangeEvent<HTMLInputElement>;
+                    handleFileUpload(event);
+                  }
+                }}
+              >
+                {uploading ? (
+                  <div className="space-y-4">
+                    <RefreshCw className="h-12 w-12 mx-auto animate-spin text-primary" />
+                    <div>
+                      <h3 className="text-lg font-medium">Processing Documents</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Please wait while we analyze and index your documents...
+                      </p>
+                    </div>
                   </div>
+                ) : (
+                  <>
+                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-medium">Drop files here or click to browse</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Supports PDF, DOCX, DOC, TXT, and MD files (max 50MB each)
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Multiple files supported • Automatic content categorization
+                      </p>
+                    </div>
+                    <Input
+                      type="file"
+                      multiple
+                      accept=".pdf,.docx,.doc,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,text/plain,text/markdown"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          setSelectedFiles(Array.from(e.target.files));
+                        }
+                        handleFileUpload(e);
+                      }}
+                      disabled={uploading}
+                      className="mt-4 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                    />
+                  </>
                 )}
               </div>
+
+              {selectedFiles.length > 0 && !uploading && (
+                <Card className="bg-muted/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Selected Files ({selectedFiles.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {selectedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <span className="truncate">{file.name}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(file.size / 1024)}KB
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               <Alert>
                 <FileText className="h-4 w-4" />
