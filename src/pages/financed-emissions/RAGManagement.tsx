@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Upload, 
-  Search, 
-  Database, 
-  FileText, 
-  RefreshCw, 
-  CheckCircle, 
+import {
+  Upload,
+  Search,
+  Database,
+  FileText,
+  RefreshCw,
+  CheckCircle,
   AlertTriangle,
   Trash2,
   Download,
@@ -56,7 +56,7 @@ export default function RAGManagementPage() {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
       const response = await fetch(`${apiUrl}/health`);
-      
+
       if (response.ok) {
         toast({
           title: 'Connection Successful',
@@ -99,7 +99,7 @@ export default function RAGManagementPage() {
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         setCollections(data.data?.collections || []);
       } else {
@@ -126,7 +126,7 @@ export default function RAGManagementPage() {
     try {
       setUploading(true);
       const formData = new FormData();
-      
+
       Array.from(files).forEach(file => {
         formData.append('documents', file);
       });
@@ -145,7 +145,7 @@ export default function RAGManagementPage() {
       }
 
       const data = await response.json();
-      
+
       toast({
         title: 'Upload Successful',
         description: `Processed ${data.data.processed} documents`,
@@ -153,7 +153,7 @@ export default function RAGManagementPage() {
 
       // Refresh collections
       await fetchCollections();
-      
+
       // Clear file input
       event.target.value = '';
     } catch (error) {
@@ -193,7 +193,7 @@ export default function RAGManagementPage() {
 
       const data = await response.json();
       setSearchResults(data.data.results);
-      
+
       toast({
         title: 'Search Complete',
         description: `Found ${data.data.results.length} relevant documents`,
@@ -211,6 +211,7 @@ export default function RAGManagementPage() {
   };
 
   const getCollectionIcon = (name: string) => {
+    if (!name) return <Database className="h-5 w-5 text-gray-600" />;
     if (name.includes('methodology')) return <BookOpen className="h-5 w-5 text-blue-600" />;
     if (name.includes('regulation')) return <Shield className="h-5 w-5 text-red-600" />;
     if (name.includes('calculation')) return <Calculator className="h-5 w-5 text-green-600" />;
@@ -218,6 +219,7 @@ export default function RAGManagementPage() {
   };
 
   const getCollectionColor = (name: string) => {
+    if (!name) return 'border-gray-200 bg-gray-50';
     if (name.includes('methodology')) return 'border-blue-200 bg-blue-50';
     if (name.includes('regulation')) return 'border-red-200 bg-red-50';
     if (name.includes('calculation')) return 'border-green-200 bg-green-50';
@@ -419,21 +421,21 @@ export default function RAGManagementPage() {
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">
-                              {Math.round(result.similarity * 100)}% match
+                              {Math.round((result.similarity || 0) * 100)}% match
                             </Badge>
                             <Badge variant="secondary">
-                              {result.metadata.category}
+                              {result.metadata?.category || 'Unknown'}
                             </Badge>
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            {result.metadata.filename}
+                            {result.metadata?.filename || 'Unknown file'}
                           </span>
                         </div>
-                        <p className="text-sm">{result.content}</p>
+                        <p className="text-sm">{result.content || 'No content available'}</p>
                         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                          <span>Source: {result.metadata.authority}</span>
+                          <span>Source: {result.metadata?.authority || 'Unknown'}</span>
                           <span>•</span>
-                          <span>Type: {result.metadata.type}</span>
+                          <span>Type: {result.metadata?.type || 'Unknown'}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -465,13 +467,13 @@ export default function RAGManagementPage() {
             </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {collections.map((collection) => (
-                <Card key={collection.name} className={getCollectionColor(collection.name)}>
+              {collections.filter(collection => collection && collection.name).map((collection) => (
+                <Card key={collection.name || 'unknown'} className={getCollectionColor(collection.name)}>
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {getCollectionIcon(collection.name)}
-                        <CardTitle className="text-base">{collection.name}</CardTitle>
+                        <CardTitle className="text-base">{collection.name || 'Unknown Collection'}</CardTitle>
                       </div>
                       {collection.error ? (
                         <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -484,12 +486,12 @@ export default function RAGManagementPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Documents:</span>
-                        <span className="font-medium">{collection.documentCount.toLocaleString()}</span>
+                        <span className="font-medium">{(collection.documentCount || 0).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Last Updated:</span>
                         <span className="text-muted-foreground">
-                          {new Date(collection.lastUpdated).toLocaleDateString()}
+                          {collection.lastUpdated ? new Date(collection.lastUpdated).toLocaleDateString() : 'Unknown'}
                         </span>
                       </div>
                       {collection.error && (
@@ -513,7 +515,7 @@ export default function RAGManagementPage() {
                   <p className="text-muted-foreground mb-4">
                     Upload some documents to create your first knowledge base collection
                   </p>
-                  <Button onClick={() => document.querySelector('[value="upload"]')?.click()}>
+                  <Button onClick={() => (document.querySelector('[value="upload"]') as HTMLElement)?.click()}>
                     Upload Documents
                   </Button>
                 </div>

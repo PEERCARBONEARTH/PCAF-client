@@ -313,7 +313,7 @@ export function PWAInstallPrompt() {
       )}
 
       {/* Connection Status Indicator */}
-      <div className="fixed top-4 right-4 z-40">
+      <div className="fixed bottom-4 right-4 z-40">
         <Badge 
           variant={isOnline ? "default" : "destructive"}
           className="flex items-center gap-1"
