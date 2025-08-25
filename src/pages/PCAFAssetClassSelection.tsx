@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { PeercarbonLogo } from '@/components/PeercarbonLogo';
 import { ModeToggle } from '@/components/mode-toggle';
 import { UserMenu } from '@/components/auth/UserMenu';
-import { ArrowLeft, Car, Building2, Factory, Home, Zap, Wind, Banknote } from 'lucide-react';
+import { ArrowLeft, Car, Building2, Factory, Home, Zap, Wind, Banknote, TrendingUp } from 'lucide-react';
 
 const assetClasses = [
   {
@@ -16,6 +16,14 @@ const assetClasses = [
     icon: Car,
     available: true,
     route: '/financed-emissions'
+  },
+  {
+    id: 'green-finance-platform',
+    title: 'Green Finance Platform',
+    description: 'Automated green portfolio management with performance-driven disbursements',
+    icon: TrendingUp,
+    available: true,
+    route: '/green-finance'
   },
   {
     id: 'listed-equity-corporate-bonds',
