@@ -12,7 +12,7 @@
     "dev:frontend:simple": "vite --config vite.config.simple.ts",
     "dev:backend": "cd backend && npm run dev",
     "build": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "vite build",
+    "build:frontend": "vite build --mode production",
     "build:backend": "cd backend && npm run build",
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\" --names \"FRONTEND,BACKEND\" --prefix-colors \"cyan,yellow\"",
     "start:frontend": "vite preview",
