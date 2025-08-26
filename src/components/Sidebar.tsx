@@ -388,36 +388,80 @@ export function Sidebar() {
 
         {/* Mobile overlay */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" />
+          <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setMobileMenuOpen(false)} />
         )}
 
         {/* Mobile sidebar */}
         <div
           id="mobile-sidebar"
           className={cn(
-            "fixed left-0 top-0 z-50 h-full w-80 transform transition-transform duration-300 ease-out md:hidden",
-            "bg-gradient-to-b from-card/95 via-card to-card/98 backdrop-blur-xl",
-            "border-r border-border/50 shadow-2xl shadow-black/20",
+            "fixed left-0 top-0 z-50 h-full w-72 transform transition-transform duration-300 ease-out md:hidden",
+            "bg-card border-r border-border shadow-xl",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <MobileSidebarContent
-            onClose={() => setMobileMenuOpen(false)}
-            currentPlatform={currentPlatform}
-            location={location}
-            visibleItems={visibleItems}
-            pinnedItems={pinnedItems}
-            collapsedGroups={collapsedGroups}
-            compactMode={compactMode}
-            toggleGroupCollapse={toggleGroupCollapse}
-            togglePin={togglePin}
-            resetToDefaults={resetToDefaults}
-            renderNavigationItem={renderNavigationItem}
-            getNavigationItems={getNavigationItems}
-            getVisibleItems={getVisibleItems}
-            getPinnedItems={getPinnedItems}
-            getItemsByCategory={getItemsByCategory}
-          />
+          {/* Simple mobile header */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <PeercarbonLogo size={20} />
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold text-foreground">Peercarbon</h1>
+                <p className="text-xs text-muted-foreground">
+                  {currentPlatform === 'financed-emissions' ? 'Financed Emissions' : 'Green Finance'}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Simple navigation list */}
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            {getVisibleItems().map(item => {
+              const isActive = location.pathname === item.href;
+              const Icon = item.icon;
+
+              return (
+                <NavLink
+                  key={item.id}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium">{item.name}</div>
+                    <div className="text-xs opacity-75 truncate">{item.description}</div>
+                  </div>
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          {/* Simple footer */}
+          <div className="border-t border-border p-4">
+            <NavLink
+              to={`/${currentPlatform}/settings`}
+              className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Settings className="h-5 w-5 shrink-0" />
+              <span>Settings</span>
+            </NavLink>
+          </div>
         </div>
       </>
     );
@@ -597,153 +641,3 @@ export function Sidebar() {
   );
 }
 
-// Mobile sidebar content component
-function MobileSidebarContent({
-  onClose,
-  currentPlatform,
-  location,
-  visibleItems,
-  pinnedItems,
-  collapsedGroups,
-  compactMode,
-  toggleGroupCollapse,
-  togglePin,
-  resetToDefaults,
-  renderNavigationItem,
-  getNavigationItems,
-  getVisibleItems,
-  getPinnedItems,
-  getItemsByCategory
-}: {
-  onClose: () => void;
-  currentPlatform: string;
-  location: any;
-  visibleItems: string[];
-  pinnedItems: string[];
-  collapsedGroups: string[];
-  compactMode: boolean;
-  toggleGroupCollapse: (id: string) => void;
-  togglePin: (id: string) => void;
-  resetToDefaults: () => void;
-  renderNavigationItem: (item: any, isPinned?: boolean) => React.ReactNode;
-  getNavigationItems: () => any[];
-  getVisibleItems: () => any[];
-  getPinnedItems: () => any[];
-  getItemsByCategory: (categoryId: string) => any[];
-}) {
-  return (
-    <>
-      {/* Glassmorphism overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-primary/[0.03] pointer-events-none" />
-
-      {/* Header */}
-      <div className="relative z-10 flex items-center gap-4 px-6 py-6 border-b border-border/30 bg-gradient-to-r from-muted/20 via-transparent to-muted/10">
-        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shrink-0 shadow-lg shadow-primary/25 ring-1 ring-white/20">
-          <PeercarbonLogo size={28} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-bold text-foreground truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-            Peercarbon
-          </h1>
-          <p className="text-sm text-muted-foreground/90 font-medium mt-0.5">
-            {currentPlatform === 'financed-emissions' ? 'Scope 3 Category 15 Portal' : 'Impact Investment Hub'}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-9 w-9 p-0 shrink-0 rounded-sm hover:bg-muted/50"
-          onClick={onClose}
-        >
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-
-      {/* Quick Access (Pinned Items) */}
-      {getPinnedItems().length > 0 && (
-        <div className="relative z-10 px-6 py-5 border-b border-border/30 bg-gradient-to-r from-yellow-500/5 via-transparent to-amber-500/5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-gradient-to-br from-yellow-400 to-amber-500 shadow-lg shadow-yellow-500/25">
-              <Star className="h-4 w-4 text-white fill-current drop-shadow-sm" />
-            </div>
-            <span className="text-sm font-semibold text-foreground">Quick Access</span>
-          </div>
-          <div className="space-y-2">
-            {getPinnedItems().map(item => renderNavigationItem(item, true))}
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="relative z-10 flex-1 px-6 py-6 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-muted/30 scrollbar-track-transparent">
-        {currentPlatform === 'financed-emissions' ? (
-          // Simplified flat navigation for financed emissions
-          <div className="space-y-3">
-            {getVisibleItems().map(item => renderNavigationItem(item))}
-          </div>
-        ) : (
-          // Grouped navigation for green finance
-          Object.entries(categories).map(([categoryId, category]) => {
-            const categoryItems = getItemsByCategory(categoryId);
-            if (categoryItems.length === 0) return null;
-
-            const isCollapsed = collapsedGroups.includes(categoryId);
-            const CategoryIcon = category.icon;
-
-            return (
-              <Collapsible key={categoryId} open={!isCollapsed}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-sm hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300"
-                    onClick={() => toggleGroupCollapse(categoryId)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-gradient-to-br from-muted to-muted/50 shadow-sm">
-                        <CategoryIcon className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <span className="text-sm text-foreground">{category.name}</span>
-                      <Badge variant="outline" className="text-xs bg-muted/50 border-muted text-muted-foreground">
-                        {categoryItems.length}
-                      </Badge>
-                    </div>
-                    <div className="transition-transform duration-300">
-                      {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-2 mt-3 ml-2">
-                  {categoryItems.map(item => renderNavigationItem(item))}
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })
-        )}
-      </nav>
-
-      {/* Footer */}
-      <div className="relative z-10 border-t border-border/30 p-6 bg-gradient-to-t from-muted/10 via-transparent to-transparent">
-        <NavLink
-          to={`/${currentPlatform}/settings`}
-          className="group flex items-center gap-4 px-4 py-3.5 rounded-sm text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:shadow-lg hover:shadow-muted/20"
-        >
-          <div className="flex items-center justify-center w-10 h-10 rounded-sm bg-muted/30 group-hover:bg-primary/10 transition-all duration-300">
-            <Settings className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors duration-300" />
-          </div>
-          <span className="font-semibold">Settings</span>
-        </NavLink>
-
-        {/* Version indicator */}
-        <div className="mt-4 pt-4 border-t border-border/20">
-          <div className="flex items-center justify-between text-xs text-muted-foreground/60">
-            <span>v2.1.0</span>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></div>
-              <span>Online</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
