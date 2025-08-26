@@ -36,8 +36,8 @@ export function PlatformLayout({ children }: PlatformLayoutProps) {
     <div className="flex h-screen w-full bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <div className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b p-4 flex items-center justify-between md:pl-6">
-          <div className="flex items-center gap-4 ml-12 md:ml-0">
+        <div className="hidden md:flex sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b p-4 items-center justify-between">
+          <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold text-foreground">{platformTitle}</h1>
           </div>
           
@@ -62,7 +62,7 @@ export function PlatformLayout({ children }: PlatformLayoutProps) {
           </div>
         </div>
         
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 pt-20 md:pt-6">
           {children}
         </main>
       </div>
