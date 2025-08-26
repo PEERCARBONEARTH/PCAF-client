@@ -592,19 +592,31 @@ export default function RAGManagementPage() {
                         Multiple files supported • Automatic content categorization
                       </p>
                     </div>
-                    <Input
-                      type="file"
-                      multiple
-                      accept=".pdf,.docx,.doc,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,text/plain,text/markdown"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          setSelectedFiles(Array.from(e.target.files));
-                        }
-                        handleFileUpload(e);
-                      }}
-                      disabled={uploading}
-                      className="mt-4 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-                    />
+                    <div className="mt-4 flex justify-center">
+                      <Button 
+                        type="button" 
+                        disabled={uploading}
+                        className="btn-organic-primary"
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Browse Files
+                      </Button>
+                      <input
+                        id="file-upload"
+                        type="file"
+                        multiple
+                        accept=".pdf,.docx,.doc,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,text/plain,text/markdown"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            setSelectedFiles(Array.from(e.target.files));
+                          }
+                          handleFileUpload(e);
+                        }}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                    </div>
                   </>
                 )}
               </div>
