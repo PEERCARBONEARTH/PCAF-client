@@ -141,7 +141,140 @@ export function MobileOptimizedDashboard({
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header */}
+      <div 
 
+
+
+className="flex-1"
+
+
+onTouchStart={handleTouchStart}
+
+
+onTouchMove={handleTouchMove}
+
+
+onTouchEnd={handleTouchEnd}
+
+
+>
+
+
+<Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+
+
+  <TabsList className="grid w-full grid-cols-4 mx-4 mb-4">
+
+
+    <TabsTrigger value="overview" className="text-xs">
+
+
+      <Home className="h-3 w-3 mr-1" />
+
+
+      Home
+
+
+    </TabsTrigger>
+
+
+    <TabsTrigger value="goals" className="text-xs">
+
+
+      <Target className="h-3 w-3 mr-1" />
+
+
+      Goals
+
+
+    </TabsTrigger>
+
+
+    <TabsTrigger value="progress" className="text-xs">
+
+
+      <Trophy className="h-3 w-3 mr-1" />
+
+
+      Progress
+
+
+    </TabsTrigger>
+
+
+    <TabsTrigger value="help" className="text-xs">
+
+
+      <HelpCircle className="h-3 w-3 mr-1" />
+
+
+      Help
+
+
+    </TabsTrigger>
+
+
+  </TabsList>
+
+
+
+
+
+  <div className="px-4 pb-20">
+
+
+    <TabsContent value="overview" className="mt-0">
+
+
+      <MobileOverview portfolioMetrics={portfolioMetrics} />
+
+
+    </TabsContent>
+
+
+    
+
+
+    <TabsContent value="goals" className="mt-0">
+
+
+      <MobileGoals onActionStart={onActionStart} />
+
+
+    </TabsContent>
+
+
+    
+
+
+    <TabsContent value="progress" className="mt-0">
+
+
+      <MobileProgress portfolioMetrics={portfolioMetrics} />
+
+
+    </TabsContent>
+
+
+    
+
+
+    <TabsContent value="help" className="mt-0">
+
+
+      <MobileHelp />
+
+
+    </TabsContent>
+
+
+  </div>
+
+
+</Tabs>
+
+
+</div>
 
       {/* Mobile Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2">
