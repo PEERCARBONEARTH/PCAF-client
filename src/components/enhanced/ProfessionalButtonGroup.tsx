@@ -23,21 +23,21 @@ export function ProfessionalButtonGroup({
 }: ProfessionalButtonGroupProps) {
   const variantStyles = {
     default: {
-      container: "p-1.5 bg-muted/50 rounded-lg border border-border/60",
+      container: "p-1.5 bg-muted/50 rounded-sm border border-border/60",
       button: {
         active: "bg-card text-primary shadow-sm border-primary/30",
         inactive: "bg-transparent text-muted-foreground hover:text-foreground border-transparent"
       }
     },
     outline: {
-      container: "rounded-lg border border-border/60",
+      container: "rounded-sm border border-border/60",
       button: {
         active: "bg-primary/10 text-primary border-primary/30",
         inactive: "bg-transparent text-muted-foreground hover:text-foreground border-transparent"
       }
     },
     glass: {
-      container: "p-1 bg-background/80 backdrop-blur-md rounded-lg border border-border/40 shadow-lg",
+      container: "p-1 bg-background/80 backdrop-blur-md rounded-sm border border-border/40 shadow-lg",
       button: {
         active: "bg-primary text-primary-foreground border-primary/50 shadow-md",
         inactive: "bg-transparent text-muted-foreground hover:bg-primary/10 hover:text-foreground border-transparent"

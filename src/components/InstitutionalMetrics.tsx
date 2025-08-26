@@ -153,9 +153,9 @@ export function InstitutionalMetrics({ clientType }: InstitutionalMetricsProps) 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {portfolioMetrics.map((metric, index) => (
-            <div key={index} className="border rounded-lg p-4">
+            <div key={index} className="border rounded-sm p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className={`p-2 rounded-lg bg-muted ${getStatusColor(metric.status)}`}>
+                <div className={`p-2 rounded-sm bg-muted ${getStatusColor(metric.status)}`}>
                   {metric.icon}
                 </div>
                 {getStatusBadge(metric.status)}

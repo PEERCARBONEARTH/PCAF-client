@@ -12,7 +12,7 @@ interface GlobalFilterBarProps {
 
 export function GlobalFilterBar({ fuelTypes, selectedFuelType, period, onChange }: GlobalFilterBarProps) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border rounded-lg p-3 bg-background/50">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border rounded-sm p-3 bg-background/50">
       {/* Fuel type filter */}
       <div className="flex items-center gap-2">
         <label className="text-sm text-muted-foreground">Fuel type</label>

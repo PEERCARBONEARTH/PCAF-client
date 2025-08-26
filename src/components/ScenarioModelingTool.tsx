@@ -718,7 +718,7 @@ export function ScenarioModelingTool() {
               <CardContent>
                 <div className="space-y-4">
                   {vehicleImpacts.map((impact, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50">
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-sm hover:bg-muted/50">
                       <div className="flex-1">
                         <h4 className="font-semibold">{impact.vehicleType}</h4>
                         <div className="text-sm text-muted-foreground">

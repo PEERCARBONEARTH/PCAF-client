@@ -165,7 +165,7 @@ export default function ReportsPage() {
                 <CardContent className="space-y-3">
                   <button 
                     onClick={() => navigate('/financed-emissions/reports/templates')}
-                    className="w-full p-3 text-left rounded-lg border border-border/20 hover:bg-muted/30 transition-colors"
+                    className="w-full p-3 text-left rounded-sm border border-border/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Layout className="h-4 w-4 text-primary" />
@@ -176,7 +176,7 @@ export default function ReportsPage() {
                   
                   <button 
                     onClick={() => setActiveTab("generate")}
-                    className="w-full p-3 text-left rounded-lg border border-border/20 hover:bg-muted/30 transition-colors"
+                    className="w-full p-3 text-left rounded-sm border border-border/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Plus className="h-4 w-4 text-primary" />
@@ -189,7 +189,7 @@ export default function ReportsPage() {
                   
                   <button 
                     onClick={() => setActiveTab("history")}
-                    className="w-full p-3 text-left rounded-lg border border-border/20 hover:bg-muted/30 transition-colors"
+                    className="w-full p-3 text-left rounded-sm border border-border/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <History className="h-4 w-4 text-primary" />
@@ -200,7 +200,7 @@ export default function ReportsPage() {
                   
                   <button 
                     onClick={() => navigate('/financed-emissions/ai-insights')}
-                    className="w-full p-3 text-left rounded-lg border border-border/20 hover:bg-muted/30 transition-colors"
+                    className="w-full p-3 text-left rounded-sm border border-border/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Brain className="h-4 w-4 text-primary" />

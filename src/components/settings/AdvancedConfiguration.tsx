@@ -26,8 +26,8 @@ export function AdvancedConfiguration({ activeSubsection }: AdvancedConfiguratio
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-          <div className="mx-auto w-12 h-12 bg-muted rounded-lg flex items-center justify-center mb-4">
+        <div className="border-2 border-dashed border-muted-foreground/25 rounded-sm p-8 text-center">
+          <div className="mx-auto w-12 h-12 bg-muted rounded-sm flex items-center justify-center mb-4">
             <FileText className="h-6 w-6 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-medium mb-2">Upload Client Documents</h3>

@@ -157,7 +157,7 @@ export function MRVIntegrationPanel({ projects }: MRVIntegrationPanelProps) {
                   const thresholdCheck = checkThreshold(project);
                   
                   return (
-                    <div key={project.id} className="border rounded-lg p-4">
+                    <div key={project.id} className="border rounded-sm p-4">
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <h3 className="font-semibold">{project.schoolName}</h3>
@@ -288,7 +288,7 @@ export function MRVIntegrationPanel({ projects }: MRVIntegrationPanelProps) {
                   const check = checkThreshold(project);
                   
                   return (
-                    <div key={project.id} className="border rounded-lg p-4">
+                    <div key={project.id} className="border rounded-sm p-4">
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="font-semibold">{project.schoolName}</h3>
                         <Badge variant={check.passed ? "default" : "secondary"}>

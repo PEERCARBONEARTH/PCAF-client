@@ -175,7 +175,7 @@ export function DataQualityManagement({ activeSubsection }: DataQualityManagemen
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-lg border">
+          <div className="rounded-sm border">
             <div className="grid grid-cols-4 gap-4 p-4 border-b bg-muted/50 font-medium">
               <div>Vehicle Type</div>
               <div>Default EF (kg CO₂e/km)</div>

@@ -33,7 +33,7 @@ export function MetricCard({
             )}
           </div>
           {icon && (
-            <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary shrink-0 ml-3 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+            <div className="flex h-12 w-12 items-center justify-center rounded-sm  bg-primary/10 text-primary shrink-0 ml-3 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
               {icon}
             </div>
           )}
@@ -59,7 +59,7 @@ export function MetricCard({
       </div>
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 rounded-sm opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     </Card>
   );
 }

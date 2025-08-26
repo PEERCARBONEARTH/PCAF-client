@@ -346,7 +346,7 @@ export function IntegrationWizard({ integrations, onStartConfiguration, onSaveCo
 
               {/* Health Status */}
               {integration.status === "active" && (
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center justify-between p-3 rounded-sm bg-muted/30">
                   <div className="flex items-center gap-2">
                     {getHealthIcon(integration.health)}
                     <span className="text-sm font-medium">Health: {integration.health}</span>
@@ -361,7 +361,7 @@ export function IntegrationWizard({ integrations, onStartConfiguration, onSaveCo
 
               {/* Error Information */}
               {integration.status === "error" && integration.errorCount > 0 && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <div className="p-3 rounded-sm bg-destructive/10 border border-destructive/20">
                   <p className="text-sm text-destructive font-medium">
                     {integration.errorCount} errors detected
                   </p>
@@ -431,7 +431,7 @@ export function IntegrationWizard({ integrations, onStartConfiguration, onSaveCo
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 {steps.map((step, index) => (
                   <div key={step.id} className="flex items-center gap-2 flex-shrink-0">
-                    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                    <div className={`flex items-center gap-2 px-3 py-2 rounded-sm ${
                       index === currentStep ? "bg-primary text-primary-foreground" :
                       index < currentStep ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"
                     }`}>
@@ -526,7 +526,7 @@ export function IntegrationWizard({ integrations, onStartConfiguration, onSaveCo
                     
                     <div className="space-y-3">
                       {selectedIntegration.testEndpoints.map((endpoint) => (
-                        <div key={endpoint.id} className="p-3 rounded-lg border border-border">
+                        <div key={endpoint.id} className="p-3 rounded-sm border border-border">
                           <div className="flex items-center justify-between">
                             <div>
                               <h4 className="font-medium text-foreground">{endpoint.name}</h4>

@@ -559,7 +559,7 @@ export function NaturalLanguageQueryInterface() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Visualization */}
-                <div className="border rounded-lg p-4">
+                <div className="border rounded-sm p-4">
                   {renderVisualization(result)}
                 </div>
 

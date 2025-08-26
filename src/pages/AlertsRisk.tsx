@@ -215,7 +215,7 @@ export default function AlertsRisk() {
                       <p className="metric-value mt-2">{metric.value}</p>
                       <p className="text-sm text-muted-foreground mt-1">{metric.subtext}</p>
                     </div>
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${metric.bgColor} ${metric.color}`}>
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-sm ${metric.bgColor} ${metric.color}`}>
                       <metric.icon className="h-6 w-6" />
                     </div>
                   </div>
@@ -263,10 +263,10 @@ export default function AlertsRisk() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentAlerts.map((alert) => (
-                      <div key={alert.id} className="border border-border rounded-lg p-4 hover:shadow-[var(--shadow-elevated)] transition-all">
+                      <div key={alert.id} className="border border-border rounded-sm p-4 hover:shadow-[var(--shadow-elevated)] transition-all">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-4">
-                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${getSeverityColor(alert.severity)}`}>
+                            <div className={`flex h-10 w-10 items-center justify-center rounded-sm ${getSeverityColor(alert.severity)}`}>
                               <alert.icon className="h-5 w-5" />
                             </div>
                             <div className="flex-1">

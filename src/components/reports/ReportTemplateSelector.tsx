@@ -186,7 +186,7 @@ export function ReportTemplateSelector({ onTemplateSelect }: { onTemplateSelect:
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
+                    <div className="p-2 rounded-sm bg-primary/10">
                       <TemplateIcon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
@@ -243,7 +243,7 @@ export function ReportTemplateSelector({ onTemplateSelect }: { onTemplateSelect:
                   </div>
 
                   {isPreview && (
-                    <div className="p-3 bg-muted/30 rounded-lg border-l-2 border-primary">
+                    <div className="p-3 bg-muted/30 rounded-sm border-l-2 border-primary">
                       <h4 className="text-sm font-medium mb-1">Preview</h4>
                       <p className="text-xs text-muted-foreground">{template.preview}</p>
                       <div className="mt-2">

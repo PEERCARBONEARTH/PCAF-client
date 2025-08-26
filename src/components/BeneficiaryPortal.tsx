@@ -180,7 +180,7 @@ export function BeneficiaryPortal() {
                   <p className="metric-value mt-2">${totalReceived.toLocaleString()}</p>
                   <p className="text-sm text-muted-foreground mt-1">All time</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+                <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                   <DollarSign className="h-6 w-6" />
                 </div>
               </div>
@@ -195,7 +195,7 @@ export function BeneficiaryPortal() {
                   <p className="metric-value mt-2">{completedPayments.length}</p>
                   <p className="text-sm text-muted-foreground mt-1">Completed</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                   <CheckCircle className="h-6 w-6" />
                 </div>
               </div>
@@ -210,7 +210,7 @@ export function BeneficiaryPortal() {
                   <p className="metric-value mt-2">{processingPayments.length}</p>
                   <p className="text-sm text-muted-foreground mt-1">In progress</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+                <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-warning/10 text-warning">
                   <Clock className="h-6 w-6" />
                 </div>
               </div>
@@ -309,7 +309,7 @@ export function BeneficiaryPortal() {
                 const MethodIcon = getMethodIcon(payment.method);
                 
                 return (
-                  <div key={payment.id} className="flex items-center justify-between p-4 rounded-lg border">
+                  <div key={payment.id} className="flex items-center justify-between p-4 rounded-sm border">
                     <div className="flex items-center gap-4">
                       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
                         payment.status === 'completed' ? 'bg-success/10' :
@@ -356,21 +356,21 @@ export function BeneficiaryPortal() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3 p-3 rounded-sm bg-muted/50">
                 <Phone className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium">Phone Support</p>
                   <p className="text-sm text-muted-foreground">+1-800-CLIMATE</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3 p-3 rounded-sm bg-muted/50">
                 <Mail className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium">Email Support</p>
                   <p className="text-sm text-muted-foreground">support@climate.finance</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3 p-3 rounded-sm bg-muted/50">
                 <Bell className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium">24/7 Monitoring</p>

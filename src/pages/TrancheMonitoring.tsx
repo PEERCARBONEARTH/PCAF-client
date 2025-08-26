@@ -152,7 +152,7 @@ export default function TrancheMonitoring() {
                       <p className="metric-value mt-2">{stats.totalTranches}</p>
                       <p className="text-sm text-muted-foreground mt-1">Across all programs</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <FileText className="h-6 w-6" />
                     </div>
                   </div>
@@ -167,7 +167,7 @@ export default function TrancheMonitoring() {
                       <p className="metric-value mt-2">${(stats.readyToDisburse.amount / 1000).toFixed(0)}K</p>
                       <p className="text-sm text-muted-foreground mt-1">{stats.readyToDisburse.count} tranches pending</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <DollarSign className="h-6 w-6" />
                     </div>
                   </div>
@@ -182,7 +182,7 @@ export default function TrancheMonitoring() {
                       <p className="metric-value mt-2">{stats.monitoring.percentage}%</p>
                       <p className="text-sm text-muted-foreground mt-1">Schools transmitting</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <TrendingUp className="h-6 w-6" />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function TrancheMonitoring() {
                       <p className="metric-value mt-2">{stats.avgTriggerTime} days</p>
                       <p className="text-sm text-muted-foreground mt-1">To milestone completion</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <Clock className="h-6 w-6" />
                     </div>
                   </div>
@@ -255,7 +255,7 @@ export default function TrancheMonitoring() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {readyTranches.slice(0, 4).map((tranche) => (
-                        <div key={tranche.id} className="p-4 rounded-lg border border-success/20 bg-success/5">
+                        <div key={tranche.id} className="p-4 rounded-sm border border-success/20 bg-success/5">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="font-medium text-foreground">{tranche.schoolName}</p>

@@ -121,7 +121,7 @@ export const NavigationPreferences: React.FC = () => {
             {navigationProfiles.map((profile) => (
               <div
                 key={profile.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                className={`p-4 border rounded-sm cursor-pointer transition-all hover:shadow-md ${
                   activeProfile === profile.id 
                     ? 'border-primary bg-primary/5' 
                     : 'border-border hover:border-primary/50'
@@ -260,7 +260,7 @@ export const NavigationPreferences: React.FC = () => {
             return (
               <div key={categoryId} className="space-y-3">
                 <div 
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-muted/70 transition-colors"
+                  className="flex items-center justify-between p-3 bg-muted/50 rounded-sm cursor-pointer hover:bg-muted/70 transition-colors"
                   onClick={() => toggleGroupCollapse(categoryId)}
                 >
                   <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ export const NavigationPreferences: React.FC = () => {
                       return (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors"
+                          className="flex items-center justify-between p-3 border border-border rounded-sm hover:bg-muted/30 transition-colors"
                           draggable
                           onDragStart={(e) => handleDragStart(e, item.id)}
                           onDragOver={handleDragOver}

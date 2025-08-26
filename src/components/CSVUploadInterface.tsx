@@ -475,7 +475,7 @@ const sampleRows = [
           </Alert>
 
           {/* File Upload */}
-          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+          <div className="border-2 border-dashed border-border rounded-sm p-8 text-center">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                 <FileText className="h-6 w-6 text-primary" />
@@ -552,15 +552,15 @@ const sampleRows = [
               <CardContent className="space-y-4">
                 {/* Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-muted/50 rounded-lg text-center">
+                  <div className="p-4 bg-muted/50 rounded-sm text-center">
                     <div className="text-2xl font-bold">{uploadResult.totalRows}</div>
                     <div className="text-sm text-muted-foreground">Total Rows</div>
                   </div>
-                  <div className="p-4 bg-green-100 dark:bg-green-900/20 rounded-lg text-center">
+                  <div className="p-4 bg-green-100 dark:bg-green-900/20 rounded-sm text-center">
                     <div className="text-2xl font-bold text-green-600">{uploadResult.validRows}</div>
                     <div className="text-sm text-muted-foreground">Valid Rows</div>
                   </div>
-                  <div className="p-4 bg-red-100 dark:bg-red-900/20 rounded-lg text-center">
+                  <div className="p-4 bg-red-100 dark:bg-red-900/20 rounded-sm text-center">
                     <div className="text-2xl font-bold text-red-600">{uploadResult.invalidRows}</div>
                     <div className="text-sm text-muted-foreground">Invalid Rows</div>
                   </div>

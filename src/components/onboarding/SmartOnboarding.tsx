@@ -437,7 +437,7 @@ export function SmartOnboarding({ onComplete, onSkip }: SmartOnboardingProps) {
             </div>
 
             {/* Expected Outcomes */}
-            <div className="bg-muted/50 rounded-lg p-4">
+            <div className="bg-muted/50 rounded-sm p-4">
               <h4 className="font-medium mb-2">What you'll achieve:</h4>
               <ul className="space-y-1 text-sm">
                 {selectedGoal.outcomes.map((outcome, index) => (

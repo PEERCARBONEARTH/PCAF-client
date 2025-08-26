@@ -369,7 +369,7 @@ export default function WorkflowCenter() {
                       <p className="metric-value mt-2">{workflowStats.activeWorkflows}</p>
                       <p className="text-sm text-muted-foreground mt-1">In progress</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <Workflow className="h-6 w-6" />
                     </div>
                   </div>
@@ -384,7 +384,7 @@ export default function WorkflowCenter() {
                       <p className="metric-value mt-2">{workflowStats.pendingReviews}</p>
                       <p className="text-sm text-muted-foreground mt-1">Awaiting approval</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-warning/10 text-warning">
                       <Clock className="h-6 w-6" />
                     </div>
                   </div>
@@ -399,7 +399,7 @@ export default function WorkflowCenter() {
                       <p className="metric-value mt-2">{workflowStats.completedToday}</p>
                       <p className="text-sm text-muted-foreground mt-1">Tasks finished</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                       <CheckCircle className="h-6 w-6" />
                     </div>
                   </div>
@@ -414,7 +414,7 @@ export default function WorkflowCenter() {
                       <p className="metric-value mt-2">{workflowStats.avgCompletionTime}</p>
                       <p className="text-sm text-muted-foreground mt-1">Per workflow</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-info/10 text-info">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-info/10 text-info">
                       <TrendingUp className="h-6 w-6" />
                     </div>
                   </div>

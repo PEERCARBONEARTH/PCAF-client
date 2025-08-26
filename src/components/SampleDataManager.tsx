@@ -228,7 +228,7 @@ export function SampleDataManager() {
           </div>
 
           {/* Sample Data Description */}
-          <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+          <div className="p-4 bg-muted/50 rounded-sm space-y-2">
             <h4 className="font-medium">Sample Data Includes:</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• 50 realistic motor vehicle loans ($25k - $60k range)</li>

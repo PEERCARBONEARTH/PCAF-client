@@ -169,7 +169,7 @@ export function DealPipelineDrawer() {
                 <ScrollArea className="h-full pr-4">
                   <div className="space-y-4">
                     {pipelineProjects.map((project) => (
-                      <div key={project.id} className="p-4 rounded-lg border border-border hover:border-primary/50 bg-background/50 transition-all duration-300">
+                      <div key={project.id} className="p-4 rounded-sm border border-border hover:border-primary/50 bg-background/50 transition-all duration-300">
                         <div className="flex items-start justify-between mb-2">
                           <div>
                             <div className="flex items-center gap-2">
@@ -284,7 +284,7 @@ export function DealPipelineDrawer() {
                         {pipelineProjects
                           .filter(p => selectedForComparison.includes(p.id))
                           .map((project) => (
-                            <div key={project.id} className="p-4 rounded-lg border border-primary bg-primary/5 transition-all duration-300">
+                            <div key={project.id} className="p-4 rounded-sm border border-primary bg-primary/5 transition-all duration-300">
                               <div className="flex items-start justify-between mb-2">
                                 <div>
                                   <div className="flex items-center gap-2">

@@ -104,7 +104,7 @@ export function UnifiedMetricCard({
           </div>
           
           {Icon && (
-            <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${styles.icon}`}>
+            <div className={`flex h-12 w-12 items-center justify-center rounded-sm ${styles.icon}`}>
               <Icon className="h-6 w-6" />
             </div>
           )}

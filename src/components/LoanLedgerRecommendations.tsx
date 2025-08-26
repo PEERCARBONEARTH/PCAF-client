@@ -133,7 +133,7 @@ export function LoanLedgerRecommendations({
           {recommendations.map((rec) => (
             <div
               key={rec.id}
-              className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+              className="flex items-start gap-4 p-4 border rounded-sm hover:bg-muted/50 transition-colors"
             >
               <div className="flex-shrink-0 mt-1">
                 {rec.icon}

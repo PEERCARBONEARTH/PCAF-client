@@ -257,7 +257,7 @@ export function AIAssistantPanel({
                         </div>
                       )}
                       
-                      <div className={`max-w-[80%] rounded-lg p-3 ${
+                      <div className={`max-w-[80%] rounded-sm p-3 ${
                         message.role === 'user' 
                           ? 'bg-primary text-primary-foreground ml-auto' 
                           : 'bg-muted'
@@ -303,7 +303,7 @@ export function AIAssistantPanel({
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <Loader2 className="h-4 w-4 text-primary animate-spin" />
                   </div>
-                  <div className="bg-muted rounded-lg p-3">
+                  <div className="bg-muted rounded-sm p-3">
                     <p className="text-sm text-muted-foreground">
                       {agents.find(a => a.type === selectedAgent)?.name} agent is thinking...
                     </p>

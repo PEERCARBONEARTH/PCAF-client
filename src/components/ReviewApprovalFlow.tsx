@@ -139,7 +139,7 @@ export function ReviewApprovalFlow({ items, onApprove, onReject, onComplete }: R
             {pendingItems.map((item) => (
               <div 
                 key={item.id} 
-                className={`p-4 rounded-lg border ${getPriorityColor(item.priority)} hover:shadow-md transition-all`}
+                className={`p-4 rounded-sm border ${getPriorityColor(item.priority)} hover:shadow-md transition-all`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 flex-1">
@@ -187,7 +187,7 @@ export function ReviewApprovalFlow({ items, onApprove, onReject, onComplete }: R
           <CardContent>
             <div className="space-y-3">
               {completedItems.slice(0, 5).map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                <div key={item.id} className="flex items-center gap-3 p-3 rounded-sm bg-muted/30">
                   <div className={`p-1 rounded ${item.status === "approved" ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"}`}>
                     {item.status === "approved" ? 
                       <CheckCircle className="h-3 w-3" /> : 

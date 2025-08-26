@@ -280,7 +280,7 @@ export function DataFlowManager({ jobs, rules, onJobCreate, onJobProcess, onJobR
           </CardHeader>
           <CardContent className="space-y-4">
             {activeJobs.map((job) => (
-              <div key={job.id} className="p-4 rounded-lg border border-border">
+              <div key={job.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start gap-3">
                     {getStatusIcon(job.status)}
@@ -367,7 +367,7 @@ export function DataFlowManager({ jobs, rules, onJobCreate, onJobProcess, onJobR
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {rules.map((rule) => (
-              <div key={rule.id} className="p-4 rounded-lg border border-border">
+              <div key={rule.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-medium text-foreground">{rule.name}</h4>
                   <div className="flex items-center gap-2">

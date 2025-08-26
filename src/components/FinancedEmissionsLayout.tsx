@@ -134,7 +134,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         {/* Enhanced Sidebar header with glassmorphism */}
         <div className="flex h-16 items-center justify-between px-6 border-b border-border bg-gradient-to-r from-muted/50 to-card backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="p-1.5 rounded-lg bg-muted/50 backdrop-blur-sm shadow-[var(--shadow-xs)]">
+            <div className="p-1.5 rounded-sm bg-muted/50 backdrop-blur-sm shadow-[var(--shadow-xs)]">
               <PeercarbonLogo size={28} className="text-foreground" />
             </div>
             <div>
@@ -145,7 +145,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden text-foreground hover:bg-muted hover:scale-105 transition-[var(--transition-smooth)] rounded-lg shadow-[var(--shadow-xs)]"
+            className="lg:hidden text-foreground hover:bg-muted hover:scale-105 transition-[var(--transition-smooth)] rounded-sm shadow-[var(--shadow-xs)]"
             onClick={() => setSidebarOpen(false)}
           >
             <X className="h-5 w-5" />
@@ -163,7 +163,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
                   key={item.name}
                   onClick={() => navigate(item.href)}
                   className={cn(
-                    "w-full flex items-center gap-4 px-4 py-3.5 text-left rounded-sm transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm",
+                    "w-full flex items-center gap-4 px-4 py-3.5 text-left rounded-sm  transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm",
                     isActive
                       ? "bg-accent text-primary border border-accent/40 shadow-[var(--shadow-elevated)] scale-[1.02] translate-x-1"
                       : "text-muted-foreground hover:bg-muted/20 hover:text-foreground hover:scale-[1.01] hover:translate-x-1 hover:shadow-[var(--shadow-card)]"
@@ -176,7 +176,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
                   )}
                   
                   <div className={cn(
-                    "p-2 rounded-lg transition-[var(--transition-bounce)] relative z-10 shadow-[var(--shadow-xs)]",
+                    "p-2 rounded-sm transition-[var(--transition-bounce)] relative z-10 shadow-[var(--shadow-xs)]",
                     isActive 
                       ? "bg-primary/20 text-primary group-hover:scale-110 shadow-[var(--shadow-glow)]" 
                       : "bg-muted/20 text-muted-foreground group-hover:bg-muted/30 group-hover:text-foreground group-hover:scale-110"
@@ -211,7 +211,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
 
         {/* Enhanced Sidebar footer with premium styling */}
         <div className="border-t border-border p-6 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm">
-          <div className="flex items-center gap-4 p-3 rounded-sm bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
+          <div className="flex items-center gap-4 p-3 rounded-sm  bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
             <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shadow-[var(--shadow-xs)] group-hover:shadow-[var(--shadow-glow)] group-hover:scale-110 transition-[var(--transition-bounce)]">
               <Shield className="h-5 w-5 text-accent group-hover:text-accent-light transition-colors duration-300" />
             </div>
@@ -234,7 +234,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden text-foreground hover:bg-muted hover:scale-105 transition-[var(--transition-smooth)] rounded-lg shadow-[var(--shadow-xs)]"
+              className="lg:hidden text-foreground hover:bg-muted hover:scale-105 transition-[var(--transition-smooth)] rounded-sm shadow-[var(--shadow-xs)]"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -259,10 +259,10 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
               <ArrowLeft className="h-4 w-4" />
               Switch Platform
             </Button>
-            <div className="p-1 rounded-lg bg-muted/50 backdrop-blur-sm">
+            <div className="p-1 rounded-sm bg-muted/50 backdrop-blur-sm">
               <ModeToggle />
             </div>
-            <div className="p-1 rounded-lg bg-muted/50 backdrop-blur-sm hover:bg-muted/70 transition-colors duration-300">
+            <div className="p-1 rounded-sm bg-muted/50 backdrop-blur-sm hover:bg-muted/70 transition-colors duration-300">
               <UserMenu />
             </div>
           </div>

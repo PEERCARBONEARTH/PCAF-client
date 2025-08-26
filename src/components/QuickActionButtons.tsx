@@ -181,7 +181,7 @@ export const QuickActionButtons = () => {
         </div>
 
         {/* Emergency Actions */}
-        <div className="mt-6 p-4 bg-destructive/5 rounded-lg border border-destructive/10">
+        <div className="mt-6 p-4 bg-destructive/5 rounded-sm border border-destructive/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-destructive">Emergency Actions</p>

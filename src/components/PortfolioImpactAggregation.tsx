@@ -71,7 +71,7 @@ export function PortfolioImpactAggregation() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="text-center p-4 bg-success/5 rounded-lg border border-success/20">
+          <div className="text-center p-4 bg-success/5 rounded-sm border border-success/20">
             <Leaf className="h-8 w-8 text-success mx-auto mb-3" />
             <div className="text-3xl font-bold text-success mb-1">
               {portfolioSummary.totalCarbonAvoidance.toLocaleString()}
@@ -80,7 +80,7 @@ export function PortfolioImpactAggregation() {
             <p className="text-xs text-muted-foreground">Contributes {portfolioSummary.scope3Contribution}% to Scope 3 reduction</p>
           </div>
           
-          <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20">
+          <div className="text-center p-4 bg-primary/5 rounded-sm border border-primary/20">
             <TrendingUp className="h-8 w-8 text-primary mx-auto mb-3" />
             <div className="text-3xl font-bold text-primary mb-1">
               {portfolioSummary.greenFinanceActual}%
@@ -90,7 +90,7 @@ export function PortfolioImpactAggregation() {
             <p className="text-xs text-muted-foreground">Target: {portfolioSummary.greenFinanceTarget}%</p>
           </div>
           
-          <div className="text-center p-4 bg-finance/5 rounded-lg border border-finance/20">
+          <div className="text-center p-4 bg-finance/5 rounded-sm border border-finance/20">
             <Users className="h-8 w-8 text-finance mx-auto mb-3" />
             <div className="text-3xl font-bold text-finance mb-1">
               {portfolioSummary.beneficiariesReached.toLocaleString()}

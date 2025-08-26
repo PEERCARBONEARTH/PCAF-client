@@ -41,7 +41,7 @@ export function ExecutiveSummary({ kpis }: { kpis: KPIs }) {
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {items.map((it, idx) => (
-            <div key={idx} className="rounded-lg border p-4">
+            <div key={idx} className="rounded-sm border p-4">
               <div className="text-sm text-muted-foreground">{it.label}</div>
               <div className="mt-1 text-2xl font-bold text-foreground">{it.value}</div>
               <div className="text-xs text-muted-foreground">{it.sub}</div>

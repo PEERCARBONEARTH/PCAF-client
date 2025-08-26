@@ -295,7 +295,7 @@ function RegulatoryFrameworks({ clientType }: { clientType: "bank" | "fund" }) {
         
         <div className="space-y-4">
           {regulatoryFrameworks.map((framework, index) => (
-            <div key={index} className="border rounded-lg p-4">
+            <div key={index} className="border rounded-sm p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {(() => {
@@ -340,7 +340,7 @@ function RegulatoryFrameworks({ clientType }: { clientType: "bank" | "fund" }) {
         </div>
         
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-warning/5 rounded-lg border border-warning/20">
+          <div className="flex items-center justify-between p-3 bg-warning/5 rounded-sm border border-warning/20">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-4 w-4 text-warning" />
               <div>
@@ -354,7 +354,7 @@ function RegulatoryFrameworks({ clientType }: { clientType: "bank" | "fund" }) {
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <div className="flex items-center justify-between p-3 bg-primary/5 rounded-sm border border-primary/20">
             <div className="flex items-center gap-3">
               <Target className="h-4 w-4 text-primary" />
               <div>
@@ -368,7 +368,7 @@ function RegulatoryFrameworks({ clientType }: { clientType: "bank" | "fund" }) {
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-muted/5 rounded-lg border border-muted/20">
+          <div className="flex items-center justify-between p-3 bg-muted/5 rounded-sm border border-muted/20">
             <div className="flex items-center gap-3">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <div>
@@ -424,7 +424,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                       {overallStats.verifiedBeneficiaries} verified
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                     <Users className="h-6 w-6" />
                   </div>
                 </div>
@@ -439,7 +439,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                     <p className="metric-value mt-2">{overallStats.highRiskBeneficiaries}</p>
                     <p className="text-sm text-muted-foreground mt-1">Requires attention</p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
                     <AlertTriangle className="h-6 w-6" />
                   </div>
                 </div>
@@ -456,7 +456,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                 <p className="metric-value mt-2">{overallStats.activeContracts}</p>
                 <p className="text-sm text-muted-foreground mt-1">Smart contracts</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                 <Lock className="h-6 w-6" />
               </div>
             </div>
@@ -471,7 +471,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                 <p className="metric-value mt-2">${overallStats.totalContractBalance.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground mt-1">Total secured</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-finance/10 text-finance">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-finance/10 text-finance">
                 <Wallet className="h-6 w-6" />
               </div>
             </div>
@@ -638,7 +638,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                 </div>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-warning/5 rounded-lg border border-warning/20">
+                  <div className="flex items-center justify-between p-3 bg-warning/5 rounded-sm border border-warning/20">
                     <div className="flex items-center gap-3">
                       <AlertTriangle className="h-4 w-4 text-warning" />
                       <div>
@@ -652,7 +652,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+                  <div className="flex items-center justify-between p-3 bg-primary/5 rounded-sm border border-primary/20">
                     <div className="flex items-center gap-3">
                       <Target className="h-4 w-4 text-primary" />
                       <div>
@@ -666,7 +666,7 @@ export function UnifiedComplianceCenter({ clientType = "fund", mode = "both" }: 
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-muted/5 rounded-lg border border-muted/20">
+                  <div className="flex items-center justify-between p-3 bg-muted/5 rounded-sm border border-muted/20">
                     <div className="flex items-center gap-3">
                       <Globe className="h-4 w-4 text-muted-foreground" />
                       <div>

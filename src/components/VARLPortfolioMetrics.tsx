@@ -107,7 +107,7 @@ export function VARLPortfolioMetrics({ metrics }: VARLPortfolioMetricsProps) {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className={`p-2 rounded-lg ${getIconColor(metric.color)}`}>
+                    <div className={`p-2 rounded-sm ${getIconColor(metric.color)}`}>
                       <Icon className="h-4 w-4" />
                     </div>
                     {metric.alert && (

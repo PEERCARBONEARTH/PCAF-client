@@ -267,7 +267,7 @@ export function CommunicationFlowManager({ channels, templates, campaigns, onCha
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {channels.map((channel) => (
-              <div key={channel.id} className="p-4 rounded-lg border border-border">
+              <div key={channel.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {getChannelIcon(channel.type)}
@@ -334,7 +334,7 @@ export function CommunicationFlowManager({ channels, templates, campaigns, onCha
           </CardHeader>
           <CardContent className="space-y-4">
             {activeCampaigns.map((campaign) => (
-              <div key={campaign.id} className="p-4 rounded-lg border border-border">
+              <div key={campaign.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h4 className="font-medium text-foreground">{campaign.name}</h4>
@@ -397,7 +397,7 @@ export function CommunicationFlowManager({ channels, templates, campaigns, onCha
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {templates.map((template) => (
-              <div key={template.id} className="p-4 rounded-lg border border-border">
+              <div key={template.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-medium text-foreground">{template.name}</h4>
                   <Badge variant="outline">{template.type}</Badge>

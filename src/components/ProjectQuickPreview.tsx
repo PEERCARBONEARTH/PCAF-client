@@ -97,7 +97,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
           <TabsContent value="overview" className="space-y-6">
             {/* Quick Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="w-4 h-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Funding</span>
@@ -105,7 +105,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{project.funding}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="w-4 h-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Beneficiaries</span>
@@ -113,7 +113,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{project.beneficiaries}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-4 h-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Milestones</span>
@@ -121,7 +121,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{project.milestones.completed}/{project.milestones.total}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-4 h-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Progress</span>
@@ -165,7 +165,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
           
           <TabsContent value="investment" className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-4 h-4 text-success" />
                   <span className="text-sm text-muted-foreground">Expected ROI</span>
@@ -173,7 +173,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{enrichedProject.roi}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="w-4 h-4 text-blue-500" />
                   <span className="text-sm text-muted-foreground">Funding Gap</span>
@@ -181,7 +181,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{enrichedProject.fundingGap}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Calendar className="w-4 h-4 text-orange-500" />
                   <span className="text-sm text-muted-foreground">Timeline</span>
@@ -190,7 +190,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
               </div>
             </div>
             
-            <div className="p-4 rounded-lg border border-border">
+            <div className="p-4 rounded-sm border border-border">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-primary" />
@@ -228,7 +228,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
               </div>
             </div>
             
-            <div className="p-4 rounded-lg border border-border">
+            <div className="p-4 rounded-sm border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <FileText className="w-4 h-4 text-primary" />
                 <h3 className="font-medium">Financial Summary</h3>
@@ -257,7 +257,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
           
           <TabsContent value="impact" className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-4 h-4 text-green-500" />
                   <span className="text-sm text-muted-foreground">Carbon Credits</span>
@@ -265,7 +265,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{enrichedProject.carbonCredits}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="w-4 h-4 text-purple-500" />
                   <span className="text-sm text-muted-foreground">Beneficiaries</span>
@@ -273,7 +273,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
                 <p className="font-semibold text-lg">{project.beneficiaries}</p>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted/50">
+              <div className="p-4 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <BarChart3 className="w-4 h-4 text-blue-500" />
                   <span className="text-sm text-muted-foreground">Impact Score</span>
@@ -282,7 +282,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
               </div>
             </div>
             
-            <div className="p-4 rounded-lg border border-border">
+            <div className="p-4 rounded-sm border border-border">
               <h3 className="font-medium mb-3">Environmental Impact</h3>
               
               <div className="space-y-4">
@@ -312,7 +312,7 @@ export function ProjectQuickPreview({ isOpen, onClose, project, onViewDetail }: 
               </div>
             </div>
             
-            <div className="p-4 rounded-lg border border-border">
+            <div className="p-4 rounded-sm border border-border">
               <h3 className="font-medium mb-3">Social Impact</h3>
               
               <div className="space-y-4">

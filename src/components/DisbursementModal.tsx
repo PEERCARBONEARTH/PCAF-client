@@ -145,7 +145,7 @@ export function DisbursementModal({ open, onOpenChange, tranche }: DisbursementM
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center justify-between p-3 rounded-sm bg-muted/50">
                 <div className="flex items-center gap-3">
                   <Badge variant={approvalInfo.color as any}>
                     {approvalInfo.level}

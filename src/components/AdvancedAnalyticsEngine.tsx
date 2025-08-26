@@ -473,7 +473,7 @@ export function AdvancedAnalyticsEngine({
               {anomalies.slice(0, 8).map((anomaly, index) => (
                 <div 
                   key={index} 
-                  className="p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                  className="p-3 border rounded-sm cursor-pointer hover:bg-muted/50 transition-colors"
                   onClick={() => onAnomalyClick?.(anomaly)}
                 >
                   <div className="flex items-start justify-between mb-2">
@@ -542,7 +542,7 @@ export function AdvancedAnalyticsEngine({
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-card p-3 border rounded-lg shadow-lg">
+                        <div className="bg-card p-3 border rounded-sm shadow-lg">
                           <p className="font-medium">Loan {data.loanId}</p>
                           <p>Risk Score: {data.x.toFixed(2)}</p>
                           <p>Emissions Intensity: {data.y.toFixed(2)} kg CO₂e/$1k</p>

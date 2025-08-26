@@ -248,7 +248,7 @@ export function NewProgramForm({ onSubmit, onCancel }: NewProgramFormProps) {
               className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3"
             >
               {disbursementModels.map((model) => (
-                <div key={model.id} className="flex items-start space-x-3 p-3 border border-border rounded-lg hover:bg-accent/50">
+                <div key={model.id} className="flex items-start space-x-3 p-3 border border-border rounded-sm hover:bg-accent/50">
                   <RadioGroupItem value={model.id} id={model.id} className="mt-1" />
                   <div className="space-y-1">
                     <Label htmlFor={model.id} className="font-medium cursor-pointer">

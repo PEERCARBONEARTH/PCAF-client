@@ -27,7 +27,7 @@ export function EmissionCalculatorGuide({ stepId }: EmissionCalculatorGuideProps
         </CardHeader>
         <CardContent>
           <div className="text-center py-4">
-            <div className="inline-block bg-background border rounded-lg p-4">
+            <div className="inline-block bg-background border rounded-sm p-4">
               <p className="text-lg font-mono">
                 <span className="text-primary font-semibold">Financed Emissions</span> = 
                 <span className="text-blue-600"> Outstanding Amount</span> ÷ 

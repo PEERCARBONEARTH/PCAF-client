@@ -54,7 +54,7 @@ export default function PlatformSelection() {
           <Card className="group hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] bg-card/80 backdrop-blur-sm border-border/50">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-lg bg-finance/10">
+                <div className="p-2 rounded-sm bg-finance/10">
                   <Calculator className="h-6 w-6 text-finance" />
                 </div>
                 <CardTitle className="text-2xl">Financed Emissions Platform</CardTitle>

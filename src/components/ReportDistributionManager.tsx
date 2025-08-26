@@ -369,7 +369,7 @@ export function ReportDistributionManager({ schedules, exports, shareableLinks, 
         <CardContent>
           <div className="space-y-4">
             {schedules.map((schedule) => (
-              <div key={schedule.id} className="p-4 rounded-lg border border-border">
+              <div key={schedule.id} className="p-4 rounded-sm border border-border">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h4 className="font-medium text-foreground">{schedule.name}</h4>
@@ -466,7 +466,7 @@ export function ReportDistributionManager({ schedules, exports, shareableLinks, 
         <CardContent>
           <div className="space-y-3">
             {exports.slice(0, 5).map((exportItem) => (
-              <div key={exportItem.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
+              <div key={exportItem.id} className="flex items-center justify-between p-3 rounded-sm border border-border">
                 <div className="flex items-center gap-3">
                   {getFormatIcon(exportItem.format)}
                   <div>
@@ -511,7 +511,7 @@ export function ReportDistributionManager({ schedules, exports, shareableLinks, 
         <CardContent>
           <div className="space-y-3">
             {shareableLinks.slice(0, 5).map((link) => (
-              <div key={link.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
+              <div key={link.id} className="flex items-center justify-between p-3 rounded-sm border border-border">
                 <div>
                   <h4 className="font-medium text-foreground">{link.reportName}</h4>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">

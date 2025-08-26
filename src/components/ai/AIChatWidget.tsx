@@ -480,7 +480,7 @@ export function AIChatWidget({
                       )}
                       
                       <div
-                        className={`max-w-[80%] rounded-lg p-2 text-xs ${
+                        className={`max-w-[80%] rounded-sm p-2 text-xs ${
                           message.role === 'user'
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted'
@@ -505,7 +505,7 @@ export function AIChatWidget({
                       <div className={`w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center ${getAgentColor(selectedAgent)}`}>
                         <Loader2 className="h-3 w-3 animate-spin" />
                       </div>
-                      <div className="bg-muted rounded-lg p-2 text-xs">
+                      <div className="bg-muted rounded-sm p-2 text-xs">
                         <p className="text-muted-foreground">AI is thinking...</p>
                       </div>
                     </div>

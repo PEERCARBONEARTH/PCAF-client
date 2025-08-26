@@ -281,7 +281,7 @@ export default function Marketplace() {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        <div className="p-2 bg-primary/10 rounded-sm text-primary">
                           {integration.icon}
                         </div>
                         <div>

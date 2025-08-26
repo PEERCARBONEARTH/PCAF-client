@@ -117,7 +117,7 @@ export function ScenarioSimulator({ conditions }: ScenarioSimulatorProps) {
         <div className="space-y-4">
           <h4 className="font-medium">Disbursement Scenarios</h4>
           {scenarios.map((scenario, index) => (
-            <div key={index} className="border border-border rounded-lg p-4">
+            <div key={index} className="border border-border rounded-sm p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Badge variant={

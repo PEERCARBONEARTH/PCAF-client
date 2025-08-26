@@ -97,7 +97,7 @@ export function LogicBuilderPanel({ templateTitle, onClose, onComplete }: LogicB
       {/* Conditions Configuration */}
       <div className="space-y-6">
         {conditions.map((condition, index) => (
-          <div key={condition.id} className="border border-border rounded-lg p-4 space-y-4">
+          <div key={condition.id} className="border border-border rounded-sm p-4 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-foreground">Condition {index + 1}</h4>
               {conditions.length > 1 && (
@@ -189,7 +189,7 @@ export function LogicBuilderPanel({ templateTitle, onClose, onComplete }: LogicB
           <CardTitle>Logic Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="bg-accent/50 rounded-lg p-4">
+          <div className="bg-accent/50 rounded-sm p-4">
             <p className="text-sm text-muted-foreground mb-3">
               This tranche will trigger when <strong>all</strong> selected conditions are met:
             </p>

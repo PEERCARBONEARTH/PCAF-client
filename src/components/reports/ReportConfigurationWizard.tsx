@@ -176,7 +176,7 @@ export function ReportConfigurationWizard({ onConfigUpdate }: { onConfigUpdate: 
               return (
                 <div 
                   key={step.id}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-sm transition-all ${
                     isActive 
                       ? 'bg-primary/10 text-primary border border-primary/20' 
                       : isCompleted 

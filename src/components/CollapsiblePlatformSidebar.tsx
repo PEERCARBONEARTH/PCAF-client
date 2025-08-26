@@ -125,7 +125,7 @@ export function CollapsiblePlatformSidebar() {
         <NavLink
           to={item.href}
           className={cn(
-            "flex items-center gap-3 rounded-lg text-sm font-medium transition-all",
+            "flex items-center gap-3 rounded-sm text-sm font-medium transition-all",
             isActive 
               ? "bg-primary text-primary-foreground shadow-sm" 
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
@@ -168,7 +168,7 @@ export function CollapsiblePlatformSidebar() {
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarHeader className="border-b border-border">
         <div className="flex items-center gap-3 px-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary text-primary-foreground shrink-0">
             <PeercarbonLogo size={16} />
           </div>
           {open && (

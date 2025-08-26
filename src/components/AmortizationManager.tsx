@@ -235,7 +235,7 @@ export function AmortizationManager({ loanId, onUpdate }: AmortizationManagerPro
               {loans.map((loan) => (
                 <div
                   key={loan.id}
-                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                  className={`p-3 border rounded-sm cursor-pointer transition-colors ${
                     selectedLoan?.id === loan.id 
                       ? 'border-primary bg-primary/5' 
                       : 'border-border hover:border-primary/50'

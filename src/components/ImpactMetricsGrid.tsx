@@ -181,7 +181,7 @@ export function ImpactMetricsGrid() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${category.color}/10 text-${category.color}`}>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-sm bg-${category.color}/10 text-${category.color}`}>
                     <IconComponent className="h-5 w-5" />
                   </div>
                   <div>
@@ -205,7 +205,7 @@ export function ImpactMetricsGrid() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {category.metrics.map((metric, metricIndex) => (
-                  <div key={metricIndex} className="p-4 border border-border rounded-lg space-y-3">
+                  <div key={metricIndex} className="p-4 border border-border rounded-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-sm">{metric.title}</h4>
                       <Badge 

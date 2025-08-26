@@ -215,7 +215,7 @@ export function ComplianceCenter() {
                   {overallStats.verifiedBeneficiaries} verified
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <Users className="h-6 w-6" />
               </div>
             </div>
@@ -230,7 +230,7 @@ export function ComplianceCenter() {
                 <p className="metric-value mt-2">{overallStats.highRiskBeneficiaries}</p>
                 <p className="text-sm text-muted-foreground mt-1">Requires attention</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
                 <AlertTriangle className="h-6 w-6" />
               </div>
             </div>
@@ -245,7 +245,7 @@ export function ComplianceCenter() {
                 <p className="metric-value mt-2">{overallStats.activeContracts}</p>
                 <p className="text-sm text-muted-foreground mt-1">Smart contracts</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                 <Lock className="h-6 w-6" />
               </div>
             </div>
@@ -260,7 +260,7 @@ export function ComplianceCenter() {
                 <p className="metric-value mt-2">${overallStats.totalContractBalance.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground mt-1">Total secured</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-finance/10 text-finance">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-finance/10 text-finance">
                 <Wallet className="h-6 w-6" />
               </div>
             </div>

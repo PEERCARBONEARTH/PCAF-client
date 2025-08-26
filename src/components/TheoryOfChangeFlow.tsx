@@ -140,7 +140,7 @@ export function TheoryOfChangeFlow() {
                 <Card className="h-full">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-${stage.color}/10 text-${stage.color}`}>
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-sm bg-${stage.color}/10 text-${stage.color}`}>
                         <IconComponent className="h-4 w-4" />
                       </div>
                       <CardTitle className="text-lg">{stage.stage}</CardTitle>

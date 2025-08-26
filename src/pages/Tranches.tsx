@@ -149,7 +149,7 @@ export default function Tranches() {
                       <p className="metric-value mt-2">{stat.value}</p>
                       <p className="text-sm text-muted-foreground mt-1">{stat.subtext}</p>
                     </div>
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 ${stat.color}`}>
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 ${stat.color}`}>
                       <stat.icon className="h-6 w-6" />
                     </div>
                   </div>
@@ -172,7 +172,7 @@ export default function Tranches() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background/80">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-background/80">
                         <module.icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -237,7 +237,7 @@ export default function Tranches() {
             <CardContent>
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border bg-background/50">
+                  <div key={index} className="flex items-center justify-between p-4 rounded-sm border border-border bg-background/50">
                     <div className="flex items-center gap-4">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <activity.icon className="h-4 w-4" />

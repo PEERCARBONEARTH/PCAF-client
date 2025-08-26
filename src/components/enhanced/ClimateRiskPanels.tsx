@@ -151,7 +151,7 @@ export function ClimateRiskPanels({ loans, onRiskClick }: ClimateRiskPanelsProps
             return (
               <div 
                 key={index}
-                className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="p-4 border rounded-sm hover:bg-muted/50 cursor-pointer transition-colors"
                 onClick={() => onRiskClick?.('physical', risk.severity, `${risk.type}: ${risk.description}`)}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -206,7 +206,7 @@ export function ClimateRiskPanels({ loans, onRiskClick }: ClimateRiskPanelsProps
             return (
               <div 
                 key={index}
-                className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="p-4 border rounded-sm hover:bg-muted/50 cursor-pointer transition-colors"
                 onClick={() => onRiskClick?.('transition', risk.severity, `${risk.type}: ${risk.description}`)}
               >
                 <div className="flex items-start justify-between mb-2">

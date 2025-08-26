@@ -152,7 +152,7 @@ export function DisbursementDashboard() {
                 <p className="metric-value mt-2">{stats.total}</p>
                 <p className="text-sm text-muted-foreground mt-1">All time</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <FileText className="h-6 w-6" />
               </div>
             </div>
@@ -167,7 +167,7 @@ export function DisbursementDashboard() {
                 <p className="metric-value mt-2">{stats.pending}</p>
                 <p className="text-sm text-muted-foreground mt-1">Requires action</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-warning/10 text-warning">
                 <Clock className="h-6 w-6" />
               </div>
             </div>
@@ -182,7 +182,7 @@ export function DisbursementDashboard() {
                 <p className="metric-value mt-2">{stats.processing}</p>
                 <p className="text-sm text-muted-foreground mt-1">In progress</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-info/10 text-info">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-info/10 text-info">
                 <RefreshCw className="h-6 w-6" />
               </div>
             </div>
@@ -197,7 +197,7 @@ export function DisbursementDashboard() {
                 <p className="metric-value mt-2">${stats.completedAmount.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground mt-1">Successfully disbursed</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                 <DollarSign className="h-6 w-6" />
               </div>
             </div>

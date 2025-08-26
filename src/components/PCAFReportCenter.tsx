@@ -340,7 +340,7 @@ export function PCAFReportCenter() {
               </div>
 
               {/* AI Enhancement Options */}
-              <div className="p-4 border rounded-lg bg-muted/30">
+              <div className="p-4 border rounded-sm bg-muted/30">
                 <div className="flex items-center gap-2 mb-3">
                   <Brain className="h-4 w-4 text-primary" />
                   <Label className="text-sm font-medium">AI Enhancement Settings</Label>

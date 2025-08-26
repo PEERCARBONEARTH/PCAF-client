@@ -96,7 +96,7 @@ export const IVBLogicPanel = () => {
           ))}
         </div>
         
-        <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
+        <div className="mt-6 p-4 bg-primary/5 rounded-sm border border-primary/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-primary">Next Auto-Release</p>

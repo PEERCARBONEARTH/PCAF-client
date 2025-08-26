@@ -112,7 +112,7 @@ export function SimplifiedSidebar() {
         key={item.id}
         to={item.href}
         className={cn(
-          "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-accent/50",
+          "flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium transition-all hover:bg-accent/50",
           isActive 
             ? "bg-primary text-primary-foreground shadow-sm" 
             : "text-muted-foreground hover:text-foreground"
@@ -136,7 +136,7 @@ export function SimplifiedSidebar() {
     <div className="flex h-screen flex-col bg-card border-r border-border w-64">
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-6 border-b border-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
+        <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary text-primary-foreground shrink-0">
           <PeercarbonLogo size={24} />
         </div>
         <div className="min-w-0 flex-1">
@@ -157,7 +157,7 @@ export function SimplifiedSidebar() {
         <NavLink
           to={`/${currentPlatform}/settings`}
           className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all"
+            "flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all"
           )}
         >
           <Settings className="h-4 w-4 shrink-0" />

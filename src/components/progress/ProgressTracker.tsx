@@ -599,7 +599,7 @@ function AchievementCard({ achievement }: AchievementCardProps) {
   const isUnlocked = !!achievement.unlockedAt;
   
   return (
-    <div className={`p-4 rounded-lg border transition-all ${
+    <div className={`p-4 rounded-sm border transition-all ${
       isUnlocked 
         ? 'bg-background border-border hover:shadow-md' 
         : 'bg-muted/30 border-muted'
@@ -662,7 +662,7 @@ function SkillProgressGrid({ skills }: SkillProgressGridProps) {
           <Card key={skillKey}>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2 rounded-lg bg-muted ${skill.color}`}>
+                <div className={`p-2 rounded-sm bg-muted ${skill.color}`}>
                   {skill.icon}
                 </div>
                 <div>

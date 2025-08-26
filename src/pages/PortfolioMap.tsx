@@ -193,7 +193,7 @@ const PortfolioMap = () => {
         </div>
         <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-sm font-medium flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg">
               <Download className="h-4 w-4" />
               Export Data
             </Button>
@@ -424,7 +424,7 @@ const PortfolioMap = () => {
           
           <div className="space-y-3 max-h-80 overflow-y-auto">
             {filteredProjects.map((project) => (
-              <div key={project.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div key={project.id} className="p-3 border rounded-sm hover:bg-muted/50 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-medium text-sm">{project.name}</h4>
                   <Badge className={`text-xs ${getStatusColor(project.status)}`}>

@@ -112,7 +112,7 @@ export function DeploymentDashboard({ projects }: DeploymentDashboardProps) {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                  className={`p-3 border rounded-sm cursor-pointer transition-colors ${
                     selectedProject?.id === project.id 
                       ? 'border-primary bg-primary/5' 
                       : 'border-border hover:border-primary/50'
@@ -220,7 +220,7 @@ export function DeploymentDashboard({ projects }: DeploymentDashboardProps) {
               </TabsContent>
 
               <TabsContent value="uploads" className="space-y-4">
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-border rounded-sm p-6 text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground mb-2">
                     Drag and drop files here, or click to select

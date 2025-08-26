@@ -91,7 +91,7 @@ export function WarehouseCreditDashboard() {
                 <p className="metric-value mt-2">${(warehouseFacility.totalCapacity / 1000000).toFixed(1)}M</p>
                 <p className="text-sm text-muted-foreground mt-1">USD</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <Building className="h-6 w-6" />
               </div>
             </div>
@@ -106,7 +106,7 @@ export function WarehouseCreditDashboard() {
                 <p className="metric-value mt-2">${(warehouseFacility.availableCapacity / 1000000).toFixed(1)}M</p>
                 <p className="text-sm text-muted-foreground mt-1">{warehouseFacility.utilizationRate.toFixed(1)}% utilized</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                 <CreditCard className="h-6 w-6" />
               </div>
             </div>
@@ -122,7 +122,7 @@ export function WarehouseCreditDashboard() {
                 <p className="metric-value mt-2">{activeOrders}</p>
                 <p className="text-sm text-muted-foreground mt-1">In production/transit</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-warning/10 text-warning">
                 <Package className="h-6 w-6" />
               </div>
             </div>
@@ -137,7 +137,7 @@ export function WarehouseCreditDashboard() {
                 <p className="metric-value mt-2">${(totalFinancingOutstanding / 1000).toFixed(0)}K</p>
                 <p className="text-sm text-muted-foreground mt-1">Financing amount</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-orange-500/10 text-orange-500">
                 <DollarSign className="h-6 w-6" />
               </div>
             </div>

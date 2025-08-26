@@ -325,7 +325,7 @@ export function MobileNavigation({ onNavigate, notifications = 0 }: MobileNaviga
           {!isOnline && (
             <>
               <Separator className="my-4" />
-              <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="p-3 bg-orange-50 rounded-sm border border-orange-200">
                 <div className="flex items-center gap-2 mb-2">
                   <WifiOff className="h-4 w-4 text-orange-600" />
                   <span className="text-sm font-medium text-orange-900">Offline Mode</span>

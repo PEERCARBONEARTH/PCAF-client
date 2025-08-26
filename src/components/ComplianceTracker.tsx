@@ -123,7 +123,7 @@ export function ComplianceTracker({ clientType }: ComplianceTrackerProps) {
         
         <div className="space-y-4">
           {regulatoryFrameworks.map((framework, index) => (
-            <div key={index} className="border rounded-lg p-4">
+            <div key={index} className="border rounded-sm p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {getStatusIcon(framework.status)}
@@ -165,7 +165,7 @@ export function ComplianceTracker({ clientType }: ComplianceTrackerProps) {
         </div>
         
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-warning/5 rounded-lg border border-warning/20">
+          <div className="flex items-center justify-between p-3 bg-warning/5 rounded-sm border border-warning/20">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-4 w-4 text-warning" />
               <div>
@@ -179,7 +179,7 @@ export function ComplianceTracker({ clientType }: ComplianceTrackerProps) {
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <div className="flex items-center justify-between p-3 bg-primary/5 rounded-sm border border-primary/20">
             <div className="flex items-center gap-3">
               <Target className="h-4 w-4 text-primary" />
               <div>
@@ -193,7 +193,7 @@ export function ComplianceTracker({ clientType }: ComplianceTrackerProps) {
             </div>
           </div>
           
-          <div className="flex items-center justify-between p-3 bg-muted/5 rounded-lg border border-muted/20">
+          <div className="flex items-center justify-between p-3 bg-muted/5 rounded-sm border border-muted/20">
             <div className="flex items-center gap-3">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <div>

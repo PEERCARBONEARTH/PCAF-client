@@ -109,7 +109,7 @@ export function PortfolioOverviewDashboard() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className={`p-2 rounded-lg ${getIconColor(metric.color)}`}>
+                      <div className={`p-2 rounded-sm ${getIconColor(metric.color)}`}>
                         <Icon className="h-4 w-4" />
                       </div>
                     </div>
@@ -168,9 +168,9 @@ export function PortfolioOverviewDashboard() {
           <div className="space-y-3">
             {recentProjects.length > 0 ? (
               recentProjects.map((project) => (
-                <div key={project.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                <div key={project.id} className="flex items-center justify-between p-3 rounded-sm border border-border hover:bg-accent/50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <div>

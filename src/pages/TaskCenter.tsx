@@ -382,7 +382,7 @@ export default function TaskCenter() {
               <CardContent>
                 <div className="space-y-4">
                   {recentMessages.map((message) => (
-                    <div key={message.id} className={`flex items-start gap-4 p-4 border border-border rounded-lg ${message.unread ? 'bg-blue-50 dark:bg-blue-950/20' : ''}`}>
+                    <div key={message.id} className={`flex items-start gap-4 p-4 border border-border rounded-sm ${message.unread ? 'bg-blue-50 dark:bg-blue-950/20' : ''}`}>
                       <div className="flex-shrink-0">
                         {getUserAvatar(message.sender, message.avatar)}
                       </div>

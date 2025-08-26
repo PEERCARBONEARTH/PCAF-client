@@ -185,7 +185,7 @@ export function ActionWorkflowManager({ workflows, onWorkflowComplete, onStepCom
 
               {/* Next Action */}
               {workflow.nextAction && (
-                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                <div className="p-3 rounded-sm bg-primary/10 border border-primary/20">
                   <p className="text-sm font-medium text-primary">Next: {workflow.nextAction}</p>
                 </div>
               )}
@@ -203,7 +203,7 @@ export function ActionWorkflowManager({ workflows, onWorkflowComplete, onStepCom
                       ));
 
                     return (
-                      <div key={step.id} className="flex items-start gap-3 p-3 rounded-lg border border-border">
+                      <div key={step.id} className="flex items-start gap-3 p-3 rounded-sm border border-border">
                         <div className="mt-0.5">
                           {getStepStatusIcon(step.status)}
                         </div>
@@ -259,7 +259,7 @@ export function ActionWorkflowManager({ workflows, onWorkflowComplete, onStepCom
           <CardContent>
             <div className="space-y-3">
               {completedWorkflows.slice(0, 5).map((workflow) => (
-                <div key={workflow.id} className="flex items-center gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
+                <div key={workflow.id} className="flex items-center gap-3 p-3 rounded-sm bg-success/5 border border-success/20">
                   <CheckCircle className="h-4 w-4 text-success" />
                   <div className="flex-1">
                     <p className="font-medium text-foreground">{workflow.title}</p>

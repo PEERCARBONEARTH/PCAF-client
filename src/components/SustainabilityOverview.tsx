@@ -151,7 +151,7 @@ export function SustainabilityOverview({ clientType = "standard" }: Sustainabili
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 bg-background border border-border rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-3 bg-background border border-border rounded-sm p-3 shadow-sm">
               <span className={`text-sm font-semibold transition-colors ${viewMode === "project" ? "text-primary" : "text-muted-foreground"}`}>
                 Project View
               </span>

@@ -65,7 +65,7 @@ export function AssetReadinessTimeline({ projects }: AssetReadinessTimelineProps
         <CardContent>
           <div className="space-y-6">
             {projects.map((project) => (
-              <div key={project.id} className="border rounded-lg p-4 bg-card">
+              <div key={project.id} className="border rounded-sm p-4 bg-card">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-semibold">{project.schoolName}</h3>

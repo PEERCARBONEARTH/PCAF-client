@@ -469,7 +469,7 @@ function OpportunityInsightDetails({ insight }: { insight: any }) {
         <span className="font-medium">${insight.data.potentialRevenue.toLocaleString()}</span>
       </div>
 
-      <div className="p-3 bg-white rounded-lg border">
+      <div className="p-3 bg-white rounded-sm border">
         <div className="text-sm font-medium mb-1">Competitive Advantage</div>
         <div className="text-sm text-muted-foreground">{insight.data.competitiveAdvantage}</div>
       </div>

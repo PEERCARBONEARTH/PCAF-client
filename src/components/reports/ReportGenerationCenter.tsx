@@ -283,9 +283,9 @@ const recentReports: {
                 const isGenerating = generatingReports.includes(template.id);
                 
                 return (
-                  <div key={template.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
+                  <div key={template.id} className="flex items-center justify-between p-4 border border-border rounded-sm hover:bg-accent/50 transition-colors">
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                         <Icon className="h-6 w-6" />
                       </div>
                       <div className="flex-1">

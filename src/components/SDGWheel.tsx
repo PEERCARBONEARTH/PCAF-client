@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload[0]) {
     const data = payload[0].payload;
     return (
-      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+      <div className="bg-background border border-border rounded-sm p-3 shadow-lg">
         <p className="font-medium text-foreground">SDG {data.goal}: {data.name}</p>
         <p className="text-sm text-muted-foreground">Impact Score: {data.score}%</p>
         <p className="text-sm text-muted-foreground">{data.projects} active projects</p>
@@ -127,7 +127,7 @@ export function SDGWheel() {
                 <p className="metric-value mt-2">17/17</p>
                 <p className="text-sm text-muted-foreground mt-1">All goals addressed</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <Globe className="h-6 w-6" />
               </div>
             </div>
@@ -146,7 +146,7 @@ export function SDGWheel() {
                 <p className="metric-value mt-2">5</p>
                 <p className="text-sm text-muted-foreground mt-1">Score ≥ 85%</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <Zap className="h-6 w-6" />
               </div>
             </div>
@@ -165,7 +165,7 @@ export function SDGWheel() {
                 <p className="metric-value mt-2">89.4K</p>
                 <p className="text-sm text-muted-foreground mt-1">Across all SDGs</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary/10 text-primary">
                 <Users className="h-6 w-6" />
               </div>
             </div>

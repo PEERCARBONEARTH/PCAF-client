@@ -159,7 +159,7 @@ export function APIKeyManagement() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Generate New Key */}
-          <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+          <div className="space-y-4 p-4 border rounded-sm bg-muted/30">
             <h4 className="font-medium">Generate New API Key</h4>
             <div className="flex gap-3">
               <div className="flex-1">
@@ -191,7 +191,7 @@ export function APIKeyManagement() {
             ) : (
               <div className="space-y-3">
                 {apiKeys.map((key) => (
-                  <div key={key.id} className="p-4 border rounded-lg space-y-3">
+                  <div key={key.id} className="p-4 border rounded-sm space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
                         <h5 className="font-medium">{key.name}</h5>

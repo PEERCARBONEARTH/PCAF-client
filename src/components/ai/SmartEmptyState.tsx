@@ -560,7 +560,7 @@ function CapabilityPreview({ type }: { type: string }) {
           <Card key={index} className="hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${capability.color}`}>
+                <div className={`p-3 rounded-sm ${capability.color}`}>
                   {capability.icon}
                 </div>
                 <div>
@@ -648,7 +648,7 @@ function DynamicInsightsDisplay({
           ) : (
             <div className="space-y-4">
               {insights.map((insight) => (
-                <div key={insight.id} className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg border">
+                <div key={insight.id} className="flex items-start gap-3 p-4 bg-muted/50 rounded-sm border">
                   <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 shrink-0" />
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-2">{insight.content}</p>

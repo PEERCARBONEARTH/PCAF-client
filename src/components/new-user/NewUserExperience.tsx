@@ -176,7 +176,7 @@ function PlatformOverview({ onGetStarted }: { onGetStarted: () => void }) {
           <Card key={index} className="hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${feature.color}`}>
+                <div className={`p-3 rounded-sm ${feature.color}`}>
                   {feature.icon}
                 </div>
                 <div>
@@ -451,7 +451,7 @@ function PCAFBenefits() {
           <Card key={index}>
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${benefit.color}`}>
+                <div className={`p-2 rounded-sm ${benefit.color}`}>
                   {benefit.icon}
                 </div>
                 {benefit.category}

@@ -41,7 +41,7 @@ export const LandingPreview: React.FC = () => {
               </div>
               
               {/* Impact Metric */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/10">
+              <div className="flex items-center justify-between p-3 rounded-sm bg-primary/5 border border-primary/10">
                 <div className="flex items-center gap-2">
                   <Leaf className="h-4 w-4 text-primary" />
                   <span className="text-sm text-foreground">Impact Verified</span>
@@ -94,7 +94,7 @@ export const LandingPreview: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="text-xs text-muted-foreground">Current Trigger:</div>
-              <div className="bg-finance/5 border border-finance/20 rounded-lg p-3">
+              <div className="bg-finance/5 border border-finance/20 rounded-sm p-3">
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle className="h-3 w-3 text-finance" />
                   <span className="text-foreground">200 hrs verified cooking</span>

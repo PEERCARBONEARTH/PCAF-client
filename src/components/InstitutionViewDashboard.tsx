@@ -252,7 +252,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm border">
+              <div className="text-center p-4 bg-white rounded-sm shadow-sm border">
                 <div className="text-2xl font-bold text-green-600">2030</div>
                 <div className="text-sm text-muted-foreground">Net Zero Target</div>
                 <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700">
@@ -260,22 +260,22 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                   On Track
                 </Badge>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm border">
+              <div className="text-center p-4 bg-white rounded-sm shadow-sm border">
                 <div className="text-2xl font-bold text-blue-600">505k</div>
                 <div className="text-sm text-muted-foreground">Total Portfolio Emissions</div>
                 <div className="text-xs text-green-600 mt-1">↓ 24.6% vs 2020</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm border">
+              <div className="text-center p-4 bg-white rounded-sm shadow-sm border">
                 <div className="text-2xl font-bold text-purple-600">78%</div>
                 <div className="text-sm text-muted-foreground">PCAF Coverage</div>
                 <Progress value={78} className="mt-2 h-2" />
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm border">
+              <div className="text-center p-4 bg-white rounded-sm shadow-sm border">
                 <div className="text-2xl font-bold text-orange-600">$61.5M</div>
                 <div className="text-sm text-muted-foreground">Green Finance Deployed</div>
                 <div className="text-xs text-green-600 mt-1">↑ 34% YoY</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm border">
+              <div className="text-center p-4 bg-white rounded-sm shadow-sm border">
                 <div className="text-2xl font-bold text-red-600">15.8%</div>
                 <div className="text-sm text-muted-foreground">High Risk Exposure</div>
                 <div className="text-xs text-green-600 mt-1">↓ 5.2% vs 2023</div>
@@ -284,7 +284,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
             
             {/* Additional Metrics Row */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-sm border border-green-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-green-700 font-medium">Scope 1 & 2 Emissions</div>
@@ -295,7 +295,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                   </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-sm border border-blue-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-blue-700 font-medium">Scope 3 Emissions</div>
@@ -306,7 +306,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                   </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-sm border border-purple-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-purple-700 font-medium">Portfolio Institutions</div>
@@ -317,7 +317,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                   </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-sm border border-yellow-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-yellow-700 font-medium">Data Quality Score</div>
@@ -425,12 +425,12 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                 
                 {/* Current vs Target */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-center p-3 bg-blue-50 rounded-sm border border-blue-200">
                     <div className="text-2xl font-bold text-blue-600">505k</div>
                     <div className="text-sm text-blue-700">Current Emissions (tCO₂e)</div>
                     <div className="text-xs text-blue-600">2024 Actual</div>
                   </div>
-                  <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div className="text-center p-3 bg-green-50 rounded-sm border border-green-200">
                     <div className="text-2xl font-bold text-green-600">286k</div>
                     <div className="text-sm text-green-700">2030 Target (tCO₂e)</div>
                     <div className="text-xs text-green-600">57% reduction needed</div>
@@ -441,17 +441,17 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                 <div>
                   <h4 className="text-sm font-medium mb-3">Emissions by Sector (2024)</h4>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div className="text-center p-3 bg-green-50 rounded-sm border border-green-200">
                       <div className="text-lg font-bold text-green-600">163k</div>
                       <div className="text-xs text-green-700">Scope 1 & 2</div>
                       <div className="text-xs text-muted-foreground">32% of total</div>
                     </div>
-                    <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="text-center p-3 bg-blue-50 rounded-sm border border-blue-200">
                       <div className="text-lg font-bold text-blue-600">342k</div>
                       <div className="text-xs text-blue-700">Scope 3</div>
                       <div className="text-xs text-muted-foreground">68% of total</div>
                     </div>
-                    <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <div className="text-center p-3 bg-purple-50 rounded-sm border border-purple-200">
                       <div className="text-lg font-bold text-purple-600">-43k</div>
                       <div className="text-xs text-purple-700">Carbon Credits</div>
                       <div className="text-xs text-muted-foreground">8.5% offset</div>
@@ -564,17 +564,17 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
               <div className="space-y-6">
                 {/* Risk Distribution */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="text-center p-4 bg-red-50 rounded-sm border border-red-200">
                     <div className="text-sm font-medium text-red-700">High Risk</div>
                     <div className="text-2xl font-bold text-red-600">20.8%</div>
                     <div className="text-xs text-red-600">Coal, Oil & Gas</div>
                   </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <div className="text-center p-4 bg-yellow-50 rounded-sm border border-yellow-200">
                     <div className="text-sm font-medium text-yellow-700">Medium Risk</div>
                     <div className="text-2xl font-bold text-yellow-600">37.8%</div>
                     <div className="text-xs text-yellow-600">Agriculture, Manufacturing</div>
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="text-center p-4 bg-green-50 rounded-sm border border-green-200">
                     <div className="text-sm font-medium text-green-700">Low Risk</div>
                     <div className="text-2xl font-bold text-green-600">41.4%</div>
                     <div className="text-xs text-green-600">Renewables, Clean Tech</div>
@@ -616,7 +616,7 @@ export const InstitutionViewDashboard: React.FC<InstitutionViewDashboardProps> =
                       <SelectItem value="business">Business as Usual</SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="mt-3 p-3 bg-blue-50 rounded-sm border border-blue-200">
                     <div className="text-sm font-medium text-blue-700">1.5°C Scenario Impact</div>
                     <div className="text-xs text-blue-600 mt-1">
                       Portfolio at-risk value: $8.4M (13.7% of total)

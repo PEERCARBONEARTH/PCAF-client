@@ -153,7 +153,7 @@ export default function PCAFAssetClassSelection() {
               >
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className={`p-3 rounded-lg ${
+                    <div className={`p-3 rounded-sm ${
                       assetClass.available 
                         ? 'bg-finance/10 group-hover:bg-finance/20' 
                         : 'bg-muted/20'
@@ -205,9 +205,9 @@ export default function PCAFAssetClassSelection() {
           </div>
 
           {/* PCAF Compliance Notice */}
-          <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg p-6 max-w-4xl mx-auto">
+          <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-sm p-6 max-w-4xl mx-auto">
             <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-finance/10">
+              <div className="p-2 rounded-sm bg-finance/10">
                 <Building2 className="h-5 w-5 text-finance" />
               </div>
               <div>

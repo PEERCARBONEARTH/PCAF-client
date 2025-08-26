@@ -280,7 +280,7 @@ export default function SiteMRVDataFeed({ projectId, schoolName }: MRVDataFeedPr
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                  <div className="p-2 bg-primary/10 rounded-sm text-primary">
                     {metric.icon}
                   </div>
                   <div>

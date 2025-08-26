@@ -286,7 +286,7 @@ export function AIAgentDashboard() {
                           className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
-                            className={`max-w-[70%] rounded-lg p-3 ${
+                            className={`max-w-[70%] rounded-sm p-3 ${
                               message.type === 'user' 
                                 ? 'bg-primary text-primary-foreground' 
                                 : 'bg-muted'

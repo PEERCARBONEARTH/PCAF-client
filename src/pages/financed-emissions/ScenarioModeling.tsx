@@ -90,7 +90,7 @@ export default function ScenarioModelingPage() {
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+              <div className="p-2 rounded-sm bg-purple-100 text-purple-600">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>

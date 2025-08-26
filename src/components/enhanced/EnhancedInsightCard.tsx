@@ -106,7 +106,7 @@ export function EnhancedInsightCard({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className={cn(
-            "p-2 rounded-lg transition-all duration-300",
+            "p-2 rounded-sm transition-all duration-300",
             variant === "success" && "bg-success/10 hover:bg-success/20",
             variant === "warning" && "bg-warning/10 hover:bg-warning/20",
             variant === "info" && "bg-info/10 hover:bg-info/20",
@@ -148,7 +148,7 @@ export function EnhancedInsightCard({
       <div className="space-y-4">
         {items.map((item, index) => (
           <div key={index} className={cn(
-            "group flex items-center justify-between p-4 rounded-lg border transition-all duration-300",
+            "group flex items-center justify-between p-4 rounded-sm border transition-all duration-300",
             "hover:shadow-md hover:scale-[1.01] hover:-translate-y-0.5 cursor-pointer",
             getStatusStyles(item.status)
           )}>

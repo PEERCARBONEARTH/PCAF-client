@@ -523,7 +523,7 @@ export function UnifiedTaskWorkflowCenter({ mode = "both", defaultTab = "overvie
                           <p className="metric-value mt-2">{workflowStats.activeWorkflows}</p>
                           <p className="text-sm text-muted-foreground mt-1">In progress</p>
                         </div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                           <Workflow className="h-6 w-6" />
                         </div>
                       </div>
@@ -538,7 +538,7 @@ export function UnifiedTaskWorkflowCenter({ mode = "both", defaultTab = "overvie
                           <p className="metric-value mt-2">{workflowStats.pendingReviews}</p>
                           <p className="text-sm text-muted-foreground mt-1">Awaiting approval</p>
                         </div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-warning/10 text-warning">
                           <Clock className="h-6 w-6" />
                         </div>
                       </div>
@@ -555,7 +555,7 @@ export function UnifiedTaskWorkflowCenter({ mode = "both", defaultTab = "overvie
                       <p className="metric-value mt-2">{workflowStats.completedToday}</p>
                       <p className="text-sm text-muted-foreground mt-1">Tasks finished</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-success/10 text-success">
                       <CheckCircle className="h-6 w-6" />
                     </div>
                   </div>
@@ -570,7 +570,7 @@ export function UnifiedTaskWorkflowCenter({ mode = "both", defaultTab = "overvie
                       <p className="metric-value mt-2">{workflowStats.avgCompletionTime}</p>
                       <p className="text-sm text-muted-foreground mt-1">Per workflow</p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-info/10 text-info">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-info/10 text-info">
                       <TrendingUp className="h-6 w-6" />
                     </div>
                   </div>
@@ -666,7 +666,7 @@ export function UnifiedTaskWorkflowCenter({ mode = "both", defaultTab = "overvie
                   <CardContent>
                     <div className="space-y-4">
                       {recentMessages.map((message) => (
-                        <div key={message.id} className={`flex items-start gap-4 p-4 border border-border rounded-lg ${message.unread ? 'bg-blue-50 dark:bg-blue-950/20' : ''}`}>
+                        <div key={message.id} className={`flex items-start gap-4 p-4 border border-border rounded-sm ${message.unread ? 'bg-blue-50 dark:bg-blue-950/20' : ''}`}>
                           <div className="flex-shrink-0">
                             {getUserAvatar(message.sender, message.avatar)}
                           </div>

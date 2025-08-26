@@ -293,7 +293,7 @@ export default function ProjectExplorer() {
                         <p className="metric-value mt-2">{stat.value}</p>
                         <p className="text-sm text-muted-foreground mt-1">{stat.subtext}</p>
                       </div>
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 ${stat.color}`}>
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 ${stat.color}`}>
                         <stat.icon className="h-6 w-6" />
                       </div>
                     </div>
@@ -332,19 +332,19 @@ export default function ProjectExplorer() {
                     </Badge>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                    <div className="p-3 rounded-lg border border-border">
+                    <div className="p-3 rounded-sm border border-border">
                       <p className="text-xs text-muted-foreground">Deployment Focus</p>
                       <p className="font-medium">East Africa</p>
                     </div>
-                    <div className="p-3 rounded-lg border border-border">
+                    <div className="p-3 rounded-sm border border-border">
                       <p className="text-xs text-muted-foreground">Technology Partner</p>
                       <p className="font-medium">EcoTech Solutions</p>
                     </div>
-                    <div className="p-3 rounded-lg border border-border">
+                    <div className="p-3 rounded-sm border border-border">
                       <p className="text-xs text-muted-foreground">Target Impact</p>
                       <p className="font-medium">425K Beneficiaries</p>
                     </div>
-                    <div className="p-3 rounded-lg border border-border">
+                    <div className="p-3 rounded-sm border border-border">
                       <p className="text-xs text-muted-foreground">Carbon Reduction</p>
                       <p className="font-medium">~85% per kitchen</p>
                     </div>
@@ -393,7 +393,7 @@ export default function ProjectExplorer() {
               <CardContent>
                 <div className="space-y-4">
                   {filteredProjects.map((project, index) => (
-                    <div key={index} className="p-4 rounded-lg border border-border bg-background/50 hover:shadow-[var(--shadow-elevated)] transition-all duration-300">
+                    <div key={index} className="p-4 rounded-sm border border-border bg-background/50 hover:shadow-[var(--shadow-elevated)] transition-all duration-300">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">

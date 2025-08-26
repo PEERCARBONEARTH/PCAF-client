@@ -593,7 +593,7 @@ const getDataQualityColor = (score: number) => {
               return (
                 <div 
                   key={index}
-                  className={`${styles.border} ${styles.background} rounded-lg p-4 transition-all duration-200 hover:shadow-md`}
+                  className={`${styles.border} ${styles.background} rounded-sm p-4 transition-all duration-200 hover:shadow-md`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start space-x-3">

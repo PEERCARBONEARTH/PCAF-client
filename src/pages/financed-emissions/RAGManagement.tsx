@@ -533,7 +533,7 @@ export default function RAGManagementPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${uploading
+                className={`border-2 border-dashed rounded-sm p-8 text-center transition-colors ${uploading
                   ? 'border-primary/50 bg-primary/5'
                   : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5'
                   }`}

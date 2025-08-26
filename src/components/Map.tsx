@@ -183,8 +183,8 @@ const Map: React.FC<MapProps> = ({ mapboxToken, onTokenSubmit }) => {
 
   return (
     <div className="relative w-full h-[400px]">
-      <div ref={mapContainer} className="absolute inset-0 rounded-lg shadow-lg" />
-      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+      <div ref={mapContainer} className="absolute inset-0 rounded-sm shadow-lg" />
+      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-sm p-3 shadow-lg">
         <h3 className="font-semibold text-sm mb-2">Project Status</h3>
         <div className="space-y-1 text-xs">
           <div className="flex items-center gap-2">

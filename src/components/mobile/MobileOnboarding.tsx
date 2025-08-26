@@ -428,7 +428,7 @@ export function MobileOnboarding({ onComplete, onSkip }: MobileOnboardingProps) 
                 {currentGoal.steps.map((step, index) => (
                   <div 
                     key={step.id}
-                    className={`p-3 rounded-lg border ${
+                    className={`p-3 rounded-sm border ${
                       index === currentStepIndex 
                         ? 'border-primary bg-primary/5' 
                         : 'border-border'

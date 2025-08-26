@@ -392,7 +392,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
               <div className="absolute inset-0 bg-black/20" />
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 rounded-sm bg-white/20 backdrop-blur-sm">
+                  <div className="p-3 rounded-sm  bg-white/20 backdrop-blur-sm">
                     <Sparkles className="h-8 w-8" />
                   </div>
                   <div>
@@ -401,21 +401,21 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                   </div>
                 </div>
                 <div className="grid md:grid-cols-3 gap-6 mt-8">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <Brain className="h-6 w-6 text-yellow-300" />
                       <span className="font-semibold">Smart Analysis</span>
                     </div>
                     <p className="text-sm text-indigo-100">AI-powered pattern recognition across {metrics?.totalLoans?.toLocaleString() || 0} loans</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <Target className="h-6 w-6 text-green-300" />
                       <span className="font-semibold">Precision Targeting</span>
                     </div>
                     <p className="text-sm text-indigo-100">Identify high-impact opportunities with {Math.round((recommendations.reduce((acc, r) => acc + r.confidence, 0) / recommendations.length) * 100)}% confidence</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <Zap className="h-6 w-6 text-orange-300" />
                       <span className="font-semibold">Instant Action</span>
@@ -440,7 +440,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
             <Card className="border-0 shadow-2xl bg-gradient-to-br from-white to-gray-50">
               <CardHeader className="pb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500">
+                  <div className="p-2 rounded-sm bg-gradient-to-br from-yellow-400 to-orange-500">
                     <Lightbulb className="h-6 w-6 text-white" />
                   </div>
                   <div>
@@ -489,15 +489,15 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                         </div>
                         
                         <div className="grid md:grid-cols-3 gap-4 mt-6">
-                          <div className="bg-blue-50 rounded-sm p-4">
+                          <div className="bg-blue-50 rounded-sm  p-4">
                             <div className="text-sm font-medium text-blue-600 mb-1">Expected Value</div>
                             <div className="text-lg font-bold text-blue-900">{rec.estimatedValue}</div>
                           </div>
-                          <div className="bg-green-50 rounded-sm p-4">
+                          <div className="bg-green-50 rounded-sm  p-4">
                             <div className="text-sm font-medium text-green-600 mb-1">Timeline</div>
                             <div className="text-lg font-bold text-green-900">{rec.timeframe}</div>
                           </div>
-                          <div className="bg-purple-50 rounded-sm p-4">
+                          <div className="bg-purple-50 rounded-sm  p-4">
                             <div className="text-sm font-medium text-purple-600 mb-1">Effort Level</div>
                             <div className="text-lg font-bold text-purple-900 capitalize">{rec.effort}</div>
                           </div>
@@ -519,22 +519,22 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-4 gap-6">
-                  <div className="text-center p-4 rounded-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+                  <div className="text-center p-4 rounded-sm  bg-gradient-to-br from-blue-50 to-indigo-50">
                     <Target className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-blue-900">{metrics?.totalLoans?.toLocaleString() || 0}</div>
                     <div className="text-sm text-blue-600">Active Loans</div>
                   </div>
-                  <div className="text-center p-4 rounded-sm bg-gradient-to-br from-green-50 to-emerald-50">
+                  <div className="text-center p-4 rounded-sm  bg-gradient-to-br from-green-50 to-emerald-50">
                     <Globe className="h-8 w-8 text-green-500 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-green-900">{metrics?.totalFinancedEmissions?.toLocaleString() || 0}</div>
                     <div className="text-sm text-green-600">tCO2e Financed</div>
                   </div>
-                  <div className="text-center p-4 rounded-sm bg-gradient-to-br from-purple-50 to-violet-50">
+                  <div className="text-center p-4 rounded-sm  bg-gradient-to-br from-purple-50 to-violet-50">
                     <CheckCircle className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-purple-900">{metrics?.weightedAvgDataQuality?.toFixed(1) || 0}</div>
                     <div className="text-sm text-purple-600">Data Quality Score</div>
                   </div>
-                  <div className="text-center p-4 rounded-sm bg-gradient-to-br from-orange-50 to-red-50">
+                  <div className="text-center p-4 rounded-sm  bg-gradient-to-br from-orange-50 to-red-50">
                     <Shield className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-orange-900">{metrics?.complianceScore || 0}%</div>
                     <div className="text-sm text-orange-600">PCAF Compliance</div>
@@ -553,7 +553,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
               <div className="absolute inset-0 bg-black/20" />
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 rounded-sm bg-white/20 backdrop-blur-sm">
+                  <div className="p-3 rounded-sm  bg-white/20 backdrop-blur-sm">
                     <Shield className="h-8 w-8" />
                   </div>
                   <div>
@@ -562,7 +562,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                   </div>
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <Globe className="h-6 w-6 text-blue-300" />
                       <span className="font-semibold text-lg">Physical Risks</span>
@@ -570,7 +570,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                     <div className="text-3xl font-bold mb-2">Medium</div>
                     <p className="text-orange-100">Weather events, sea level rise, temperature changes</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <TrendingUp className="h-6 w-6 text-purple-300" />
                       <span className="font-semibold text-lg">Transition Risks</span>
@@ -666,21 +666,21 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                             </Badge>
                           </div>
                           <div className="grid md:grid-cols-3 gap-4 mt-6">
-                            <div className="bg-blue-50 rounded-lg p-4">
+                            <div className="bg-blue-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-blue-600 mb-1">Probability</div>
                               <div className="text-2xl font-bold text-blue-900">{Math.round(risk.probability * 100)}%</div>
                             </div>
-                            <div className="bg-purple-50 rounded-lg p-4">
+                            <div className="bg-purple-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-purple-600 mb-1">Time Horizon</div>
                               <div className="text-2xl font-bold text-purple-900 capitalize">{risk.timeHorizon}-term</div>
                             </div>
-                            <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="bg-gray-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-gray-600 mb-1">Impact</div>
                               <div className="text-lg font-bold text-gray-900">{risk.impact}</div>
                             </div>
                           </div>
                           {risk.mitigation && (
-                            <div className="mt-6 p-4 bg-green-50 rounded-lg border-l-4 border-l-green-400">
+                            <div className="mt-6 p-4 bg-green-50 rounded-sm border-l-4 border-l-green-400">
                               <div className="font-semibold text-green-800 mb-2">Mitigation Strategy</div>
                               <p className="text-green-700">{risk.mitigation}</p>
                             </div>
@@ -704,21 +704,21 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                             </Badge>
                           </div>
                           <div className="grid md:grid-cols-3 gap-4 mt-6">
-                            <div className="bg-orange-50 rounded-lg p-4">
+                            <div className="bg-orange-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-orange-600 mb-1">Probability</div>
                               <div className="text-2xl font-bold text-orange-900">{Math.round(risk.probability * 100)}%</div>
                             </div>
-                            <div className="bg-purple-50 rounded-lg p-4">
+                            <div className="bg-purple-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-purple-600 mb-1">Time Horizon</div>
                               <div className="text-2xl font-bold text-purple-900 capitalize">{risk.timeHorizon}-term</div>
                             </div>
-                            <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="bg-gray-50 rounded-sm p-4">
                               <div className="text-sm font-medium text-gray-600 mb-1">Impact</div>
                               <div className="text-lg font-bold text-gray-900">{risk.impact}</div>
                             </div>
                           </div>
                           {risk.mitigation && (
-                            <div className="mt-6 p-4 bg-green-50 rounded-lg border-l-4 border-l-green-400">
+                            <div className="mt-6 p-4 bg-green-50 rounded-sm border-l-4 border-l-green-400">
                               <div className="font-semibold text-green-800 mb-2">Mitigation Strategy</div>
                               <p className="text-green-700">{risk.mitigation}</p>
                             </div>
@@ -741,7 +741,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
               <div className="absolute inset-0 bg-black/20" />
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 rounded-sm bg-white/20 backdrop-blur-sm">
+                  <div className="p-3 rounded-sm  bg-white/20 backdrop-blur-sm">
                     <BarChart3 className="h-8 w-8" />
                   </div>
                   <div>
@@ -750,7 +750,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                   </div>
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <TrendingDown className="h-6 w-6 text-green-300" />
                       <span className="font-semibold">Net Zero 2050</span>
@@ -758,7 +758,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                     <div className="text-3xl font-bold text-green-300">-65%</div>
                     <p className="text-indigo-100">Emission Reduction</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <TrendingUp className="h-6 w-6 text-orange-300" />
                       <span className="font-semibold">Delayed Transition</span>
@@ -766,7 +766,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                     <div className="text-3xl font-bold text-orange-300">+25%</div>
                     <p className="text-indigo-100">Risk Increase</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-sm p-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-sm  p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <AlertTriangle className="h-6 w-6 text-red-300" />
                       <span className="font-semibold">Current Policies</span>
@@ -825,7 +825,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                         </div>
                         
                         <div className="grid md:grid-cols-3 gap-6">
-                          <div className={`p-4 rounded-sm ${scenario.emissionChange < 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+                          <div className={`p-4 rounded-sm  ${scenario.emissionChange < 0 ? 'bg-green-50' : 'bg-red-50'}`}>
                             <div className="flex items-center gap-2 mb-2">
                               {scenario.emissionChange < 0 ? (
                                 <TrendingDown className="h-5 w-5 text-green-600" />
@@ -839,7 +839,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                             </div>
                           </div>
                           
-                          <div className={`p-4 rounded-sm ${scenario.riskChange < 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+                          <div className={`p-4 rounded-sm  ${scenario.riskChange < 0 ? 'bg-green-50' : 'bg-red-50'}`}>
                             <div className="flex items-center gap-2 mb-2">
                               {scenario.riskChange < 0 ? (
                                 <TrendingDown className="h-5 w-5 text-green-600" />
@@ -853,7 +853,7 @@ export function ReorganizedAIInsights({ portfolioMetrics, onChatTrigger, focusAr
                             </div>
                           </div>
                           
-                          <div className="p-4 rounded-sm bg-blue-50">
+                          <div className="p-4 rounded-sm  bg-blue-50">
                             <div className="flex items-center gap-2 mb-2">
                               <Clock className="h-5 w-5 text-blue-600" />
                               <span className="font-semibold text-gray-700">Timeframe</span>

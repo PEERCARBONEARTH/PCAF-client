@@ -336,7 +336,7 @@ export function ConfigurationFlowManager({ categories, onSave, onTest, onReset }
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <div className="p-2 bg-primary/10 rounded-sm text-primary">
                       {category.icon}
                     </div>
                     <div>
@@ -452,7 +452,7 @@ export function ConfigurationFlowManager({ categories, onSave, onTest, onReset }
               }
             </p>
             {currentCategory?.requiresRestart && pendingAction?.type === 'save' && (
-              <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
+              <div className="p-3 rounded-sm bg-warning/10 border border-warning/20">
                 <p className="text-sm text-warning">
                   <AlertTriangle className="h-3 w-3 inline mr-1" />
                   This configuration requires a system restart to take effect.

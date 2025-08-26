@@ -90,7 +90,7 @@ export default function ClimateRiskPage() {
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-100 text-orange-600">
+              <div className="p-2 rounded-sm bg-orange-100 text-orange-600">
                 <Globe className="h-5 w-5" />
               </div>
               <div>
@@ -127,7 +127,7 @@ export default function ClimateRiskPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="p-4 bg-white rounded-lg border">
+              <div className="p-4 bg-white rounded-sm border">
                 <h4 className="font-medium mb-2">Extreme Weather Events</h4>
                 <p className="text-sm text-muted-foreground">
                   Assess portfolio exposure to floods, hurricanes, and extreme temperatures
@@ -136,7 +136,7 @@ export default function ClimateRiskPage() {
                   Geographic Analysis
                 </Badge>
               </div>
-              <div className="p-4 bg-white rounded-lg border">
+              <div className="p-4 bg-white rounded-sm border">
                 <h4 className="font-medium mb-2">Sea Level Rise</h4>
                 <p className="text-sm text-muted-foreground">
                   Coastal region exposure analysis for vehicle collateral
@@ -158,7 +158,7 @@ export default function ClimateRiskPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="p-4 bg-white rounded-lg border">
+              <div className="p-4 bg-white rounded-sm border">
                 <h4 className="font-medium mb-2">Technology Transition</h4>
                 <p className="text-sm text-muted-foreground">
                   EV adoption impact on ICE vehicle values and demand
@@ -167,7 +167,7 @@ export default function ClimateRiskPage() {
                   Market Risk
                 </Badge>
               </div>
-              <div className="p-4 bg-white rounded-lg border">
+              <div className="p-4 bg-white rounded-sm border">
                 <h4 className="font-medium mb-2">Policy & Regulation</h4>
                 <p className="text-sm text-muted-foreground">
                   Carbon pricing and emission standards impact

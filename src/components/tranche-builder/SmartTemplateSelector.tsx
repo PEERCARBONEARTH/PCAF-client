@@ -148,7 +148,7 @@ export function SmartTemplateSelector({ onTemplateSelect }: SmartTemplateSelecto
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${template.color}/10 text-${template.color}`}>
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-sm bg-${template.color}/10 text-${template.color}`}>
                       <IconComponent className="h-5 w-5" />
                     </div>
                     <div>
@@ -229,7 +229,7 @@ export function SmartTemplateSelector({ onTemplateSelect }: SmartTemplateSelecto
 
                   {/* Risk Assessment */}
                   {template.riskLevel === 'high' && (
-                    <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
+                    <div className="flex items-start gap-2 p-3 rounded-sm bg-warning/10 border border-warning/20">
                       <AlertTriangle className="h-4 w-4 text-warning mt-0.5" />
                       <div className="text-sm">
                         <p className="font-medium text-warning">High Complexity Template</p>

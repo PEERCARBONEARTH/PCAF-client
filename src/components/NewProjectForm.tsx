@@ -301,7 +301,7 @@ export function NewProjectForm({ onClose, onProjectCreated }: NewProjectFormProp
         {/* Document Upload */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Supporting Documents</h3>
-          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+          <div className="border-2 border-dashed border-muted-foreground/25 rounded-sm p-6 text-center">
             <Upload className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
             <p className="text-sm text-muted-foreground mb-2">
               Upload project documents, proposals, or supporting files

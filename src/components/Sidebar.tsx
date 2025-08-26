@@ -363,7 +363,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 shrink-0 rounded-sm hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            className="h-9 w-9 p-0 shrink-0 rounded-sm  hover:bg-muted/50 hover:scale-110 transition-all duration-300"
             onClick={() => resetToDefaults()}
             title="Reset Navigation"
           >
@@ -373,7 +373,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 shrink-0 rounded-sm hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            className="h-9 w-9 p-0 shrink-0 rounded-sm  hover:bg-muted/50 hover:scale-110 transition-all duration-300"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
             {sidebarCollapsed ? <Menu className="h-5 w-5" /> : <Minimize2 className="h-5 w-5" />}
@@ -386,7 +386,7 @@ export function Sidebar() {
         <div className="relative z-10 px-6 py-5 border-b border-border/30 bg-gradient-to-r from-yellow-500/5 via-transparent to-amber-500/5">
           {!compactMode && (
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-500 shadow-lg shadow-yellow-500/25">
+              <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-gradient-to-br from-yellow-400 to-amber-500 shadow-lg shadow-yellow-500/25">
                 <Star className="h-4 w-4 text-white fill-current drop-shadow-sm" />
               </div>
               <span className="text-sm font-semibold text-foreground">Quick Access</span>
@@ -427,12 +427,12 @@ export function Sidebar() {
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-sm hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300 hover:scale-[1.02]"
+                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-sm  hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300 hover:scale-[1.02]"
                     onClick={() => toggleGroupCollapse(categoryId)}
                   >
                     <div className="flex items-center gap-3">
                       {!compactMode && (
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-muted to-muted/50 shadow-sm">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-gradient-to-br from-muted to-muted/50 shadow-sm">
                           <CategoryIcon className="h-4 w-4 text-muted-foreground" />
                         </div>
                       )}
@@ -465,12 +465,12 @@ export function Sidebar() {
               <NavLink
                 to={`/${currentPlatform}/settings`}
                 className={cn(
-                  "group flex items-center gap-4 px-4 py-3.5 rounded-sm text-sm font-medium transition-all duration-300 hover:scale-[1.02]",
+                  "group flex items-center gap-4 px-4 py-3.5 rounded-sm  text-sm font-medium transition-all duration-300 hover:scale-[1.02]",
                   "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:shadow-lg hover:shadow-muted/20",
                   (compactMode || sidebarCollapsed) && "justify-center px-3"
                 )}
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted/30 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
+                <div className="flex items-center justify-center w-10 h-10 rounded-sm bg-muted/30 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
                   <Settings className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors duration-300" />
                 </div>
                 {!compactMode && !sidebarCollapsed && (

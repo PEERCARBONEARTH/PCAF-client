@@ -287,7 +287,7 @@ export default function ProgramConfiguration() {
           </CardHeader>
           <CardContent className="space-y-4">
             {milestones.map((milestone, index) => (
-              <div key={milestone.id} className="p-4 border rounded-lg space-y-3">
+              <div key={milestone.id} className="p-4 border rounded-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Milestone {index + 1}</span>
                   {milestones.length > 1 && (

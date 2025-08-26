@@ -463,7 +463,7 @@ export function MotorVehicleLoanCalculator() {
                     <div className="text-xs text-muted-foreground">tCO₂e/year</div>
                   </div>
                   
-                  <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <div className="p-4 bg-primary/10 rounded-sm border border-primary/20">
                     <div className="text-sm text-muted-foreground">Financed Emissions</div>
                     <div className="text-2xl font-bold text-primary">{calculation.financed_emissions.toFixed(3)}</div>
                     <div className="text-xs text-muted-foreground">tCO₂e (PCAF Cat. 15)</div>

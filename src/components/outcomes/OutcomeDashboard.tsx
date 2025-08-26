@@ -1265,7 +1265,7 @@ function ActionItemCard({ action, onStart }: ActionItemCardProps) {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+    <div className="flex items-center justify-between p-3 bg-background rounded-sm border">
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <h5 className="font-medium text-sm">{action.title}</h5>
@@ -1338,7 +1338,7 @@ function AIInsightCard({ insight }: AIInsightCardProps) {
   };
 
   return (
-    <div className={`p-3 rounded-lg border ${insight.actionable ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+    <div className={`p-3 rounded-sm border ${insight.actionable ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <p className="text-sm">{insight.text}</p>
@@ -1378,7 +1378,7 @@ function AIRecommendationCard({ recommendation }: AIRecommendationCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="p-4 rounded-lg border bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+    <div className="p-4 rounded-sm border bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
       <div className="space-y-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -1461,7 +1461,7 @@ function RelatedDocumentCard({ document }: RelatedDocumentCardProps) {
   };
 
   return (
-    <div className="p-3 rounded-lg border bg-white hover:shadow-sm transition-shadow cursor-pointer">
+    <div className="p-3 rounded-sm border bg-white hover:shadow-sm transition-shadow cursor-pointer">
       <div className="flex items-start gap-3">
         <div className="shrink-0 mt-0.5">
           {getDocumentTypeIcon(document.type)}
