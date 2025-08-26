@@ -154,6 +154,52 @@ const FinancedEmissionsRoutes = () => {
   );
 };
 
+// Component to handle green finance routing with new layout
+const GreenFinanceRoutes = () => {
+  const { setPlatform } = usePlatform();
+
+  // Auto-set platform to green-finance when accessing these routes
+  useEffect(() => {
+    console.log('Setting platform to green-finance');
+    setPlatform('green-finance');
+  }, [setPlatform]);
+
+  console.log('GreenFinanceRoutes rendering');
+
+  return (
+    <PlatformLayout>
+      <Routes>
+        <Route index element={<Index />} />
+        <Route path="tranches" element={<Tranches />} />
+        <Route path="tranches/builder" element={<TrancheBuilder />} />
+        <Route path="tranches/monitoring" element={<TrancheMonitoring />} />
+        <Route path="reports" element={<Reporting />} />
+        <Route path="projects" element={<ProjectExplorer />} />
+        <Route path="opportunities" element={<ViewAllOpportunities />} />
+        <Route path="projects/:projectId" element={<ProjectDetail />} />
+        <Route path="alerts-risk" element={<AlertsRisk />} />
+        <Route path="compliance" element={<ComplianceVault />} />
+        <Route path="users" element={<UserAccess />} />
+        <Route path="tasks" element={<TaskCenter />} />
+        <Route path="workflows" element={<WorkflowCenter />} />
+        <Route path="marketplace" element={<Marketplace />} />
+        <Route path="pcaf-calculator" element={<PCAFCalculator />} />
+        <Route path="institution-view" element={<InstitutionView />} />
+        <Route path="developer" element={<DeveloperPortal />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="portfolio-map" element={<PortfolioMap />} />
+        <Route path="impact-reports" element={<ImpactReports />} />
+        <Route path="new-investment" element={<NewInvestment />} />
+        <Route path="varl" element={<VARLDashboard />} />
+        <Route path="asset-monitoring" element={<AssetMonitoring />} />
+        <Route path="tranche-review" element={<TrancheReview />} />
+        <Route path="program-configuration" element={<ProgramConfiguration />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </PlatformLayout>
+  );
+};
+
 // Component to handle platform-aware routing
 const PlatformRoutes = () => {
   const { currentPlatform } = usePlatform();
@@ -163,43 +209,8 @@ const PlatformRoutes = () => {
     return <PlatformSelection />;
   }
 
-  // Show platform-specific routes wrapped in layout
-  return (
-    <PlatformLayout>
-      <Routes>
-        {currentPlatform === 'green-finance' && (
-          <>
-            <Route path="/" element={<Navigate to="/green-finance" replace />} />
-            <Route path="/green-finance" element={<Index />} />
-            <Route path="/green-finance/tranches" element={<Tranches />} />
-            <Route path="/green-finance/tranches/builder" element={<TrancheBuilder />} />
-            <Route path="/green-finance/tranches/monitoring" element={<TrancheMonitoring />} />
-            <Route path="/green-finance/reports" element={<Reporting />} />
-            <Route path="/green-finance/projects" element={<ProjectExplorer />} />
-            <Route path="/green-finance/opportunities" element={<ViewAllOpportunities />} />
-            <Route path="/green-finance/projects/:projectId" element={<ProjectDetail />} />
-            <Route path="/green-finance/alerts-risk" element={<AlertsRisk />} />
-            <Route path="/green-finance/compliance" element={<ComplianceVault />} />
-            <Route path="/green-finance/users" element={<UserAccess />} />
-
-            <Route path="/green-finance/tasks" element={<TaskCenter />} />
-            <Route path="/green-finance/workflows" element={<WorkflowCenter />} />
-            <Route path="/green-finance/marketplace" element={<Marketplace />} />
-            <Route path="/green-finance/pcaf-calculator" element={<PCAFCalculator />} />
-            <Route path="/green-finance/institution-view" element={<InstitutionView />} />
-            <Route path="/green-finance/developer" element={<DeveloperPortal />} />
-            <Route path="/green-finance/settings" element={<Settings />} />
-            <Route path="/green-finance/portfolio-map" element={<PortfolioMap />} />
-            <Route path="/green-finance/impact-reports" element={<ImpactReports />} />
-            <Route path="/green-finance/new-investment" element={<NewInvestment />} />
-            <Route path="/green-finance/varl" element={<VARLDashboard />} />
-          </>
-        )}
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </PlatformLayout>
-  );
+  // Redirect to appropriate platform
+  return <Navigate to={`/${currentPlatform}`} replace />;
 };
 
 function App() {
@@ -313,6 +324,7 @@ function App() {
                   {/* Approval status check for authenticated users */}
 
                   {/* Protected routes */}
+                  {/* Financed Emissions Platform Routes */}
                   <Route
                     path="/financed-emissions"
                     element={<Navigate to="/financed-emissions/overview" replace />}
@@ -322,7 +334,6 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <PlatformProvider>
-                          {/* AssumptionsProvider wraps FE routes to make data available */}
                           <AssumptionsProvider>
                             <FinancedEmissionsRoutes />
                           </AssumptionsProvider>
@@ -331,6 +342,19 @@ function App() {
                     }
                   />
 
+                  {/* Green Finance Platform Routes */}
+                  <Route
+                    path="/green-finance/*"
+                    element={
+                      <ProtectedRoute>
+                        <PlatformProvider>
+                          <GreenFinanceRoutes />
+                        </PlatformProvider>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Standalone Pages */}
                   <Route
                     path="/platform-selection"
                     element={
@@ -364,9 +388,9 @@ function App() {
                     }
                   />
 
-                  {/* Root and authenticated routes */}
+                  {/* Root route - redirect to platform selection */}
                   <Route
-                    path="/*"
+                    path="/"
                     element={
                       user ? (
                         <ProtectedRoute>
@@ -379,6 +403,9 @@ function App() {
                       )
                     }
                   />
+
+                  {/* Catch-all for unmatched routes */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
