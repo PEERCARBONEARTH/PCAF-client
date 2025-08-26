@@ -433,19 +433,19 @@ export default function RAGManagementPage() {
   };
 
   const getCollectionIcon = (name: string) => {
-    if (!name) return <Database className="h-5 w-5 text-gray-600" />;
-    if (name.includes('methodology')) return <BookOpen className="h-5 w-5 text-blue-600" />;
-    if (name.includes('regulation')) return <Shield className="h-5 w-5 text-red-600" />;
-    if (name.includes('calculation')) return <Calculator className="h-5 w-5 text-green-600" />;
-    return <Database className="h-5 w-5 text-gray-600" />;
+    if (!name) return <Database className="h-5 w-5 text-gray-700" />;
+    if (name.includes('methodology')) return <BookOpen className="h-5 w-5 text-blue-700" />;
+    if (name.includes('regulation')) return <Shield className="h-5 w-5 text-red-700" />;
+    if (name.includes('calculation')) return <Calculator className="h-5 w-5 text-green-700" />;
+    return <Database className="h-5 w-5 text-gray-700" />;
   };
 
   const getCollectionColor = (name: string) => {
-    if (!name) return 'border-gray-200 bg-gray-50';
-    if (name.includes('methodology')) return 'border-blue-200 bg-blue-50';
-    if (name.includes('regulation')) return 'border-red-200 bg-red-50';
-    if (name.includes('calculation')) return 'border-green-200 bg-green-50';
-    return 'border-gray-200 bg-gray-50';
+    if (!name) return 'border-gray-300 bg-gray-100 text-gray-900';
+    if (name.includes('methodology')) return 'border-blue-300 bg-blue-100 text-blue-900';
+    if (name.includes('regulation')) return 'border-red-300 bg-red-100 text-red-900';
+    if (name.includes('calculation')) return 'border-green-300 bg-green-100 text-green-900';
+    return 'border-gray-300 bg-gray-100 text-gray-900';
   };
 
   return (
@@ -782,9 +782,9 @@ export default function RAGManagementPage() {
                         <CardTitle className="text-base">{collection.name || 'Unknown Collection'}</CardTitle>
                       </div>
                       {collection.error ? (
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <AlertTriangle className="h-4 w-4 text-red-700" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-green-700" />
                       )}
                     </div>
                   </CardHeader>
