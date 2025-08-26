@@ -240,18 +240,18 @@ export function Sidebar() {
         key={`${item.id}-${isPinned ? 'pinned' : 'regular'}`}
         to={item.href}
         className={cn(
-          "group relative flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out",
+          "group relative flex items-center gap-3 px-4 py-3.5 rounded-md text-sm font-medium transition-all duration-300 ease-out",
           "hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10",
           isActive
             ? "bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/25 border border-primary/20"
             : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:backdrop-blur-sm",
           compactMode && !sidebarCollapsed && "justify-center px-3",
           sidebarCollapsed && "justify-center px-3",
-          "before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-transparent before:via-white/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+          "before:absolute before:inset-0 before:rounded-md before:bg-gradient-to-r before:from-transparent before:via-white/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
         )}
       >
         <div className={cn(
-          "relative z-10 flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300",
+          "relative z-10 flex items-center justify-center w-10 h-10 rounded-md transition-all duration-300",
           isActive
             ? "bg-white/20 backdrop-blur-sm shadow-inner"
             : "bg-muted/30 group-hover:bg-primary/10 group-hover:scale-110"
@@ -343,7 +343,7 @@ export function Sidebar() {
       <div className="relative z-10 flex items-center gap-4 px-6 py-8 border-b border-border/30 bg-gradient-to-r from-muted/20 via-transparent to-muted/10">
         {!sidebarCollapsed && (
           <>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shrink-0 shadow-lg shadow-primary/25 ring-1 ring-white/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shrink-0 shadow-lg shadow-primary/25 ring-1 ring-white/20">
               <PeercarbonLogo size={28} />
             </div>
             {!compactMode && (
@@ -363,7 +363,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 shrink-0 rounded-xl hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            className="h-9 w-9 p-0 shrink-0 rounded-sm hover:bg-muted/50 hover:scale-110 transition-all duration-300"
             onClick={() => resetToDefaults()}
             title="Reset Navigation"
           >
@@ -373,7 +373,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 shrink-0 rounded-xl hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            className="h-9 w-9 p-0 shrink-0 rounded-sm hover:bg-muted/50 hover:scale-110 transition-all duration-300"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
             {sidebarCollapsed ? <Menu className="h-5 w-5" /> : <Minimize2 className="h-5 w-5" />}
@@ -427,7 +427,7 @@ export function Sidebar() {
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-xl hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300 hover:scale-[1.02]"
+                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-sm hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300 hover:scale-[1.02]"
                     onClick={() => toggleGroupCollapse(categoryId)}
                   >
                     <div className="flex items-center gap-3">
@@ -465,7 +465,7 @@ export function Sidebar() {
               <NavLink
                 to={`/${currentPlatform}/settings`}
                 className={cn(
-                  "group flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02]",
+                  "group flex items-center gap-4 px-4 py-3.5 rounded-sm text-sm font-medium transition-all duration-300 hover:scale-[1.02]",
                   "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:shadow-lg hover:shadow-muted/20",
                   (compactMode || sidebarCollapsed) && "justify-center px-3"
                 )}

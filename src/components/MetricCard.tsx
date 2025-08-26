@@ -33,7 +33,7 @@ export function MetricCard({
             )}
           </div>
           {icon && (
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0 ml-3 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+            <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary shrink-0 ml-3 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
               {icon}
             </div>
           )}

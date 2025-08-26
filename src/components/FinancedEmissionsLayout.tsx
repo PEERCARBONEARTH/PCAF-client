@@ -163,7 +163,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
                   key={item.name}
                   onClick={() => navigate(item.href)}
                   className={cn(
-                    "w-full flex items-center gap-4 px-4 py-3.5 text-left rounded-xl transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm",
+                    "w-full flex items-center gap-4 px-4 py-3.5 text-left rounded-sm transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm",
                     isActive
                       ? "bg-accent text-primary border border-accent/40 shadow-[var(--shadow-elevated)] scale-[1.02] translate-x-1"
                       : "text-muted-foreground hover:bg-muted/20 hover:text-foreground hover:scale-[1.01] hover:translate-x-1 hover:shadow-[var(--shadow-card)]"
@@ -211,7 +211,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
 
         {/* Enhanced Sidebar footer with premium styling */}
         <div className="border-t border-border p-6 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm">
-          <div className="flex items-center gap-4 p-3 rounded-xl bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
+          <div className="flex items-center gap-4 p-3 rounded-sm bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
             <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shadow-[var(--shadow-xs)] group-hover:shadow-[var(--shadow-glow)] group-hover:scale-110 transition-[var(--transition-bounce)]">
               <Shield className="h-5 w-5 text-accent group-hover:text-accent-light transition-colors duration-300" />
             </div>

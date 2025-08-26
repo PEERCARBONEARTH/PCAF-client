@@ -83,7 +83,7 @@ export const LandingHero: React.FC = () => {
           </div>
           
           <Link to="/auth">
-            <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
+            <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground px-5 py-2.5 rounded-sm font-medium text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
               Sign In to Portal
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

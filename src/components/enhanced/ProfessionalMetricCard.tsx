@@ -80,7 +80,7 @@ export function ProfessionalMetricCard({
           </div>
           {icon && (
             <div className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-xl shrink-0 ml-4",
+              "flex h-14 w-14 items-center justify-center rounded-sm shrink-0 ml-4",
               "transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
               variant === "premium" && "bg-primary/10 text-primary group-hover:bg-primary/20",
               variant === "impact" && "bg-success/10 text-success group-hover:bg-success/20",
