@@ -242,14 +242,14 @@
   }
 
   .card-featured {
-    @apply bg-gradient-to-br from-card/95 via-card to-primary-soft/40 relative overflow-hidden backdrop-blur-lg border border-border/40 shadow-[var(--shadow-lift)] cursor-pointer hover:shadow-[var(--shadow-float)] hover:shadow-primary/10 transition-all duration-600;
+    @apply bg-gradient-to-br from-card/95 via-card to-primary-soft/40 relative overflow-hidden backdrop-blur-lg border border-border/40 shadow-[var(--shadow-lift)] cursor-pointer hover:shadow-[var(--shadow-float)] hover:shadow-primary/10 transition-all duration-500;
     border-radius: 1rem 1.125rem 1rem 1.075rem;
     transition-timing-function: var(--ease-human);
   }
 
   .card-featured::after {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-primary/10 opacity-0 transition-opacity duration-600;
+    @apply absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-primary/10 opacity-0 transition-opacity duration-500;
   }
 
   .card-featured:hover {
@@ -262,7 +262,7 @@
 
   /* Interactive Card Variants */
   .card-glass {
-    @apply bg-white/10 backdrop-blur-xl border border-white/20 relative overflow-hidden shadow-2xl shadow-black/10 cursor-pointer hover:bg-white/15 hover:border-white/30 hover:shadow-3xl hover:shadow-black/20 transition-all duration-500;
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 relative overflow-hidden shadow-2xl shadow-black/10 cursor-pointer hover:bg-white/15 hover:border-white/30 hover:shadow-2xl hover:shadow-black/20 transition-all duration-500;
   }
 
   .card-glass::before {
@@ -279,7 +279,7 @@
   }
 
   .card-neon {
-    @apply bg-card border border-primary/30 relative overflow-hidden shadow-lg shadow-primary/20 cursor-pointer hover:border-primary/50 hover:shadow-xl hover:shadow-primary/30 transition-all duration-400;
+    @apply bg-card border border-primary/30 relative overflow-hidden shadow-lg shadow-primary/20 cursor-pointer hover:border-primary/50 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300;
   }
 
   .card-neon::after {
@@ -343,13 +343,13 @@
 
   /* Enhanced Organic Button Variations */
   .btn-organic-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground font-semibold border border-primary/20 relative overflow-hidden shadow-[var(--shadow-soft)] ripple hover:shadow-[var(--shadow-lift)] hover:shadow-primary/25 hover:bg-gradient-to-r hover:from-primary/90 hover:via-primary hover:to-primary hover:-translate-y-1 hover:scale-[1.03] hover:ring-2 hover:ring-primary/20 active:scale-[0.97] active:translate-y-0 transition-all duration-400;
+    @apply px-6 py-3 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground font-semibold border border-primary/20 relative overflow-hidden shadow-[var(--shadow-soft)] ripple hover:shadow-[var(--shadow-lift)] hover:shadow-primary/25 hover:bg-gradient-to-r hover:from-primary/90 hover:via-primary hover:to-primary hover:-translate-y-1 hover:scale-[1.03] hover:ring-2 hover:ring-primary/20 active:scale-[0.97] active:translate-y-0 transition-all duration-300;
     border-radius: 0.75rem 0.875rem 0.75rem 0.825rem;
     transition-timing-function: var(--ease-gentle);
   }
 
   .btn-organic-secondary {
-    @apply px-5 py-2.5 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/30 text-foreground font-medium border border-border/40 relative overflow-hidden ripple shadow-[var(--shadow-whisper)] hover:bg-gradient-to-r hover:from-muted/80 hover:via-muted/60 hover:to-muted/40 hover:border-border/70 hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:scale-[1.02] hover:ring-1 hover:ring-border/30 active:scale-[0.98] active:translate-y-0 transition-all duration-350;
+    @apply px-5 py-2.5 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/30 text-foreground font-medium border border-border/40 relative overflow-hidden ripple shadow-[var(--shadow-whisper)] hover:bg-gradient-to-r hover:from-muted/80 hover:via-muted/60 hover:to-muted/40 hover:border-border/70 hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:scale-[1.02] hover:ring-1 hover:ring-border/30 active:scale-[0.98] active:translate-y-0 transition-all duration-300;
     border-radius: 0.625rem 0.75rem 0.625rem 0.7rem;
     transition-timing-function: var(--ease-human);
   }
@@ -400,7 +400,7 @@
   }
 
   .delight-glow {
-    @apply hover:shadow-[var(--shadow-glow)] hover:border-primary/40 transition-all duration-400 ease-out;
+    @apply hover:shadow-[var(--shadow-glow)] hover:border-primary/40 transition-all duration-300 ease-out;
   }
 
   /* Modern Card Animations */
@@ -410,7 +410,7 @@
   }
 
   .card-hover-subtle {
-    @apply transition-all duration-400 ease-out cursor-pointer hover:scale-[1.01] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/5 hover:bg-gradient-to-br hover:from-card hover:to-muted/20 active:scale-[0.99];
+    @apply transition-all duration-300 ease-out cursor-pointer hover:scale-[1.01] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/5 hover:bg-gradient-to-br hover:from-card hover:to-muted/20 active:scale-[0.99];
   }
 
   .card-hover-glow {
@@ -440,7 +440,7 @@
 
   /* Floating Action Button */
   .btn-fab {
-    @apply fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/30 hover:scale-110 hover:-translate-y-1 hover:shadow-3xl hover:shadow-primary/40 active:scale-95 transition-all duration-300 ease-out ring-4 ring-primary/10 hover:ring-primary/20;
+    @apply fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/30 hover:scale-110 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/40 active:scale-95 transition-all duration-300 ease-out ring-4 ring-primary/10 hover:ring-primary/20;
   }
 
   /* Input Field Animations */
@@ -903,7 +903,7 @@
 
 .morphing-border::after {
   content: '';
-  @apply absolute inset-0 rounded-[inherit] border-2 border-primary/50 opacity-0 transition-all duration-400 ease-out;
+  @apply absolute inset-0 rounded-[inherit] border-2 border-primary/50 opacity-0 transition-all duration-300 ease-out;
   transform: scale(0.8);
 }
 
