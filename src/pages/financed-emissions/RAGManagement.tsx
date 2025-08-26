@@ -451,11 +451,13 @@ export default function RAGManagementPage() {
   return (
     <main className="space-y-6">
       {/* Header */}
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+      <Card className="card-featured animate-slide-up border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Brain className="h-8 w-8 text-primary" />
+              <div className="p-2 rounded-xl bg-primary/10 animate-float">
+                <Brain className="h-8 w-8 text-primary" />
+              </div>
               <div>
                 <CardTitle className="text-2xl">RAG Knowledge Base Management</CardTitle>
                 <CardDescription>
@@ -464,7 +466,12 @@ export default function RAGManagementPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={testConnection} variant="outline" disabled={testingConnection}>
+              <Button 
+                onClick={testConnection} 
+                variant="outline" 
+                disabled={testingConnection}
+                className="btn-organic-secondary"
+              >
                 {testingConnection ? (
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
@@ -472,7 +479,12 @@ export default function RAGManagementPage() {
                 )}
                 Test Connection
               </Button>
-              <Button onClick={fetchCollections} variant="outline" disabled={loading}>
+              <Button 
+                onClick={fetchCollections} 
+                variant="outline" 
+                disabled={loading}
+                className="btn-organic-primary"
+              >
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Refresh Collections
               </Button>
@@ -491,6 +503,7 @@ export default function RAGManagementPage() {
                 }}
                 variant="ghost"
                 size="sm"
+                className="btn-organic-ghost"
               >
                 Debug API
               </Button>
@@ -521,10 +534,12 @@ export default function RAGManagementPage() {
 
         <TabsContent value="upload" className="space-y-6">
           {/* Upload Section */}
-          <Card>
+          <Card className="card-editorial animate-slide-up">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 animate-float">
+                  <Upload className="h-5 w-5 text-primary" />
+                </div>
                 Upload Documents
               </CardTitle>
               <CardDescription>
@@ -628,36 +643,49 @@ export default function RAGManagementPage() {
           </Card>
 
           {/* Supported Document Types */}
-          <Card>
+          <Card className="card-editorial animate-scale-in">
             <CardHeader>
-              <CardTitle>Supported Document Types</CardTitle>
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-muted/20">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                </div>
+                Supported Document Types
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="p-4 border rounded-lg">
-                  <BookOpen className="h-8 w-8 text-blue-600 mb-2" />
-                  <h4 className="font-medium">PCAF Methodology</h4>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="card-hover-subtle p-6 border rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200">
+                  <div className="p-3 rounded-xl bg-blue-100 w-fit mb-4">
+                    <BookOpen className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">PCAF Methodology</h4>
                   <p className="text-sm text-muted-foreground">
                     Official PCAF standards and calculation guides
                   </p>
                 </div>
-                <div className="p-4 border rounded-lg">
-                  <Shield className="h-8 w-8 text-red-600 mb-2" />
-                  <h4 className="font-medium">Regulations</h4>
+                <div className="card-hover-subtle p-6 border rounded-xl bg-gradient-to-br from-red-50 to-red-100/50 border-red-200">
+                  <div className="p-3 rounded-xl bg-red-100 w-fit mb-4">
+                    <Shield className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Regulations</h4>
                   <p className="text-sm text-muted-foreground">
                     TCFD, EU Taxonomy, and central bank guidance
                   </p>
                 </div>
-                <div className="p-4 border rounded-lg">
-                  <Calculator className="h-8 w-8 text-green-600 mb-2" />
-                  <h4 className="font-medium">Calculations</h4>
+                <div className="card-hover-subtle p-6 border rounded-xl bg-gradient-to-br from-green-50 to-green-100/50 border-green-200">
+                  <div className="p-3 rounded-xl bg-green-100 w-fit mb-4">
+                    <Calculator className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Calculations</h4>
                   <p className="text-sm text-muted-foreground">
                     Emission factors and calculation methodologies
                   </p>
                 </div>
-                <div className="p-4 border rounded-lg">
-                  <FileText className="h-8 w-8 text-purple-600 mb-2" />
-                  <h4 className="font-medium">Best Practices</h4>
+                <div className="card-hover-subtle p-6 border rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200">
+                  <div className="p-3 rounded-xl bg-purple-100 w-fit mb-4">
+                    <FileText className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Best Practices</h4>
                   <p className="text-sm text-muted-foreground">
                     Industry guidelines and implementation guides
                   </p>
@@ -669,10 +697,12 @@ export default function RAGManagementPage() {
 
         <TabsContent value="search" className="space-y-6">
           {/* Search Section */}
-          <Card>
+          <Card className="card-editorial animate-slide-up">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 animate-glow-pulse">
+                  <Search className="h-5 w-5 text-primary" />
+                </div>
                 Search Knowledge Base
               </CardTitle>
               <CardDescription>
@@ -706,7 +736,11 @@ export default function RAGManagementPage() {
                   </select>
                 </div>
                 <div className="flex items-end">
-                  <Button onClick={handleSearch} disabled={searching || !searchQuery.trim()}>
+                  <Button 
+                    onClick={handleSearch} 
+                    disabled={searching || !searchQuery.trim()}
+                    className="btn-organic-primary"
+                  >
                     {searching ? (
                       <RefreshCw className="h-4 w-4 animate-spin mr-2" />
                     ) : (
@@ -719,29 +753,45 @@ export default function RAGManagementPage() {
 
               {/* Search Results */}
               {searchResults.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Search Results</h3>
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <div className="p-1 rounded-lg bg-primary/10">
+                      <Search className="h-4 w-4 text-primary" />
+                    </div>
+                    Search Results
+                  </h3>
                   {searchResults.map((result, index) => (
-                    <Card key={index} className="border-l-4 border-l-primary">
-                      <CardContent className="pt-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">
+                    <Card 
+                      key={index} 
+                      className="card-hover border-l-4 border-l-primary animate-bounce-in bg-gradient-to-r from-card to-primary/5"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <CardContent className="pt-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="badge-modern bg-primary/10 border-primary/20 text-primary font-semibold">
                               {Math.round((result.similarity || 0) * 100)}% match
                             </Badge>
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className="badge-modern bg-muted/50">
                               {result.metadata?.category || 'Unknown'}
                             </Badge>
                           </div>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground bg-muted/30 px-2 py-1 rounded-md">
                             {result.metadata?.filename || 'Unknown file'}
                           </span>
                         </div>
-                        <p className="text-sm">{result.content || 'No content available'}</p>
-                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                          <span>Source: {result.metadata?.authority || 'Unknown'}</span>
-                          <span>•</span>
-                          <span>Type: {result.metadata?.type || 'Unknown'}</span>
+                        <p className="text-sm leading-relaxed mb-3 text-foreground/90">
+                          {result.content || 'No content available'}
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary/60"></div>
+                            Source: {result.metadata?.authority || 'Unknown'}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60"></div>
+                            Type: {result.metadata?.type || 'Unknown'}
+                          </span>
                         </div>
                       </CardContent>
                     </Card>
@@ -772,37 +822,49 @@ export default function RAGManagementPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {collections.filter(collection => collection && collection.name).map((collection) => (
-                <Card key={collection.name || 'unknown'} className={getCollectionColor(collection.name)}>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {collections.filter(collection => collection && collection.name).map((collection, index) => (
+                <Card 
+                  key={collection.name || 'unknown'} 
+                  className={`${getCollectionColor(collection.name)} card-editorial animate-bounce-in interactive-card`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {getCollectionIcon(collection.name)}
-                        <CardTitle className="text-base">{collection.name || 'Unknown Collection'}</CardTitle>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                          {getCollectionIcon(collection.name)}
+                        </div>
+                        <CardTitle className="text-base font-semibold">{collection.name || 'Unknown Collection'}</CardTitle>
                       </div>
-                      {collection.error ? (
-                        <AlertTriangle className="h-4 w-4 text-red-700" />
-                      ) : (
-                        <CheckCircle className="h-4 w-4 text-green-700" />
-                      )}
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm">
+                        {collection.error ? (
+                          <AlertTriangle className="h-4 w-4 text-red-600 animate-wiggle" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-600 animate-heartbeat" />
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span>Documents:</span>
-                        <span className="font-medium">{(collection.documentCount || 0).toLocaleString()}</span>
+                        <span className="text-muted-foreground">Documents:</span>
+                        <span className="font-semibold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                          {(collection.documentCount || 0).toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span>Last Updated:</span>
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground">Last Updated:</span>
+                        <span className="text-muted-foreground/80 font-medium">
                           {collection.lastUpdated ? new Date(collection.lastUpdated).toLocaleDateString() : 'Unknown'}
                         </span>
                       </div>
                       {collection.error && (
-                        <div className="text-xs text-red-600 mt-2">
-                          Error: {collection.error}
+                        <div className="p-2 rounded-lg bg-red-50 border border-red-200 animate-bounce-in">
+                          <div className="text-xs text-red-700 font-medium">
+                            Error: {collection.error}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -869,6 +931,15 @@ export default function RAGManagementPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Floating Action Button for Quick Upload */}
+      <Button
+        onClick={() => (document.querySelector('[value="upload"]') as HTMLElement)?.click()}
+        className="btn-fab"
+        title="Quick Upload"
+      >
+        <Upload className="h-6 w-6" />
+      </Button>
     </main>
   );
 }
