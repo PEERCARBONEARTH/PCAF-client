@@ -135,7 +135,7 @@ const greenFinanceItems = [
 const financedEmissionsItems = [
   {
     id: "upload",
-    name: "Link Data", 
+    name: "Link Data",
     href: "/financed-emissions/upload",
     icon: Upload,
     description: "CSV upload & API sync",
@@ -144,7 +144,7 @@ const financedEmissionsItems = [
   {
     id: "summary",
     name: "Portfolio Overview",
-    href: "/financed-emissions/summary", 
+    href: "/financed-emissions/summary",
     icon: Calculator,
     description: "Emissions Summary",
     category: "workflow"
@@ -176,7 +176,7 @@ const financedEmissionsItems = [
   {
     id: "settings",
     name: "Settings",
-    href: "/financed-emissions/settings", 
+    href: "/financed-emissions/settings",
     icon: Settings,
     description: "Configuration",
     category: "advanced"
@@ -207,7 +207,7 @@ export function Sidebar() {
     togglePin,
     resetToDefaults
   } = useNavigationStore();
-  
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const getNavigationItems = () => {
@@ -234,36 +234,50 @@ export function Sidebar() {
   const renderNavigationItem = (item: typeof greenFinanceItems[0], isPinned = false) => {
     const isActive = location.pathname === item.href;
     const Icon = item.icon;
-    
+
     const content = (
       <NavLink
         key={`${item.id}-${isPinned ? 'pinned' : 'regular'}`}
         to={item.href}
         className={cn(
-          "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all hover:bg-accent group relative",
-          isActive 
-            ? "bg-primary text-primary-foreground shadow-sm" 
-            : "text-muted-foreground hover:text-foreground",
-          compactMode && !sidebarCollapsed && "justify-center px-2",
-          sidebarCollapsed && "justify-center px-2"
+          "group relative flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out",
+          "hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10",
+          isActive
+            ? "bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/25 border border-primary/20"
+            : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:backdrop-blur-sm",
+          compactMode && !sidebarCollapsed && "justify-center px-3",
+          sidebarCollapsed && "justify-center px-3",
+          "before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-transparent before:via-white/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
         )}
       >
-        <Icon className={cn(
-          "h-5 w-5 transition-colors shrink-0",
-          isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-        )} />
-        
+        <div className={cn(
+          "relative z-10 flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300",
+          isActive
+            ? "bg-white/20 backdrop-blur-sm shadow-inner"
+            : "bg-muted/30 group-hover:bg-primary/10 group-hover:scale-110"
+        )}>
+          <Icon className={cn(
+            "h-5 w-5 transition-all duration-300 shrink-0",
+            isActive ? "text-primary-foreground drop-shadow-sm" : "text-muted-foreground group-hover:text-primary"
+          )} />
+        </div>
+
         {!compactMode && !sidebarCollapsed && (
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 relative z-10">
             <div className={cn(
-              "font-medium truncate",
-              isActive ? "text-primary-foreground" : "text-foreground"
+              "font-semibold truncate transition-colors duration-300",
+              isActive ? "text-primary-foreground drop-shadow-sm" : "text-foreground"
             )}>
               {item.name}
+              {item.isNew && (
+                <Badge className="ml-2 px-1.5 py-0.5 text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-sm">
+                  New
+                </Badge>
+              )}
             </div>
             <div className={cn(
-              "text-xs truncate",
-              isActive ? "text-primary-foreground/80" : "text-muted-foreground"
+              "text-xs truncate mt-0.5 transition-colors duration-300",
+              isActive ? "text-primary-foreground/90" : "text-muted-foreground group-hover:text-muted-foreground/80"
             )}>
               {item.description}
             </div>
@@ -274,15 +288,20 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="relative z-10 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white/20"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               togglePin(item.id);
             }}
           >
-            <Star className="h-3 w-3 fill-current text-yellow-500" />
+            <Star className="h-3.5 w-3.5 fill-current text-yellow-400 drop-shadow-sm" />
           </Button>
+        )}
+
+        {/* Active indicator */}
+        {isActive && (
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white/40 rounded-l-full shadow-sm" />
         )}
       </NavLink>
     );
@@ -308,69 +327,82 @@ export function Sidebar() {
     return content;
   };
 
-  const sidebarWidth = sidebarCollapsed ? "w-16" : compactMode ? "w-20" : "w-64";
+  const sidebarWidth = sidebarCollapsed ? "w-20" : compactMode ? "w-24" : "w-72";
 
   return (
-    <div className={cn("flex h-screen flex-col bg-card border-r border-border transition-all duration-300", sidebarWidth)}>
+    <div className={cn(
+      "flex h-screen flex-col transition-all duration-500 ease-out relative",
+      "bg-gradient-to-b from-card/95 via-card to-card/98 backdrop-blur-xl",
+      "border-r border-border/50 shadow-2xl shadow-black/5",
+      sidebarWidth
+    )}>
+      {/* Glassmorphism overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-primary/[0.03] pointer-events-none" />
+
       {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-border">
+      <div className="relative z-10 flex items-center gap-4 px-6 py-8 border-b border-border/30 bg-gradient-to-r from-muted/20 via-transparent to-muted/10">
         {!sidebarCollapsed && (
           <>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
-              <PeercarbonLogo size={24} />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shrink-0 shadow-lg shadow-primary/25 ring-1 ring-white/20">
+              <PeercarbonLogo size={28} />
             </div>
             {!compactMode && (
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold text-foreground truncate">Peercarbon</h1>
-                <p className="text-xs text-muted-foreground">
+                <h1 className="text-xl font-bold text-foreground truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                  Peercarbon
+                </h1>
+                <p className="text-sm text-muted-foreground/90 font-medium mt-0.5">
                   {currentPlatform === 'financed-emissions' ? 'Scope 3 Category 15 Portal' : 'Impact Investment Hub'}
                 </p>
               </div>
             )}
           </>
         )}
-        
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 shrink-0"
-          onClick={() => resetToDefaults()}
-          title="Reset Navigation"
-        >
-          🔄
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 shrink-0 ml-auto"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        >
-          {sidebarCollapsed ? <Menu className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-        </Button>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 p-0 shrink-0 rounded-xl hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            onClick={() => resetToDefaults()}
+            title="Reset Navigation"
+          >
+            <span className="text-lg">🔄</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 p-0 shrink-0 rounded-xl hover:bg-muted/50 hover:scale-110 transition-all duration-300"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          >
+            {sidebarCollapsed ? <Menu className="h-5 w-5" /> : <Minimize2 className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
 
       {/* Quick Access (Pinned Items) */}
       {getPinnedItems().length > 0 && !sidebarCollapsed && (
-        <div className="px-4 py-3 border-b border-border">
+        <div className="relative z-10 px-6 py-5 border-b border-border/30 bg-gradient-to-r from-yellow-500/5 via-transparent to-amber-500/5">
           {!compactMode && (
-            <div className="flex items-center gap-2 mb-3">
-              <Star className="h-4 w-4 text-yellow-500 fill-current" />
-              <span className="text-xs font-medium text-muted-foreground">Quick Access</span>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-500 shadow-lg shadow-yellow-500/25">
+                <Star className="h-4 w-4 text-white fill-current drop-shadow-sm" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">Quick Access</span>
             </div>
           )}
-          <div className="space-y-1">
+          <div className="space-y-2">
             {getPinnedItems().map(item => renderNavigationItem(item, true))}
           </div>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-4 overflow-y-auto">
+      <nav className="relative z-10 flex-1 px-6 py-6 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-muted/30 scrollbar-track-transparent">
         {currentPlatform === 'financed-emissions' ? (
           // Simplified flat navigation for financed emissions
-          <div className="space-y-1">
+          <div className="space-y-3">
             {getVisibleItems().map(item => renderNavigationItem(item))}
           </div>
         ) : (
@@ -384,7 +416,7 @@ export function Sidebar() {
 
             if (sidebarCollapsed) {
               return (
-                <div key={categoryId} className="space-y-1">
+                <div key={categoryId} className="space-y-3">
                   {categoryItems.map(item => renderNavigationItem(item))}
                 </div>
               );
@@ -395,22 +427,28 @@ export function Sidebar() {
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-2 h-auto text-left font-medium text-muted-foreground hover:text-foreground"
+                    className="w-full justify-between p-3 h-auto text-left font-semibold rounded-xl hover:bg-gradient-to-r hover:from-muted/40 hover:to-accent/20 transition-all duration-300 hover:scale-[1.02]"
                     onClick={() => toggleGroupCollapse(categoryId)}
                   >
-                    <div className="flex items-center gap-2">
-                      {!compactMode && <CategoryIcon className="h-4 w-4" />}
-                      {!compactMode && <span className="text-sm">{category.name}</span>}
-                      <Badge variant="outline" className="text-xs">
+                    <div className="flex items-center gap-3">
+                      {!compactMode && (
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-muted to-muted/50 shadow-sm">
+                          <CategoryIcon className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                      {!compactMode && <span className="text-sm text-foreground">{category.name}</span>}
+                      <Badge variant="outline" className="text-xs bg-muted/50 border-muted text-muted-foreground">
                         {categoryItems.length}
                       </Badge>
                     </div>
                     {!compactMode && (
-                      isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+                      <div className="transition-transform duration-300">
+                        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </div>
                     )}
                   </Button>
                 </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-1 mt-2">
+                <CollapsibleContent className="space-y-2 mt-3 ml-2">
                   {categoryItems.map(item => renderNavigationItem(item))}
                 </CollapsibleContent>
               </Collapsible>
@@ -420,28 +458,46 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-border p-4">
+      <div className="relative z-10 border-t border-border/30 p-6 bg-gradient-to-t from-muted/10 via-transparent to-transparent">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <NavLink
                 to={`/${currentPlatform}/settings`}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all",
-                  (compactMode || sidebarCollapsed) && "justify-center px-2"
+                  "group flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02]",
+                  "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/30 hover:shadow-lg hover:shadow-muted/20",
+                  (compactMode || sidebarCollapsed) && "justify-center px-3"
                 )}
               >
-                <Settings className="h-4 w-4 shrink-0" />
-                {!compactMode && !sidebarCollapsed && "Settings"}
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted/30 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
+                  <Settings className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors duration-300" />
+                </div>
+                {!compactMode && !sidebarCollapsed && (
+                  <span className="font-semibold">Settings</span>
+                )}
               </NavLink>
             </TooltipTrigger>
             {(compactMode || sidebarCollapsed) && (
-              <TooltipContent side="right">
-                Settings
+              <TooltipContent side="right" className="bg-card/95 backdrop-blur-sm border border-border/50">
+                <p className="font-medium">Settings</p>
               </TooltipContent>
             )}
           </Tooltip>
         </TooltipProvider>
+
+        {/* Version indicator */}
+        {!sidebarCollapsed && !compactMode && (
+          <div className="mt-4 pt-4 border-t border-border/20">
+            <div className="flex items-center justify-between text-xs text-muted-foreground/60">
+              <span>v2.1.0</span>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></div>
+                <span>Online</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
