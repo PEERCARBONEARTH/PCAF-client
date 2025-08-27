@@ -423,41 +423,105 @@ export const aiChatService = {
     message: string;
     context?: any;
   }) {
-    // Mock AI responses based on common PCAF questions
-    const responses = {
-      'what is wdqs': 'WDQS (Weighted Data Quality Score) is a measure of data quality in PCAF methodology. Scores range from 1 (best) to 5 (worst). A portfolio WDQS ≤ 3.0 indicates good compliance with PCAF standards.',
-      'how to improve data quality': 'To improve data quality: 1) Add vehicle make/model/year data, 2) Include fuel efficiency ratings, 3) Collect annual mileage data, 4) Verify vehicle specifications. Focus on high-value loans first for maximum impact.',
-      'pcaf compliance': 'PCAF compliance requires: 1) WDQS ≤ 3.0 for the portfolio, 2) Proper scope allocation, 3) Attribution factor calculations, 4) Transparent methodology documentation. Start with data quality improvements for quick wins.',
-      'emissions intensity': 'Emissions intensity measures kg CO₂e per $1,000 outstanding balance. Lower is better. Target ≤ 2.5 kg/$1k for good performance. Electric vehicles typically show 60-80% lower intensity than ICE vehicles.',
-      'default': 'I can help you with PCAF methodology, data quality improvements, emissions calculations, and compliance questions. What specific topic would you like to explore?'
-    };
-
     const message = request.message.toLowerCase();
-    let response = responses.default;
+    
+    // Enhanced pattern matching with multiple keywords and phrases
+    const responsePatterns = [
+      {
+        keywords: ['wdqs', 'weighted data quality', 'data quality score'],
+        response: 'WDQS (Weighted Data Quality Score) is a measure of data quality in PCAF methodology. Scores range from 1 (best) to 5 (worst). A portfolio WDQS ≤ 3.0 indicates good compliance with PCAF standards. Lower scores indicate higher data quality.',
+        sources: ['PCAF Global Standard', 'Data Quality Assessment Guide'],
+        followUp: ['How to improve data quality from score 2 to 4?', 'What are PCAF data options?', 'How to calculate WDQS?']
+      },
+      {
+        keywords: ['improve data quality', 'better data quality', 'data quality improvement'],
+        response: 'To improve data quality: 1) Add vehicle make/model/year data (moves from Option 5 to 4), 2) Include fuel efficiency ratings (moves to Option 3), 3) Collect annual mileage data (moves to Option 2), 4) Get real-world fuel consumption (achieves Option 1). Focus on high-value loans first for maximum impact.',
+        sources: ['PCAF Motor Vehicle Methodology', 'Data Collection Guidelines'],
+        followUp: ['What are the PCAF data options?', 'How to prioritize data collection?', 'What is attribution factor?']
+      },
+      {
+        keywords: ['pcaf compliance', 'compliance requirements', 'pcaf standard'],
+        response: 'PCAF compliance requires: 1) WDQS ≤ 3.0 for the portfolio, 2) Proper scope 3 category 15 allocation, 3) Attribution factor calculations, 4) Transparent methodology documentation, 5) Annual reporting. Start with data quality improvements for quick wins.',
+        sources: ['PCAF Global Standard', 'Compliance Checklist'],
+        followUp: ['How to calculate attribution factors?', 'What is scope 3 category 15?', 'PCAF reporting requirements?']
+      },
+      {
+        keywords: ['emissions intensity', 'emission intensity', 'carbon intensity'],
+        response: 'Emissions intensity measures kg CO₂e per $1,000 outstanding balance. Lower is better. Target ≤ 2.5 kg/$1k for good performance. Electric vehicles typically show 60-80% lower intensity than ICE vehicles. This metric helps compare portfolio performance over time.',
+        sources: ['PCAF Calculation Guide', 'Intensity Metrics'],
+        followUp: ['How to reduce emissions intensity?', 'What affects emission intensity?', 'EV vs ICE comparison?']
+      },
+      {
+        keywords: ['attribution factor', 'attribution factors', 'calculate attribution'],
+        response: 'Attribution factors determine what portion of an asset\'s emissions to allocate to your loan. For motor vehicles: Attribution Factor = Outstanding Amount / Asset Value. For example, if you have a $20k loan on a $40k car, your attribution factor is 0.5 (50%).',
+        sources: ['PCAF Attribution Methodology', 'Calculation Examples'],
+        followUp: ['How to get asset values?', 'What if asset value is unknown?', 'Attribution factor examples?']
+      },
+      {
+        keywords: ['emission factors', 'emission factor', 'co2 factors'],
+        response: 'Emission factors convert activity data to CO₂ emissions. For vehicles: kg CO₂e per km driven. PCAF recommends using regional factors when available. Default factors vary by vehicle type: passenger cars ~0.2 kg/km, trucks ~0.8 kg/km. Always use the most specific factor available.',
+        sources: ['PCAF Emission Factors Database', 'Regional Factor Guidelines'],
+        followUp: ['Where to find emission factors?', 'Regional vs global factors?', 'Vehicle-specific factors?']
+      },
+      {
+        keywords: ['data options', 'pcaf options', 'data hierarchy'],
+        response: 'PCAF data options (1-5, best to worst): Option 1: Real fuel consumption data, Option 2: Estimated fuel consumption from mileage, Option 3: Vehicle specifications + average mileage, Option 4: Vehicle type + average factors, Option 5: Asset class average. Always aim for the highest option possible.',
+        sources: ['PCAF Data Hierarchy', 'Motor Vehicle Methodology'],
+        followUp: ['How to move from option 5 to 4?', 'What data is needed for option 3?', 'Option 1 vs option 2 comparison?']
+      },
+      {
+        keywords: ['calculate financed emissions', 'financed emissions calculation', 'how to calculate'],
+        response: 'Financed Emissions = Attribution Factor × Asset Emissions. Where: Attribution Factor = Outstanding Amount ÷ Asset Value, and Asset Emissions = Activity Data × Emission Factor. For vehicles: Activity Data is typically annual mileage driven.',
+        sources: ['PCAF Calculation Formula', 'Step-by-step Guide'],
+        followUp: ['What is attribution factor?', 'How to get activity data?', 'Emission factor selection?']
+      },
+      {
+        keywords: ['tcfd', 'task force', 'climate disclosure'],
+        response: 'TCFD (Task Force on Climate-related Financial Disclosures) requires disclosure of financed emissions as part of Scope 3 Category 15. PCAF methodology is the recommended standard for calculating these emissions. Key requirements: governance, strategy, risk management, and metrics & targets.',
+        sources: ['TCFD Recommendations', 'PCAF-TCFD Alignment Guide'],
+        followUp: ['TCFD reporting requirements?', 'Scope 3 category 15 details?', 'Climate risk assessment?']
+      },
+      {
+        keywords: ['scope 3', 'category 15', 'scope 3 category 15'],
+        response: 'Scope 3 Category 15 covers emissions from investments and loans in your portfolio. This includes financed emissions from loans, project finance, and other financial products. PCAF methodology provides the standard approach for calculating these emissions.',
+        sources: ['GHG Protocol Scope 3 Standard', 'PCAF Implementation Guide'],
+        followUp: ['Other scope 3 categories?', 'Financed vs facilitated emissions?', 'Reporting boundaries?']
+      }
+    ];
 
-    // Simple keyword matching
-    for (const [key, value] of Object.entries(responses)) {
-      if (key !== 'default' && message.includes(key.replace(/\s+/g, ' '))) {
-        response = value;
+    // Find matching response
+    let matchedResponse = null;
+    for (const pattern of responsePatterns) {
+      if (pattern.keywords.some(keyword => message.includes(keyword))) {
+        matchedResponse = pattern;
         break;
       }
     }
 
+    // Default response if no match found
+    if (!matchedResponse) {
+      matchedResponse = {
+        response: 'I can help you with PCAF methodology, data quality improvements, emissions calculations, and compliance questions. Try asking about specific topics like "data quality", "attribution factors", "emission factors", or "PCAF compliance".',
+        sources: ['PCAF Global Standard', 'Motor Vehicle Methodology'],
+        followUp: ['What is PCAF methodology?', 'How to improve data quality?', 'What are attribution factors?', 'PCAF compliance requirements?']
+      };
+    }
+
     // Add some delay to simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
 
     return {
-      response,
-      sources: ['PCAF Global Standard', 'Motor Vehicle Methodology'],
+      response: matchedResponse.response,
+      sources: matchedResponse.sources || ['PCAF Global Standard'],
       confidence: 'high' as const,
-      followUpSuggestions: [
+      followUpSuggestions: matchedResponse.followUp || [
         'How do I calculate attribution factors?',
         'What are the PCAF data options?',
         'How to handle missing vehicle data?'
       ],
       metadata: {
-        processingTime: 1500,
-        tokensUsed: 150,
+        processingTime: 1200,
+        tokensUsed: 180,
         contextUsed: true,
         searchPerformed: false
       }
