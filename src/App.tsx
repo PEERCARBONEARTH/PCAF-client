@@ -57,6 +57,7 @@ import AIInsightsPage from "./pages/financed-emissions/AIInsights";
 import ClimateRiskPage from "./pages/financed-emissions/ClimateRisk";
 import ScenarioModelingPage from "./pages/financed-emissions/ScenarioModeling";
 import RAGManagementPage from "./pages/financed-emissions/RAGManagement";
+import RAGChatPage from "./pages/financed-emissions/RAGChat";
 import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
 import PortfolioDeepAnalysisPresentation from "./pages/financed-emissions/PortfolioDeepAnalysisPresentation";
 import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
@@ -137,6 +138,7 @@ const FinancedEmissionsRoutes = () => {
         <Route path="climate-risk" element={<Navigate to="/financed-emissions/ai-insights?tab=risk" replace />} />
         <Route path="scenario-modeling" element={<Navigate to="/financed-emissions/ai-insights?tab=scenarios" replace />} />
         <Route path="rag-management" element={<RAGManagementPage />} />
+        <Route path="rag-chat" element={<RAGChatPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="reports/templates" element={<ReportTemplates />} />
         <Route path="reports/presentation/portfolio-deep-analysis" element={<PortfolioDeepAnalysisPresentation />} />

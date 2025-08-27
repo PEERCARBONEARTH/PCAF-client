@@ -20,7 +20,8 @@ import {
   BookOpen,
   Globe,
   Zap,
-  Database
+  Database,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PeercarbonLogo } from '@/components/PeercarbonLogo';
@@ -71,6 +72,12 @@ const navigation = [
     href: '/financed-emissions/rag-management',
     icon: Database,
     description: 'Upload and manage knowledge base documents'
+  },
+  {
+    name: 'AI Chat',
+    href: '/financed-emissions/rag-chat',
+    icon: MessageCircle,
+    description: 'Chat with AI assistant about PCAF methodology'
   },
   {
     name: 'Settings',

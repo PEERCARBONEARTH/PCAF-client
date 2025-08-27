@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { RAGChatbot } from '@/components/rag/RAGChatbot';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -526,9 +527,10 @@ export default function RAGManagementPage() {
       )}
 
       <Tabs defaultValue="upload" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="upload">Upload Documents</TabsTrigger>
           <TabsTrigger value="search">Search Knowledge Base</TabsTrigger>
+          <TabsTrigger value="chat">AI Chat</TabsTrigger>
           <TabsTrigger value="collections">Manage Collections</TabsTrigger>
         </TabsList>
 
@@ -810,6 +812,30 @@ export default function RAGManagementPage() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="chat" className="space-y-6">
+          {/* AI Chat Section */}
+          <Card className="card-editorial animate-slide-up">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 animate-glow-pulse">
+                  <Brain className="h-5 w-5 text-primary" />
+                </div>
+                AI Chat Assistant
+              </CardTitle>
+              <CardDescription>
+                Chat with AI about your uploaded documents and PCAF methodology
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <RAGChatbot
+                defaultSessionType="general"
+                embedded={true}
+                className="h-[500px]"
+              />
             </CardContent>
           </Card>
         </TabsContent>
