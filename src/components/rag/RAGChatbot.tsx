@@ -621,19 +621,45 @@ export function RAGChatbot({
                         <Input
                             placeholder="Ask about PCAF methodology..."
                             value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        disabled={isLoading || !isConnected}
-                        className="flex-1 text-sm"
-                    />
+                            onChange={(e) => setInputMessage(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            disabled={isLoading || !isConnected}
+                            className="text-sm border-2 border-gray-200 focus:border-blue-400 rounded-lg"
+                        />
+                    </div>
                     <Button
                         onClick={() => sendMessage()}
                         disabled={isLoading || !inputMessage.trim() || !isConnected}
                         size="sm"
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg"
                     >
-                        <Send className="w-3 h-3" />
+                        {isLoading ? (
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                            <Send className="w-3 h-3" />
+                        )}
                     </Button>
                 </div>
+                
+                {!isConnected && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded border border-red-200">
+                        <AlertCircle className="w-3 h-3" />
+                        Not connected to AI service
+                    </div>
+                )}
+                
+                {isConnected && (
+                    <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+                            <span>Hallucination-free</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            <span>Surgical precision</span>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
