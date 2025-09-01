@@ -154,7 +154,7 @@ export function ConfidenceMonitor({ className }: ConfidenceMonitorProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <XCircle className="w-4 h-4 text-red-600" />
-                <span className="text-sm font-medium">Low Confidence (<70%)</span>
+                <span className="text-sm font-medium">Low Confidence (&lt;70%)</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">{metrics.lowConfidenceCount}</span>
