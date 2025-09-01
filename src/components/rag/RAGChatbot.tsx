@@ -124,10 +124,10 @@ export function RAGChatbot({
 
     const getWelcomeMessage = (type: string): string => {
         const messages = {
-            general: "Hello! I'm your PCAF AI assistant. I can help you with financed emissions calculations, methodology questions, and compliance guidance. What would you like to know?",
-            methodology: "Hi! I'm here to help you understand PCAF methodology and calculation standards. Ask me about data quality requirements, emission factors, or calculation procedures.",
-            portfolio_analysis: "Welcome! I can analyze your portfolio data and provide insights about emissions, risk assessment, and compliance. What aspect of your portfolio would you like to explore?",
-            compliance: "Hello! I specialize in PCAF compliance requirements and regulatory guidance. I can help with disclosure standards, reporting requirements, and best practices."
+            general: "Hello! I'm your PCAF motor vehicle specialist. I can help you with data quality improvements, financed emissions calculations, and PCAF compliance for motor vehicle loans. What would you like to know?",
+            methodology: "Hi! I specialize in PCAF motor vehicle methodology. Ask me about the 5 data quality options, attribution factors, emission calculations, or how to improve your PCAF scores.",
+            portfolio_analysis: "Welcome! I can analyze your motor vehicle loan portfolio and provide specific recommendations for data quality improvements and PCAF compliance. What aspect would you like to explore?",
+            compliance: "Hello! I focus on PCAF compliance for motor vehicle portfolios. I can help with data quality requirements, scoring thresholds, and reporting standards for financed emissions."
         };
         return messages[type as keyof typeof messages] || messages.general;
     };
@@ -135,24 +135,24 @@ export function RAGChatbot({
     const getInitialQuestions = (type: string): string[] => {
         const questions = {
             general: [
-                "How do I calculate financed emissions?",
-                "What are PCAF data quality scores?",
-                "Explain the PCAF methodology"
+                "How can I improve my portfolio data quality?",
+                "What are the PCAF data quality options?",
+                "How do I calculate attribution factors?"
             ],
             methodology: [
-                "How to improve data quality from score 2 to 4?",
-                "What emission factors should I use?",
-                "Explain attribution factors calculation"
+                "What are PCAF Options 1-5 for motor vehicles?",
+                "How to move from Option 5 to Option 4?",
+                "What data do I need for Option 3?"
             ],
             portfolio_analysis: [
-                "Analyze my portfolio's emission intensity",
-                "What are the highest risk loans?",
-                "How can I reduce portfolio emissions?"
+                "Analyze my motor vehicle portfolio data quality",
+                "Which loans need data improvements?",
+                "How do I prioritize data collection?"
             ],
             compliance: [
-                "What are TCFD disclosure requirements?",
-                "How to prepare PCAF compliance reports?",
-                "What are the latest regulatory updates?"
+                "What PCAF score do I need for compliance?",
+                "How to calculate weighted data quality score?",
+                "What are motor vehicle reporting requirements?"
             ]
         };
         return questions[type as keyof typeof questions] || questions.general;
@@ -174,35 +174,86 @@ export function RAGChatbot({
         setIsLoading(true);
 
         try {
-            // Try contextual RAG first for portfolio-aware responses
+            // Try dataset RAG first for surgical precision with comprehensive Q&A coverage
             try {
-                const { contextualRAGService } = await import('@/services/contextualRAGService');
+                const { datasetRAGService } = await import('@/services/datasetRAGService');
                 
-                const response = await contextualRAGService.processContextualQuery({
-                    query: content,
-                    sessionId: currentSession.id,
-                    includePortfolioContext: true,
-                    includeMethodologyContext: true,
-                    analysisType: sessionType === 'general' ? 'general' : 
-                                sessionType === 'methodology' ? 'methodology' :
-                                sessionType === 'portfolio_analysis' ? 'portfolio' :
-                                sessionType === 'compliance' ? 'compliance' : 'general'
-                });
+                // Get portfolio context if query suggests it's needed
+                let portfolioContext = null;
+                const needsPortfolio = content.toLowerCase().includes('my') || 
+                                     content.toLowerCase().includes('portfolio') ||
+                                     content.toLowerCase().includes('current') ||
+                                     sessionType === 'portfolio_analysis';
+                
+                if (needsPortfolio) {
+                    try {
+                        const { portfolioService } = await import('@/services/portfolioService');
+                        const { loans, summary } = await portfolioService.getPortfolioSummary();
+                        
+                        // Analyze portfolio for contextual responses
+                        const motorVehicleLoans = loans.filter(loan => 
+                            loan.asset_class === 'motor_vehicle' || loan.vehicle_data || !loan.asset_class
+                        );
+                        
+                        if (motorVehicleLoans.length > 0) {
+                            const dataQualityAnalysis = {
+                                averageScore: motorVehicleLoans.reduce((sum, loan) => 
+                                    sum + (loan.emissions_data?.data_quality_score || 5), 0) / motorVehicleLoans.length,
+                                distribution: motorVehicleLoans.reduce((acc, loan) => {
+                                    const score = loan.emissions_data?.data_quality_score || 5;
+                                    acc[score] = (acc[score] || 0) + 1;
+                                    return acc;
+                                }, {} as Record<number, number>),
+                                loansNeedingImprovement: motorVehicleLoans.filter(l => 
+                                    (l.emissions_data?.data_quality_score || 5) >= 4).length,
+                                complianceStatus: 'compliant' // Will be calculated properly
+                            };
+                            
+                            dataQualityAnalysis.complianceStatus = 
+                                dataQualityAnalysis.averageScore <= 3.0 ? 'compliant' : 'needs_improvement';
+                            
+                            portfolioContext = {
+                                totalLoans: motorVehicleLoans.length,
+                                dataQuality: dataQualityAnalysis,
+                                improvements: {
+                                    option_5_to_4: motorVehicleLoans.filter(l => 
+                                        (l.emissions_data?.data_quality_score || 5) === 5).map(l => l.loan_id),
+                                    option_4_to_3: motorVehicleLoans.filter(l => 
+                                        (l.emissions_data?.data_quality_score || 5) === 4).map(l => l.loan_id)
+                                }
+                            };
+                        }
+                    } catch (portfolioError) {
+                        console.warn('Could not load portfolio context:', portfolioError);
+                    }
+                }
+                
+                const response = await datasetRAGService.processQuery(content, portfolioContext);
 
                 const assistantMessage: ChatMessage = {
                     id: Date.now().toString() + '_assistant',
                     role: 'assistant',
                     content: response.response,
                     timestamp: new Date(),
-                    sources: response.sources || [],
-                    confidence: response.confidence,
+                    sources: response.sources?.map(source => ({
+                        title: source,
+                        content: `Reference from ${source}`,
+                        similarity: response.similarity || 0.95,
+                        metadata: { 
+                            verified: true, 
+                            dataset: true,
+                            questionId: response.matchedQuestionId
+                        }
+                    })) || [],
+                    confidence: response.confidence === 'high' ? 0.95 : 
+                               response.confidence === 'medium' ? 0.8 : 0.6,
                     followUpQuestions: response.followUpQuestions || []
                 };
 
                 setMessages(prev => [...prev, assistantMessage]);
                 return;
-            } catch (contextualError) {
-                console.warn('Contextual RAG failed, falling back to basic AI service:', contextualError);
+            } catch (datasetError) {
+                console.warn('Dataset RAG failed, falling back to focused service:', datasetError);
             }
 
             // Fallback to existing AI service

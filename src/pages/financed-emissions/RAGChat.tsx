@@ -16,10 +16,13 @@ import {
   Users,
   Settings,
   HelpCircle,
-  Zap
+  Zap,
+  Database
 } from 'lucide-react';
 import { RAGChatbot } from '@/components/rag/RAGChatbot';
 import { PortfolioRAGDemo } from '@/components/rag/PortfolioRAGDemo';
+import { ConfidenceMonitor } from '@/components/rag/ConfidenceMonitor';
+import { DatasetManager } from '@/components/rag/DatasetManager';
 
 export default function RAGChatPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -32,49 +35,49 @@ export default function RAGChatPage() {
     {
       id: 'general',
       title: 'General Assistant',
-      description: 'Ask questions about PCAF methodology, calculations, and best practices',
+      description: 'Motor vehicle PCAF methodology, calculations, and best practices',
       icon: MessageCircle,
       color: 'bg-blue-500',
       examples: [
-        'How do I calculate financed emissions?',
-        'What are the PCAF asset classes?',
-        'Explain data quality requirements'
+        'How can I improve my portfolio data quality?',
+        'What are the PCAF data quality options?',
+        'How do I calculate attribution factors?'
       ]
     },
     {
       id: 'methodology',
       title: 'Methodology Expert',
-      description: 'Deep dive into PCAF standards, calculation methods, and technical guidance',
+      description: 'PCAF motor vehicle standards, calculation methods, and technical guidance',
       icon: BookOpen,
       color: 'bg-green-500',
       examples: [
-        'How to improve data quality from score 2 to 4?',
-        'What emission factors should I use for real estate?',
-        'Explain attribution factors calculation'
+        'What are PCAF Options 1-5 for motor vehicles?',
+        'How to move from Option 5 to Option 4?',
+        'What data do I need for Option 3?'
       ]
     },
     {
       id: 'portfolio_analysis',
       title: 'Portfolio Analyst',
-      description: 'Analyze portfolio data, assess risks, and get optimization recommendations',
+      description: 'Analyze motor vehicle portfolio data and get specific recommendations',
       icon: TrendingUp,
       color: 'bg-purple-500',
       examples: [
-        'Analyze my portfolio emission intensity',
-        'What are the highest risk loans?',
-        'How can I reduce portfolio emissions by 20%?'
+        'Analyze my motor vehicle portfolio data quality',
+        'Which loans need data improvements?',
+        'How do I prioritize data collection?'
       ]
     },
     {
       id: 'compliance',
       title: 'Compliance Advisor',
-      description: 'Navigate regulatory requirements, disclosure standards, and reporting',
+      description: 'Motor vehicle PCAF compliance, reporting, and regulatory requirements',
       icon: Shield,
       color: 'bg-red-500',
       examples: [
-        'What are TCFD disclosure requirements?',
-        'How to prepare PCAF compliance reports?',
-        'Latest regulatory updates for banks'
+        'What PCAF score do I need for compliance?',
+        'How to calculate weighted data quality score?',
+        'What are motor vehicle reporting requirements?'
       ]
     }
   ];
@@ -131,7 +134,7 @@ export default function RAGChatPage() {
         {/* Chat Interface */}
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6">
               {chatTypes.map((type) => {
                 const Icon = type.icon;
                 return (
@@ -141,6 +144,14 @@ export default function RAGChatPage() {
                   </TabsTrigger>
                 );
               })}
+              <TabsTrigger value="monitor" className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                <span className="hidden sm:inline">Monitor</span>
+              </TabsTrigger>
+              <TabsTrigger value="dataset" className="flex items-center gap-2">
+                <Database className="w-4 h-4" />
+                <span className="hidden sm:inline">Dataset</span>
+              </TabsTrigger>
             </TabsList>
 
             {chatTypes.map((type) => {
@@ -174,6 +185,44 @@ export default function RAGChatPage() {
                 </TabsContent>
               );
             })}
+
+            {/* Confidence Monitor Tab */}
+            <TabsContent value="monitor" className="space-y-4">
+              <Card className="card-editorial">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Brain className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">System Performance Monitor</CardTitle>
+                      <CardDescription>Real-time confidence and accuracy metrics for surgical RAG responses</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <ConfidenceMonitor />
+            </TabsContent>
+
+            {/* Dataset Management Tab */}
+            <TabsContent value="dataset" className="space-y-4">
+              <Card className="card-editorial">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Database className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Q&A Dataset Management</CardTitle>
+                      <CardDescription>Monitor and test the comprehensive motor vehicle PCAF question-answer dataset</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <DatasetManager />
+            </TabsContent>
           </Tabs>
         </div>
 
