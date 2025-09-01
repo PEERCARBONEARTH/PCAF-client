@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-09-01T23:07:43.798Z",
+  "action": "switch_to_pure_dataset",
+  "replacements": [
+    {
+      "file": "src/components/rag/RAGChatbot.tsx",
+      "oldImport": "import { datasetRAGService } from '@/services/datasetRAGService';",
+      "newImport": "import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';",
+      "oldService": "datasetRAGService.processQuery",
+      "newService": "pureDatasetRAGService.processQuery",
+      "description": "Main RAG chatbot component"
+    },
+    {
+      "file": "src/components/ai/EnhancedAIInsights.tsx",
+      "oldImport": "import { datasetRAGService } from '@/services/datasetRAGService';",
+      "newImport": "import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';",
+      "oldService": "datasetRAGService.processQuery",
+      "newService": "pureDatasetRAGService.processQuery",
+      "description": "Enhanced AI insights component"
+    },
+    {
+      "file": "src/components/rag/DatasetManager.tsx",
+      "oldImport": "import { datasetRAGService } from '@/services/datasetRAGService';",
+      "newImport": "import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';",
+      "oldService": "datasetRAGService",
+      "newService": "pureDatasetRAGService",
+      "description": "Dataset management component"
+    }
+  ],
+  "results": [
+    {
+      "file": "src/components/rag/RAGChatbot.tsx",
+      "success": true
+    },
+    {
+      "file": "src/components/ai/EnhancedAIInsights.tsx",
+      "success": true
+    },
+    {
+      "file": "src/components/rag/DatasetManager.tsx",
+      "success": true
+    }
+  ],
+  "configuration": {
+    "hallucinationPrevention": "ENABLED",
+    "datasetOnlyMode": "ENABLED",
+    "externalAI": "DISABLED",
+    "generativeResponses": "DISABLED"
+  }
+}

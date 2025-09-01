@@ -18,7 +18,7 @@ import {
     Settings
 } from 'lucide-react';
 import { aiInsightsNarrativeService } from '@/services/aiInsightsNarrativeService';
-import { datasetRAGService } from '@/services/datasetRAGService';
+import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';
 
 interface EnhancedAIInsightsProps {
     portfolioData?: any;
@@ -61,7 +61,7 @@ export function EnhancedAIInsights({ portfolioData, userRole = 'risk_manager' }:
 
     const handleQuickChat = async (query: string) => {
         try {
-            const response = await datasetRAGService.processQuery({
+            const response = await pureDatasetRAGService.processQuery({
                 query,
                 sessionId: 'ai_insights_session',
                 portfolioContext: portfolioData,

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';
 
 interface ChatMessage {
     id: string;
@@ -228,7 +229,13 @@ export function RAGChatbot({
                     }
                 }
                 
-                const response = await datasetRAGService.processQuery(content, portfolioContext);
+                // Use pure dataset service to prevent hallucinations
+                const response = await pureDatasetRAGService.processQuery({
+                    query: content,
+                    sessionId: sessionId,
+                    portfolioContext: portfolioContext,
+                    userRole: 'risk_manager' // TODO: Get from user context
+                });
 
                 const assistantMessage: ChatMessage = {
                     id: Date.now().toString() + '_assistant',
@@ -238,11 +245,13 @@ export function RAGChatbot({
                     sources: response.sources?.map(source => ({
                         title: source,
                         content: `Reference from ${source}`,
-                        similarity: response.similarity || 0.95,
+                        similarity: response.isExactMatch ? 0.95 : 0.8,
                         metadata: { 
                             verified: true, 
                             dataset: true,
-                            questionId: response.matchedQuestionId
+                            questionId: response.matchedQuestionId,
+                            datasetSource: response.datasetSource,
+                            isExactMatch: response.isExactMatch
                         }
                     })) || [],
                     confidence: response.confidence === 'high' ? 0.95 : 

@@ -20,7 +20,7 @@ import {
   FileText,
   Filter
 } from 'lucide-react';
-import { datasetRAGService } from '@/services/datasetRAGService';
+import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';
 import motorVehicleDataset from '@/data/motorVehicleQADataset.json';
 
 interface DatasetManagerProps {
@@ -36,7 +36,7 @@ export function DatasetManager({ className }: DatasetManagerProps) {
 
   useEffect(() => {
     // Load dataset statistics
-    const stats = datasetRAGService.getDatasetStats();
+    const stats = pureDatasetRAGService.getDatasetStats();
     setDatasetStats(stats);
     
     // Load all questions for filtering
@@ -135,7 +135,7 @@ export function DatasetManager({ className }: DatasetManagerProps) {
 
   const testQuestion = async (question: any) => {
     try {
-      const response = await datasetRAGService.processQuery({
+      const response = await pureDatasetRAGService.processQuery({
         query: question.question,
         sessionId: 'test_session',
         userRole: 'risk_manager'
