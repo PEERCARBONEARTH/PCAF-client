@@ -15,9 +15,11 @@ import {
   FileText,
   Users,
   Settings,
-  HelpCircle
+  HelpCircle,
+  Zap
 } from 'lucide-react';
 import { RAGChatbot } from '@/components/rag/RAGChatbot';
+import { PortfolioRAGDemo } from '@/components/rag/PortfolioRAGDemo';
 
 export default function RAGChatPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -265,16 +267,29 @@ export default function RAGChatPage() {
             </CardContent>
           </Card>
 
+          {/* Contextual RAG Demo */}
+          <Card className="card-editorial animate-scale-in">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                How It Works
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PortfolioRAGDemo />
+            </CardContent>
+          </Card>
+
           {/* Usage Tips */}
           <Alert>
             <Lightbulb className="h-4 w-4" />
             <AlertDescription>
               <strong>Pro Tips:</strong>
               <ul className="mt-2 space-y-1 text-sm">
+                <li>• Ask about "my portfolio" for personalized insights</li>
                 <li>• Be specific in your questions</li>
                 <li>• Ask for examples or calculations</li>
                 <li>• Use follow-up questions for clarity</li>
-                <li>• Reference specific PCAF sections</li>
               </ul>
             </AlertDescription>
           </Alert>

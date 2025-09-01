@@ -174,7 +174,38 @@ export function RAGChatbot({
         setIsLoading(true);
 
         try {
-            // Use existing AI service
+            // Try contextual RAG first for portfolio-aware responses
+            try {
+                const { contextualRAGService } = await import('@/services/contextualRAGService');
+                
+                const response = await contextualRAGService.processContextualQuery({
+                    query: content,
+                    sessionId: currentSession.id,
+                    includePortfolioContext: true,
+                    includeMethodologyContext: true,
+                    analysisType: sessionType === 'general' ? 'general' : 
+                                sessionType === 'methodology' ? 'methodology' :
+                                sessionType === 'portfolio_analysis' ? 'portfolio' :
+                                sessionType === 'compliance' ? 'compliance' : 'general'
+                });
+
+                const assistantMessage: ChatMessage = {
+                    id: Date.now().toString() + '_assistant',
+                    role: 'assistant',
+                    content: response.response,
+                    timestamp: new Date(),
+                    sources: response.sources || [],
+                    confidence: response.confidence,
+                    followUpQuestions: response.followUpQuestions || []
+                };
+
+                setMessages(prev => [...prev, assistantMessage]);
+                return;
+            } catch (contextualError) {
+                console.warn('Contextual RAG failed, falling back to basic AI service:', contextualError);
+            }
+
+            // Fallback to existing AI service
             const { aiChatService } = await import('@/services/aiService');
 
             const response = await aiChatService.processMessage({
