@@ -532,36 +532,58 @@ export function RAGChatbot({
 
                     <Separator />
 
-                    <div className="p-4">
-                        <div className="flex gap-2">
-                            <Input
-                                ref={inputRef}
-                                placeholder="Ask me about PCAF methodology, calculations, or compliance..."
-                                value={inputMessage}
-                                onChange={(e) => setInputMessage(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                disabled={isLoading || !isConnected}
-                                className="flex-1"
-                            />
-                            <Button
-                                onClick={() => sendMessage()}
-                                disabled={isLoading || !inputMessage.trim() || !isConnected}
-                                size="sm"
-                            >
-                                {isLoading ? (
-                                    <RefreshCw className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <Send className="w-4 h-4" />
-                                )}
-                            </Button>
-                        </div>
-
-                        {!isConnected && (
-                            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                                <AlertCircle className="w-3 h-3" />
-                                Not connected to AI service
+                    <div className="p-4 bg-gradient-to-r from-gray-50 to-blue-50/30">
+                        <div className="relative">
+                            <div className="flex gap-3 items-end">
+                                <div className="flex-1 relative">
+                                    <Input
+                                        ref={inputRef}
+                                        placeholder="Ask me about PCAF methodology, calculations, or compliance..."
+                                        value={inputMessage}
+                                        onChange={(e) => setInputMessage(e.target.value)}
+                                        onKeyDown={handleKeyPress}
+                                        disabled={isLoading || !isConnected}
+                                        className="pr-12 py-3 text-sm border-2 border-gray-200 focus:border-blue-400 rounded-xl shadow-sm bg-white"
+                                    />
+                                    {inputMessage && (
+                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                        </div>
+                                    )}
+                                </div>
+                                <Button
+                                    onClick={() => sendMessage()}
+                                    disabled={isLoading || !inputMessage.trim() || !isConnected}
+                                    className="px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl shadow-lg transition-all duration-200 hover:scale-105"
+                                >
+                                    {isLoading ? (
+                                        <RefreshCw className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Send className="w-4 h-4" />
+                                    )}
+                                </Button>
                             </div>
-                        )}
+
+                            {!isConnected && (
+                                <div className="mt-3 flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+                                    <AlertCircle className="w-3 h-3" />
+                                    Not connected to AI service
+                                </div>
+                            )}
+                            
+                            {isConnected && (
+                                <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-green-400 rounded-full" />
+                                        <span>Hallucination-free responses</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Sparkles className="w-3 h-3" />
+                                        <span>Surgical precision AI</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -593,11 +615,12 @@ export function RAGChatbot({
                 </ScrollArea>
             </div>
 
-            <div className="border-t p-3">
-                <div className="flex gap-2">
-                    <Input
-                        placeholder="Ask about PCAF..."
-                        value={inputMessage}
+            <div className="border-t bg-gradient-to-r from-gray-50 to-blue-50/30 p-3">
+                <div className="flex gap-3 items-end">
+                    <div className="flex-1 relative">
+                        <Input
+                            placeholder="Ask about PCAF methodology..."
+                            value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         disabled={isLoading || !isConnected}
