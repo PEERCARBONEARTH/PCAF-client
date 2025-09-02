@@ -367,7 +367,7 @@ export function SimpleLoanLedger() {
                   <SelectItem value="excellent">Excellent (≤2)</SelectItem>
                   <SelectItem value="good">Good (2-3)</SelectItem>
                   <SelectItem value="fair">Fair (3-4)</SelectItem>
-                  <SelectItem value="poor">Poor (>4)</SelectItem>
+                  <SelectItem value="poor">Poor (&gt;4)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
