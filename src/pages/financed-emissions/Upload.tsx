@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function UploadPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"csv" | "integration">("csv");
+
   const [errorCount, setErrorCount] = useState(0);
   const [activeUploads, setActiveUploads] = useState<Map<string, UploadProgress>>(new Map());
   const [uploadHistory, setUploadHistory] = useState<any[]>([]);
@@ -149,7 +149,7 @@ export default function UploadPage() {
     return `${seconds}s`;
   };
 
-  console.log('Upload page rendering, activeTab:', activeTab);
+  console.log('Upload page rendering');
   
   return (
     <div className="space-y-6">
@@ -207,171 +207,215 @@ export default function UploadPage() {
         </Card>
       )}
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+      {/* Main Data Capture Methods */}
+      <Tabs defaultValue="csv" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="csv" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            CSV Management
+            CSV Upload
           </TabsTrigger>
           <TabsTrigger value="integration" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             System Integration
           </TabsTrigger>
+          <TabsTrigger value="sample" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Sample Data
+          </TabsTrigger>
         </TabsList>
         
+        {/* CSV Upload & Template */}
         <TabsContent value="csv">
-          <Card>
-            <CardHeader>
-              <CardTitle>CSV Data Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="upload" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="upload">Upload CSV</TabsTrigger>
-                  <TabsTrigger value="template">Download Template</TabsTrigger>
-                  <TabsTrigger value="sample">Sample Data</TabsTrigger>
-                </TabsList>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* CSV Upload */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="h-5 w-5" />
+                    Upload CSV Data
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Upload your portfolio data using our standardized CSV template
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <CSVUploadInterface
+                    onValidationSummaryChange={({ errors }) => setErrorCount(errors)}
+                    onUploadProgress={handleUploadProgress}
+                    onUploadComplete={handleUploadComplete}
+                    enhancedMode={true}
+                  />
+                </CardContent>
+              </Card>
 
-                <TabsContent value="upload">
-                  <div className="space-y-6">
+              {/* Upload History */}
+              {uploadHistory.length > 0 && (
+                <Card className="mt-6">
+                  <CardHeader>
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-muted-foreground">
-                        Upload your loan portfolio data using our CSV template
-                      </p>
-                      {uploadHistory.length > 0 && (
-                        <Button variant="outline" size="sm" onClick={loadUploadHistory}>
-                          Refresh History
-                        </Button>
-                      )}
+                      <CardTitle>Recent Uploads</CardTitle>
+                      <Button variant="outline" size="sm" onClick={loadUploadHistory}>
+                        Refresh History
+                      </Button>
                     </div>
-                    
-                    <CSVUploadInterface
-                      onValidationSummaryChange={({ errors }) => setErrorCount(errors)}
-                      onUploadProgress={handleUploadProgress}
-                      onUploadComplete={handleUploadComplete}
-                      enhancedMode={true}
-                    />
-
-                    {/* Upload History */}
-                    {uploadHistory.length > 0 && (
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Recent Uploads</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            {uploadHistory.map((upload, index) => (
-                              <div key={index} className="flex items-center justify-between p-2 border rounded">
-                                <div className="flex items-center gap-2">
-                                  {getStatusIcon(upload.status)}
-                                  <span className="text-sm">
-                                    {new Date(upload.timestamp).toLocaleString()}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                  <span>{upload.successfulItems}/{upload.totalItems} successful</span>
-                                  <Badge variant={upload.status === 'completed' ? 'default' : 'destructive'}>
-                                    {upload.status}
-                                  </Badge>
-                                </div>
-                              </div>
-                            ))}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {uploadHistory.map((upload, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-3">
+                            {getStatusIcon(upload.status)}
+                            <div>
+                              <p className="text-sm font-medium">
+                                {new Date(upload.timestamp).toLocaleDateString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(upload.timestamp).toLocaleTimeString()}
+                              </p>
+                            </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                </TabsContent>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className="text-sm font-medium">
+                                {upload.successfulItems}/{upload.totalItems}
+                              </p>
+                              <p className="text-xs text-muted-foreground">successful</p>
+                            </div>
+                            <Badge variant={upload.status === 'completed' ? 'default' : 'destructive'}>
+                              {upload.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
-                <TabsContent value="template">
+            {/* CSV Template Download */}
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    CSV Template
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Download the standardized template for data uploads
+                  </p>
+                </CardHeader>
+                <CardContent>
                   <CSVTemplateDownload />
-                </TabsContent>
-
-                <TabsContent value="sample">
-                  <SampleDataManager />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
         
+        {/* System Integration */}
         <TabsContent value="integration">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* API Integration */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  API Integration
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Configure API keys and external service connections
+                </p>
+              </CardHeader>
+              <CardContent>
+                <APIKeyManagement />
+              </CardContent>
+            </Card>
+
+            {/* LMS Integration Status */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  LMS Integration Status
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Monitor external service connections and data feeds
+                </p>
+              </CardHeader>
+              <CardContent>
+                {integrationStatus ? (
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">LMS Connection</span>
+                        <Badge variant={integrationStatus.lms?.connected ? 'default' : 'destructive'}>
+                          {integrationStatus.lms?.connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">EPA API</span>
+                        <Badge variant={integrationStatus.epa_api?.connected ? 'default' : 'destructive'}>
+                          {integrationStatus.epa_api?.connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Vehicle Database</span>
+                        <Badge variant={integrationStatus.vehicle_db?.connected ? 'default' : 'destructive'}>
+                          {integrationStatus.vehicle_db?.connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Emission Factors API</span>
+                        <Badge variant={integrationStatus.emission_factors_api?.connected ? 'default' : 'destructive'}>
+                          {integrationStatus.emission_factors_api?.connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 pt-4 border-t">
+                      <Button 
+                        onClick={() => integrationService.testExternalServices()}
+                        className="w-full"
+                        size="sm"
+                      >
+                        Test All Connections
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={loadIntegrationStatus}
+                        className="w-full"
+                        size="sm"
+                      >
+                        Refresh Status
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Loading integration status...</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Sample Data */}
+        <TabsContent value="sample">
           <Card>
             <CardHeader>
-              <CardTitle>System Integration</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Sample Data Management
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Load demonstration data to explore the platform features
+              </p>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="api" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="api">API Integration</TabsTrigger>
-                  <TabsTrigger value="lms">LMS Integration</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="api">
-                  <APIKeyManagement />
-                </TabsContent>
-
-                <TabsContent value="lms">
-                  <div className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>LMS Integration Status</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {integrationStatus ? (
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span>LMS Connection</span>
-                                <Badge variant={integrationStatus.lms?.connected ? 'default' : 'destructive'}>
-                                  {integrationStatus.lms?.connected ? 'Connected' : 'Disconnected'}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span>EPA API</span>
-                                <Badge variant={integrationStatus.epa_api?.connected ? 'default' : 'destructive'}>
-                                  {integrationStatus.epa_api?.connected ? 'Connected' : 'Disconnected'}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span>Vehicle Database</span>
-                                <Badge variant={integrationStatus.vehicle_db?.connected ? 'default' : 'destructive'}>
-                                  {integrationStatus.vehicle_db?.connected ? 'Connected' : 'Disconnected'}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span>Emission Factors API</span>
-                                <Badge variant={integrationStatus.emission_factors_api?.connected ? 'default' : 'destructive'}>
-                                  {integrationStatus.emission_factors_api?.connected ? 'Connected' : 'Disconnected'}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <Button 
-                                onClick={() => integrationService.testExternalServices()}
-                                className="w-full"
-                              >
-                                Test All Connections
-                              </Button>
-                              <Button 
-                                variant="outline"
-                                onClick={loadIntegrationStatus}
-                                className="w-full"
-                              >
-                                Refresh Status
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-center py-4">
-                            <p className="text-muted-foreground">Loading integration status...</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </TabsContent>
-              </Tabs>
+              <SampleDataManager />
             </CardContent>
           </Card>
         </TabsContent>

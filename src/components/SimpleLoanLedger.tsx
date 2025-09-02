@@ -21,7 +21,8 @@ import {
   FileText,
   Shield,
   Building2,
-  X
+  X,
+  Info
 } from "lucide-react";
 
 // Filter types
@@ -73,6 +74,16 @@ export function SimpleLoanLedger() {
       setLoading(true);
       // Load from local database which now includes all instrument types
       const allInstruments = await db.loans.toArray();
+      
+      // Debug: Log instrument types
+      console.log('Total instruments loaded:', allInstruments.length);
+      const typeBreakdown = allInstruments.reduce((acc, instrument) => {
+        const type = instrument.instrument_type || 'loan';
+        acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      console.log('Instrument type breakdown:', typeBreakdown);
+      
       setInstruments(allInstruments);
     } catch (error) {
       console.error('Failed to load instruments:', error);
@@ -265,6 +276,24 @@ export function SimpleLoanLedger() {
               >
                 <RefreshCw className="h-4 w-4" />
                 Refresh
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const count = await db.loans.count();
+                  const instruments = await db.loans.toArray();
+                  const breakdown = instruments.reduce((acc, i) => {
+                    const type = i.instrument_type || 'loan';
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                  }, {} as Record<string, number>);
+                  alert(`Database has ${count} instruments: ${JSON.stringify(breakdown)}`);
+                }}
+                className="flex items-center gap-2"
+              >
+                <Info className="h-4 w-4" />
+                Debug
               </Button>
             </div>
           </div>

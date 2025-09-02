@@ -517,18 +517,28 @@ export class SampleDataGenerator {
       // Check if data already exists
       const existingCount = await db.loans.count();
       if (existingCount > 0) {
-        return {
-          success: false,
-          message: 'Sample data already exists. Clear the database first if you want to reload.',
-          count: existingCount
-        };
+        // Check if we have all instrument types
+        const instruments = await db.loans.toArray();
+        const hasLCs = instruments.some(i => i.instrument_type === 'lc');
+        const hasGuarantees = instruments.some(i => i.instrument_type === 'guarantee');
+        
+        if (hasLCs && hasGuarantees) {
+          return {
+            success: false,
+            message: 'Sample data already exists with all instrument types. Clear the database first if you want to reload.',
+            count: existingCount
+          };
+        } else {
+          // We have old data without LCs/Guarantees, let's add them
+          console.log('Adding missing instrument types to existing data...');
+        }
       }
 
       // Generate all three instrument types
-      const sampleLoans = this.generateSampleLoans();
+      const sampleLoans = existingCount === 0 ? this.generateSampleLoans() : [];
       const sampleLCs = this.generateSampleLCs();
       const sampleGuarantees = this.generateSampleGuarantees();
-      const modalCompatibleLoans = this.generateModalCompatibleSampleLoans();
+      const modalCompatibleLoans = existingCount === 0 ? this.generateModalCompatibleSampleLoans() : [];
 
       // Convert LC and Guarantee data to LoanPortfolioItem format for database storage
       const lcPortfolioItems: LoanPortfolioItem[] = sampleLCs.map(lc => ({
@@ -574,7 +584,10 @@ export class SampleDataGenerator {
       }));
 
       // Add all instrument types to database
-      await db.loans.bulkAdd([...sampleLoans, ...lcPortfolioItems, ...guaranteePortfolioItems]);
+      const itemsToAdd = [...sampleLoans, ...lcPortfolioItems, ...guaranteePortfolioItems];
+      if (itemsToAdd.length > 0) {
+        await db.loans.bulkAdd(itemsToAdd);
+      }
 
       // Store all instrument types in the API
       try {
@@ -602,11 +615,14 @@ export class SampleDataGenerator {
       await this.generateHistoricalCalculations();
 
       const totalInstruments = sampleLoans.length + sampleLCs.length + sampleGuarantees.length;
+      const finalCount = await db.loans.count();
 
       return {
         success: true,
-        message: `Successfully loaded ${totalInstruments} sample instruments: ${sampleLoans.length} loans, ${sampleLCs.length} LCs, ${sampleGuarantees.length} guarantees`,
-        count: totalInstruments
+        message: existingCount > 0 
+          ? `Successfully added ${sampleLCs.length} LCs and ${sampleGuarantees.length} guarantees to existing data. Total: ${finalCount} instruments`
+          : `Successfully loaded ${totalInstruments} sample instruments: ${sampleLoans.length} loans, ${sampleLCs.length} LCs, ${sampleGuarantees.length} guarantees`,
+        count: finalCount
       };
     } catch (error) {
       console.error('Error loading sample data:', error);

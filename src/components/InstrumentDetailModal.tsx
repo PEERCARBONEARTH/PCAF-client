@@ -58,16 +58,16 @@ export function InstrumentDetailModal({
     totalCount
 }: InstrumentDetailModalProps) {
     const instrumentType = instrument.instrument_type || 'loan';
-    
+
     // Generate multi-year emissions data based on instrument type
     const generateMultiYearData = () => {
         const data = [];
         const term = instrumentType === 'loan' ? (instrument.loan_term_years || 5) : 3; // LCs/Guarantees typically shorter
-        
+
         for (let year = 1; year <= term; year++) {
             let outstandingBalance = instrument.outstanding_balance;
             let attributionFactor = instrument.attribution_factor;
-            
+
             if (instrumentType === 'loan') {
                 // Declining balance for loans
                 const annualPayment = instrument.loan_amount / term;
@@ -80,7 +80,7 @@ export function InstrumentDetailModal({
                 outstandingBalance = instrument.loan_amount * attributionFactor;
             }
             // LCs maintain constant exposure until expiry
-            
+
             const financedEmissions = instrument.annual_emissions * attributionFactor;
 
             data.push({
@@ -319,15 +319,15 @@ export function InstrumentDetailModal({
                                 <div className="flex items-center gap-2 mb-2">
                                     <DollarSign className="h-4 w-4 text-primary" />
                                     <span className="text-sm font-medium">
-                                        {instrumentType === 'lc' ? 'LC Amount' : 
-                                         instrumentType === 'guarantee' ? 'Guarantee Amount' : 'Loan Amount'}
+                                        {instrumentType === 'lc' ? 'LC Amount' :
+                                            instrumentType === 'guarantee' ? 'Guarantee Amount' : 'Loan Amount'}
                                     </span>
                                 </div>
                                 <p className="text-2xl font-bold">{formatCurrency(instrument.loan_amount)}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {formatCurrency(instrument.outstanding_balance)} 
-                                    {instrumentType === 'lc' ? ' drawn' : 
-                                     instrumentType === 'guarantee' ? ' at risk' : ' outstanding'}
+                                    {formatCurrency(instrument.outstanding_balance)}
+                                    {instrumentType === 'lc' ? ' drawn' :
+                                        instrumentType === 'guarantee' ? ' at risk' : ' outstanding'}
                                 </p>
                             </CardContent>
                         </Card>
@@ -400,9 +400,9 @@ export function InstrumentDetailModal({
                                                 <p className="font-medium">{formatDate(lcData.expiryDate)}</p>
                                             </div>
                                         </div>
-                                        
+
                                         <Separator />
-                                        
+
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">Issuing Bank</label>
@@ -414,7 +414,7 @@ export function InstrumentDetailModal({
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-sm font-medium text-muted-foreground">Utilization</label>
@@ -433,9 +433,9 @@ export function InstrumentDetailModal({
                                                 </p>
                                             </div>
                                         </div>
-                                        
+
                                         <Separator />
-                                        
+
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">Fleet Size</label>
@@ -475,8 +475,8 @@ export function InstrumentDetailModal({
                                             </div>
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">Risk Rating</label>
-                                                <Badge variant={guaranteeData.riskRating === 'Low' ? 'default' : 
-                                                              guaranteeData.riskRating === 'Medium' ? 'secondary' : 'destructive'}>
+                                                <Badge variant={guaranteeData.riskRating === 'Low' ? 'default' :
+                                                    guaranteeData.riskRating === 'Medium' ? 'secondary' : 'destructive'}>
                                                     {guaranteeData.riskRating} Risk
                                                 </Badge>
                                             </div>
@@ -485,15 +485,15 @@ export function InstrumentDetailModal({
                                                 <p className="font-medium">{guaranteeData.portfolioSize} vehicles</p>
                                             </div>
                                         </div>
-                                        
+
                                         <Separator />
-                                        
+
                                         <div>
                                             <label className="text-sm font-medium text-muted-foreground">Covered Obligations</label>
                                             <p className="font-medium text-sm mt-1">{guaranteeData.coveredObligations}</p>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-sm font-medium text-muted-foreground">Probability of Activation</label>
@@ -510,9 +510,9 @@ export function InstrumentDetailModal({
                                                 </p>
                                             </div>
                                         </div>
-                                        
+
                                         <Separator />
-                                        
+
                                         <div>
                                             <label className="text-sm font-medium text-muted-foreground">Trigger Events</label>
                                             <div className="mt-2 space-y-1">
@@ -561,8 +561,8 @@ export function InstrumentDetailModal({
                                                     name === 'financedEmissions' ? 'Financed Emissions' :
                                                         name === 'attributionFactor' ? 'Attribution Factor' :
                                                             instrumentType === 'lc' ? 'LC Exposure' :
-                                                            instrumentType === 'guarantee' ? 'Risk Exposure' :
-                                                            'Outstanding Balance'
+                                                                instrumentType === 'guarantee' ? 'Risk Exposure' :
+                                                                    'Outstanding Balance'
                                                 ]}
                                                 labelFormatter={(value) => `Year ${value} (${currentYear + value - 1})`}
                                             />
@@ -619,8 +619,8 @@ export function InstrumentDetailModal({
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">
                                             {instrumentType === 'lc' ? 'Fleet Annual Emissions' :
-                                             instrumentType === 'guarantee' ? 'Portfolio Annual Emissions' :
-                                             'Annual Vehicle Emissions'}
+                                                instrumentType === 'guarantee' ? 'Portfolio Annual Emissions' :
+                                                    'Annual Vehicle Emissions'}
                                         </span>
                                         <span className="font-medium">{instrument.annual_emissions.toFixed(3)} tCO₂e</span>
                                     </div>
@@ -642,8 +642,8 @@ export function InstrumentDetailModal({
                                     <label className="text-sm font-medium text-muted-foreground">Calculation Method</label>
                                     <p className="text-sm">
                                         {instrumentType === 'lc' ? 'Portfolio-based approach' :
-                                         instrumentType === 'guarantee' ? 'Risk-weighted attribution approach' :
-                                         'Asset-specific method'}
+                                            instrumentType === 'guarantee' ? 'Risk-weighted attribution approach' :
+                                                'Asset-specific method'}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
                                         Source: PCAF Global Standard 2024
