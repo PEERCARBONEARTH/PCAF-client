@@ -8,7 +8,7 @@ async function testSpecificQuery() {
   console.log('🎯 Testing Specific PCAF Query');
   console.log('=' .repeat(40));
   
-  const testQuery = "What is the motor-vehicle loan asset class under PCAF?";
+  const testQuery = "How do I calculate financed emissions for motor vehicle loans using PCAF methodology with Option 1 data quality?";
   
   try {
     const response = await fetch('http://localhost:3001/api/rag-query', {

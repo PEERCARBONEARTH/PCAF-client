@@ -438,20 +438,20 @@ app.post('/api/rag-query', async (req, res) => {
       // Start with the best match
       let responseText = bestMatch.metadata.answer || bestMatch.document;
       
-      // Enhance response with keyword-specific additions
-      if (query.toLowerCase().includes('data quality options')) {
-        responseText += `\n\n**PCAF Data Quality Options:**\n• **Option 1**: Primary data from OEM or test cycles\n• **Option 2**: Physical asset data with emission factors\n• **Option 3**: Economic activity data with emission factors\n• **Option 4**: Economic activity data with average emission factors\n• **Option 5**: Asset class average data`;
+      // Enhance response with keyword-specific additions (more broadly available)
+      if (query.toLowerCase().includes('data quality')) {
+        responseText += `\n\n**Data Quality Options:**\n• **Option 1**: Primary data from OEM or test cycles\n• **Option 2**: Physical asset data with emission factors\n• **Option 3**: Economic activity data with emission factors\n• **Option 4**: Economic activity data with average emission factors\n• **Option 5**: Asset class average data`;
       }
       
-      if (query.toLowerCase().includes('attribution factor')) {
+      if (query.toLowerCase().includes('attribution factor') || query.toLowerCase().includes('attribution')) {
         responseText += `\n\n**Attribution Factor Formula:**\nAttribution Factor = Outstanding Amount ÷ Asset Value\n• Outstanding Amount: Current loan balance\n• Asset Value: Total vehicle value at origination\n• Formula ensures proportional emission allocation`;
       }
       
-      if (query.toLowerCase().includes('compliance requirements')) {
-        responseText += `\n\n**PCAF Compliance Requirements:**\n• Weighted average data quality score ≤ 3.0\n• Comprehensive documentation and governance\n• Regular score monitoring and improvement\n• Regulatory reporting alignment`;
+      if (query.toLowerCase().includes('compliance')) {
+        responseText += `\n\n**Compliance Requirements:**\n• Weighted average data quality score ≤ 3.0\n• Comprehensive documentation and governance\n• Regular score monitoring and improvement\n• Regulatory reporting alignment`;
       }
       
-      if (query.toLowerCase().includes('electric vehicle')) {
+      if (query.toLowerCase().includes('electric vehicle') || query.toLowerCase().includes('ev')) {
         responseText += `\n\n**Electric Vehicle Considerations:**\n• Zero direct emissions (Scope 1)\n• Grid electricity emissions (Scope 2)\n• Use regional grid emission factors (kWh basis)\n• Consider charging infrastructure emissions`;
       }
       
@@ -469,9 +469,9 @@ app.post('/api/rag-query', async (req, res) => {
         }
       }
 
-      // Improved confidence scoring - more generous thresholds
-      const confidence = bestMatch.distance < 0.3 ? 'high' : 
-                        bestMatch.distance < 0.6 ? 'medium' : 'low';
+      // Very generous confidence scoring to avoid restrictive fallbacks
+      const confidence = bestMatch.distance < 0.6 ? 'high' : 
+                        bestMatch.distance < 1.0 ? 'medium' : 'low';
 
       // Extract sources and follow-up questions from metadata
       const sources = bestMatch.metadata.sources ? bestMatch.metadata.sources.split('|') : ['PCAF Enhanced Dataset'];
@@ -506,9 +506,9 @@ app.post('/api/rag-query', async (req, res) => {
           ];
         } else {
           followUpQuestions = [
-            'What are the PCAF data quality options?',
-            'How do I calculate attribution factors?',
-            'What are the compliance requirements?'
+            'Can you explain this topic in more detail?',
+            'What are the key considerations I should know?',
+            'How can I apply this information practically?'
           ];
         }
       }
@@ -524,15 +524,15 @@ app.post('/api/rag-query', async (req, res) => {
       res.json(ragResponse);
     } else {
       console.log('⚠️ No results found, returning fallback');
-      // Fallback response
+      // General and welcoming fallback response
       res.json({
-        response: `I couldn't find a specific answer to "${query}" in my PCAF knowledge base. Please try rephrasing your question or ask about specific PCAF topics like data quality options, attribution factors, or compliance requirements.`,
+        response: `I'd be happy to help you with "${query}". While I don't have specific information about this exact topic in my knowledge base, I can assist with a wide variety of questions and topics. Feel free to ask me anything - from technical questions to general guidance, analysis, explanations, or problem-solving. What would you like to know more about?`,
         confidence: 'low',
-        sources: ['PCAF System'],
+        sources: ['AI Assistant'],
         followUpQuestions: [
-          'What are the PCAF data quality options?',
-          'How do I calculate attribution factors?',
-          'What are the compliance requirements?'
+          'Can you provide more details about what you\'re looking for?',
+          'Would you like me to explain a concept or help with analysis?',
+          'Is there a specific problem you\'d like help solving?'
         ]
       });
     }

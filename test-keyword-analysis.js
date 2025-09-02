@@ -7,20 +7,28 @@ const fetch = require('node-fetch');
 
 const TEST_QUERIES = [
   {
-    query: "What are the PCAF data quality options for motor vehicles?",
-    expectedKeywords: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'data quality']
+    query: "What are the PCAF data quality options for motor vehicle financed emissions?",
+    expectedKeywords: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'motor vehicle', 'financed emissions', 'data quality']
   },
   {
-    query: "How do I calculate attribution factors?",
-    expectedKeywords: ['outstanding amount', 'asset value', 'attribution factor', 'formula']
+    query: "How do I calculate attribution factors for motor vehicle loans?",
+    expectedKeywords: ['outstanding amount', 'asset value', 'attribution factor', 'motor vehicle', 'loan', 'financed emissions']
   },
   {
-    query: "What are the compliance requirements for PCAF?",
-    expectedKeywords: ['weighted', 'score', '3.0', 'compliance', 'regulatory']
+    query: "What emission factors should I use for gasoline and diesel vehicles?",
+    expectedKeywords: ['emission factor', 'gasoline', 'diesel', 'fuel consumption', 'CO2', 'motor vehicle']
   },
   {
-    query: "How do I handle electric vehicles in PCAF calculations?",
-    expectedKeywords: ['electric', 'grid', 'emission factor', 'kWh', 'zero']
+    query: "How do I handle electric vehicles in PCAF motor vehicle calculations?",
+    expectedKeywords: ['electric vehicle', 'grid emission factor', 'kWh', 'zero tailpipe', 'electricity consumption']
+  },
+  {
+    query: "What vehicle specifications are needed for Option 1 data quality in motor vehicles?",
+    expectedKeywords: ['Option 1', 'vehicle specifications', 'fuel consumption', 'distance traveled', 'motor vehicle']
+  },
+  {
+    query: "How do I calculate financed emissions for a motor vehicle portfolio using Option 2 data?",
+    expectedKeywords: ['Option 2', 'vehicle type', 'average emission factor', 'distance', 'financed emissions', 'portfolio']
   }
 ];
 

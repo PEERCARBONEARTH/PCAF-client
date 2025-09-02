@@ -15,35 +15,53 @@ const TEST_CONFIG = {
   timeout: 30000
 };
 
-// Test queries with expected response indicators
+// Test queries with expected response indicators - PCAF Motor Vehicle Asset Class Specific
 const TEST_QUERIES = [
   {
-    query: "What are the PCAF data quality options for motor vehicles?",
-    expectedKeywords: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'data quality'],
+    query: "What are the PCAF data quality options for motor vehicle financed emissions?",
+    expectedKeywords: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'motor vehicle', 'financed emissions', 'data quality'],
     category: 'methodology',
     minConfidence: 'medium'
   },
   {
-    query: "How do I calculate attribution factors?",
-    expectedKeywords: ['outstanding amount', 'asset value', 'attribution factor', 'formula'],
+    query: "How do I calculate attribution factors for motor vehicle loans?",
+    expectedKeywords: ['outstanding amount', 'asset value', 'attribution factor', 'motor vehicle', 'loan', 'financed emissions'],
     category: 'calculation',
     minConfidence: 'high'
   },
   {
-    query: "What are the compliance requirements for PCAF?",
-    expectedKeywords: ['weighted', 'score', '3.0', 'compliance', 'regulatory'],
-    category: 'compliance',
+    query: "What emission factors should I use for gasoline and diesel vehicles?",
+    expectedKeywords: ['emission factor', 'gasoline', 'diesel', 'fuel consumption', 'CO2', 'motor vehicle'],
+    category: 'emission_factors',
     minConfidence: 'high'
   },
   {
-    query: "How do I handle electric vehicles in PCAF calculations?",
-    expectedKeywords: ['electric', 'grid', 'emission factor', 'kWh', 'zero'],
+    query: "How do I handle electric vehicles in PCAF motor vehicle calculations?",
+    expectedKeywords: ['electric vehicle', 'grid emission factor', 'kWh', 'zero tailpipe', 'electricity consumption'],
     category: 'vehicle_specific',
     minConfidence: 'medium'
   },
   {
-    query: "What is my portfolio data quality score?",
-    expectedKeywords: ['portfolio', 'WDQS', 'weighted', 'data quality'],
+    query: "What vehicle specifications are needed for Option 1 data quality in motor vehicles?",
+    expectedKeywords: ['Option 1', 'vehicle specifications', 'fuel consumption', 'distance traveled', 'motor vehicle'],
+    category: 'data_requirements',
+    minConfidence: 'high'
+  },
+  {
+    query: "How do I calculate financed emissions for a motor vehicle portfolio using Option 2 data?",
+    expectedKeywords: ['Option 2', 'vehicle type', 'average emission factor', 'distance', 'financed emissions', 'portfolio'],
+    category: 'portfolio_calculation',
+    minConfidence: 'medium'
+  },
+  {
+    query: "What is the difference between Option 3 and Option 4 for motor vehicle asset class?",
+    expectedKeywords: ['Option 3', 'Option 4', 'vehicle type', 'regional average', 'motor vehicle', 'data quality'],
+    category: 'methodology_comparison',
+    minConfidence: 'medium'
+  },
+  {
+    query: "What is my motor vehicle portfolio data quality score?",
+    expectedKeywords: ['portfolio', 'WDQS', 'weighted', 'data quality', 'motor vehicle', 'financed emissions'],
     category: 'portfolio_analysis',
     minConfidence: 'medium',
     requiresPortfolioContext: true
@@ -230,7 +248,7 @@ class RAGTestSuite {
     
     try {
       const response = await this.makeRequest({
-        query: "What is my current portfolio data quality score?",
+        query: "What is my motor vehicle portfolio data quality score and how can I improve financed emissions calculations?",
         portfolioContext: MOCK_PORTFOLIO_CONTEXT
       });
       
@@ -267,7 +285,7 @@ class RAGTestSuite {
     
     try {
       const response = await this.makeRequest({
-        query: "Explain PCAF methodology for motor vehicles"
+        query: "Explain PCAF methodology for calculating financed emissions from motor vehicle loans including data quality options"
       });
       
       if (response.ok) {
