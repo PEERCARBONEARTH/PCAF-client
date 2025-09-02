@@ -1,26 +1,362 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { AIAssistantPanel } from "@/components/enhanced/AIAssistantPanel";
-import { ReorganizedAIInsights } from "@/components/ai/ReorganizedAIInsights";
-import { SmartEmptyState } from "@/components/ai/SmartEmptyState";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, Brain, Globe, BarChart3 } from "lucide-react";
+import { useAssumptions } from "@/contexts/AssumptionsContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  Brain, 
+  BarChart3, 
+  Target, 
+  AlertTriangle, 
+  TrendingUp, 
+  TrendingDown,
+  Zap,
+  ArrowRight,
+  CheckCircle,
+  Eye,
+  Activity,
+  RefreshCw
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { portfolioService } from "@/services/portfolioService";
 import { useToast } from "@/hooks/use-toast";
 
+// Executive Summary Component
+function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
+  if (!portfolioData) return null;
+
+  const { loans, totalEmissions, avgDataQuality, evPercentage } = portfolioData;
+  const portfolioValue = loans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0), 0);
+  const riskLevel = avgDataQuality > 4 ? 'Low' : avgDataQuality > 3 ? 'Medium' : 'High';
+  const riskColor = avgDataQuality > 4 ? 'text-green-600' : avgDataQuality > 3 ? 'text-yellow-600' : 'text-destructive';
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-primary">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Portfolio Overview</CardTitle>
+            <Target className="h-4 w-4 text-primary" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{loans.length}</div>
+          <p className="text-sm text-muted-foreground">
+            ${(portfolioValue / 1000000).toFixed(1)}M total value
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">EV Transition</CardTitle>
+            <Zap className="h-4 w-4 text-green-500" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-green-600">{evPercentage.toFixed(1)}%</div>
+          <p className="text-sm text-muted-foreground">Electric vehicles</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Emissions</CardTitle>
+            <Activity className="h-4 w-4 text-orange-500" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{totalEmissions.toFixed(1)}</div>
+          <p className="text-sm text-muted-foreground">tCO₂e total</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-red-500">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Risk Level</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-500" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className={`text-2xl font-bold ${riskColor}`}>{riskLevel}</div>
+          <p className="text-sm text-muted-foreground">
+            DQ Score: {avgDataQuality.toFixed(1)}/5
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Critical Alerts Component
+function CriticalAlerts({ portfolioData }: { portfolioData: any }) {
+  if (!portfolioData || !portfolioData.anomalies || portfolioData.anomalies.length === 0) return null;
+
+  const criticalAnomalies = portfolioData.anomalies.filter((a: any) => a.severity === 'high').slice(0, 3);
+  
+  if (criticalAnomalies.length === 0) return null;
+
+  return (
+    <Alert className="border-destructive/50 bg-destructive/5">
+      <div className="flex items-start justify-between">
+        <div className="flex">
+          <AlertTriangle className="h-4 w-4 text-destructive mr-3 mt-0.5" />
+          <AlertDescription>
+            <div className="space-y-2">
+              <div className="font-semibold text-destructive">
+                {criticalAnomalies.length} Critical Alert{criticalAnomalies.length > 1 ? 's' : ''} Detected
+              </div>
+              {criticalAnomalies.slice(0, 2).map((anomaly: any, index: number) => (
+                <div key={index} className="text-sm">
+                  • <span className="font-medium">{anomaly.loanId}:</span> {anomaly.description}
+                </div>
+              ))}
+              {criticalAnomalies.length > 2 && (
+                <div className="text-xs text-muted-foreground">
+                  +{criticalAnomalies.length - 2} more critical alerts
+                </div>
+              )}
+            </div>
+          </AlertDescription>
+        </div>
+      </div>
+    </Alert>
+  );
+}
+
+// Main Dashboard Content
+function DashboardContent({ portfolioData, onViewAdvanced }: {
+  portfolioData: any;
+  onViewAdvanced?: () => void;
+}) {
+  const navigate = useNavigate();
+  const { hasTargetsConfigured } = useAssumptions();
+  
+  if (!portfolioData) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <Brain className="h-8 w-8 animate-pulse mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Loading insights...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { evPercentage, anomalies } = portfolioData;
+  const emissionsTrend = -2.5; // Mock trend data
+
+  return (
+    <div className="space-y-6">
+      {/* Target Progress or Setup Nudge */}
+      {!hasTargetsConfigured && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              Set Up Climate Targets
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Configure your climate targets to unlock advanced insights and progress tracking.
+            </p>
+            <Button onClick={() => navigate('/financed-emissions/settings')}>
+              Configure Targets
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quick Insights Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Portfolio Health */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Portfolio Health
+                <NarrativeButton
+                  onClick={handleExplainPortfolioHealth}
+                  loading={loadingNarrative === 'portfolio-health'}
+                  tooltip="Explain portfolio health"
+                />
+              </CardTitle>
+              <Badge variant="outline">{evPercentage > 30 ? 'Good' : evPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>EV Adoption Progress</span>
+                <span className="font-medium">{evPercentage.toFixed(1)}%</span>
+              </div>
+              <Progress value={evPercentage} className="h-2" />
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-muted-foreground">Emissions Trend</div>
+                <div className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}>
+                  {emissionsTrend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                  {Math.abs(emissionsTrend).toFixed(1)}%
+                </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">Risk Level</div>
+                <div className="font-semibold">Medium</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Anomalies & Alerts */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-primary" />
+                Anomalies Detected
+                <NarrativeButton
+                  onClick={handleExplainAnomalies}
+                  loading={loadingNarrative === 'anomalies-detected'}
+                  tooltip="Explain anomaly detection"
+                />
+              </CardTitle>
+              <Badge variant={anomalies.length > 3 ? "destructive" : "secondary"}>
+                {anomalies.length} found
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {anomalies.length > 0 ? (
+              <>
+                {anomalies.slice(0, 3).map((anomaly, index) => (
+                  <div 
+                    key={index}
+                    className="p-3 border rounded-lg bg-muted/20"
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <span className="text-sm font-medium">{anomaly.loanId}</span>
+                      <Badge variant={anomaly.severity === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                        {anomaly.severity}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{anomaly.description}</p>
+                  </div>
+                ))}
+                {anomalies.length > 3 && (
+                  <Button variant="outline" size="sm" className="w-full mt-3" onClick={onViewAdvanced}>
+                    View All Anomalies ({anomalies.length}) <ArrowRight className="h-4 w-4 ml-1" />
+                  </Button>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                <p className="text-sm text-muted-foreground">No anomalies detected</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="h-5 w-5 text-primary" />
+            Explore Deeper Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={() => navigate('/financed-emissions/insights/forecasting-detail')}
+            >
+              <div className="text-left">
+                <div className="font-medium">Emissions Forecasts</div>
+                <div className="text-xs text-muted-foreground">12-month projections</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={() => navigate('/financed-emissions/insights/portfolio-risk')}
+            >
+              <div className="text-left">
+                <div className="font-medium">Risk Analysis</div>
+                <div className="text-xs text-muted-foreground">Climate & transition risks</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={() => navigate('/financed-emissions/insights/green-finance')}
+            >
+              <div className="text-left">
+                <div className="font-medium">Green Strategy</div>
+                <div className="text-xs text-muted-foreground">Sustainable finance opportunities</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={() => navigate('/financed-emissions/insights/data-quality')}
+            >
+              <div className="text-left">
+                <div className="font-medium">Data Quality</div>
+                <div className="text-xs text-muted-foreground">Portfolio data analysis</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={() => navigate('/financed-emissions/insights/ev-leadership')}
+            >
+              <div className="text-left">
+                <div className="font-medium">EV Leadership</div>
+                <div className="text-xs text-muted-foreground">Electric vehicle analysis</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4"
+              onClick={onViewAdvanced}
+            >
+              <div className="text-left">
+                <div className="font-medium">Advanced Analytics</div>
+                <div className="text-xs text-muted-foreground">Comprehensive view</div>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <DataNarrativeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        narrative={selectedNarrative}
+      />
+    </div>
+  );
+}
+
 export default function AIInsightsPage() {
-  const { toast } = useToast();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [portfolioContext, setPortfolioContext] = useState<any>(null);
-  const [triggerQuery, setTriggerQuery] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [showChatSidebar, setShowChatSidebar] = useState(false);
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'insights');
+  const [activeView, setActiveView] = useState<'overview' | 'advanced'>('overview');
 
   useEffect(() => {
     document.title = "AI Insights — Financed Emissions";
-    const desc = "Comprehensive AI insights: analytics, climate risk assessment, scenario modeling, and AI assistant.";
+    const desc = "AI-powered insights for financed emissions: portfolio analysis, target tracking, anomaly detection, and strategic recommendations.";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', desc);
     const link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
@@ -31,182 +367,79 @@ export default function AIInsightsPage() {
       l.setAttribute('href', window.location.href);
       document.head.appendChild(l);
     }
-    
-    loadPortfolioContext();
   }, []);
 
-  // Handle tab changes and URL updates
-  useEffect(() => {
-    const tabFromUrl = searchParams.get('tab');
-    if (tabFromUrl && ['insights', 'risk', 'scenarios'].includes(tabFromUrl)) {
-      setActiveTab(tabFromUrl);
-    }
-  }, [searchParams]);
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    setSearchParams({ tab });
-  };
-
-  const loadPortfolioContext = async () => {
-    try {
-      setLoading(true);
-      
-      // Load portfolio data from backend
-      const { loans, summary } = await portfolioService.getPortfolioSummary();
-      const portfolioMetrics = await portfolioService.getPortfolioAnalytics();
-      
-      if (loans.length > 0) {
-        const electricVehicles = loans.filter(loan => 
-          loan.vehicle_details.fuel_type.toLowerCase().includes('electric')
-        ).length;
-        
-        // Add calculated fields for the reorganized component
-        const enhancedMetrics = {
-          ...portfolioMetrics,
-          complianceScore: Math.max(0, 100 - (portfolioMetrics.weightedAvgDataQuality - 1) * 25),
-          riskScore: Math.min(100, portfolioMetrics.weightedAvgDataQuality * 20 + Math.random() * 20)
-        };
-        
-        setPortfolioContext({
-          portfolioSummary: {
-            totalLoans: loans.length,
-            totalEmissions: portfolioMetrics.totalFinancedEmissions.toFixed(1),
-            avgDataQuality: portfolioMetrics.weightedAvgDataQuality.toFixed(2),
-            evPercentage: ((electricVehicles / loans.length) * 100).toFixed(1)
-          },
-          loans,
-          metrics: enhancedMetrics,
-          insights: [],
-          anomalies: []
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load portfolio context:', error);
-      toast({
-        title: "Loading Error",
-        description: "Failed to load portfolio data for AI analysis.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChatTrigger = (query: string) => {
-    setTriggerQuery(query);
-    setShowChatSidebar(true);
-  };
-
-  if (loading) {
-    return (
-      <main className="space-y-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center h-32">
-              <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-              <span className="ml-2">Loading AI insights...</span>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
-
-  // Show smart empty state if no portfolio data
-  if (!portfolioContext || !portfolioContext.loans || portfolioContext.loans.length === 0) {
-    return (
-      <main className="space-y-8">
-        <SmartEmptyState 
-          type="ai-insights" 
-          portfolioMetrics={portfolioContext?.metrics}
-          onGetStarted={() => {
-            toast({
-              title: "Upload Portfolio Data",
-              description: "Upload your loan data to unlock AI-powered insights",
-            });
-          }}
-        />
-      </main>
-    );
-  }
-
   return (
-    <div className="flex h-screen">
-      {/* Main Content */}
-      <div className={`flex-1 overflow-auto ${showChatSidebar ? 'pr-96' : ''} transition-all duration-300`}>
-        <main className="p-6">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="insights" className="flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                AI Insights
-              </TabsTrigger>
-              <TabsTrigger value="risk" className="flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                Climate Risk
-              </TabsTrigger>
-              <TabsTrigger value="scenarios" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Scenarios
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="insights" className="mt-0">
-              <ReorganizedAIInsights 
-                portfolioMetrics={portfolioContext?.metrics}
-                onChatTrigger={handleChatTrigger}
-                focusArea="insights"
-              />
-            </TabsContent>
-
-            <TabsContent value="risk" className="mt-0">
-              <ReorganizedAIInsights 
-                portfolioMetrics={portfolioContext?.metrics}
-                onChatTrigger={handleChatTrigger}
-                focusArea="risk"
-              />
-            </TabsContent>
-
-            <TabsContent value="scenarios" className="mt-0">
-              <ReorganizedAIInsights 
-                portfolioMetrics={portfolioContext?.metrics}
-                onChatTrigger={handleChatTrigger}
-                focusArea="scenarios"
-              />
-            </TabsContent>
-          </Tabs>
-        </main>
-      </div>
-
-      {/* AI Assistant Sidebar */}
-      {showChatSidebar && (
-        <div className="fixed right-0 top-0 h-full w-96 bg-background border-l shadow-lg z-50">
-          <div className="h-full flex flex-col">
-            <div className="p-4 border-b bg-muted/50">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold">AI Assistant</h3>
-                <button
-                  onClick={() => setShowChatSidebar(false)}
-                  className="text-muted-foreground hover:text-foreground"
+    <AnalyticsDataProvider>
+      <main className="space-y-6">
+        {/* Header */}
+        <Card className="border border-border/50 bg-gradient-to-r from-card/50 to-card/80 backdrop-blur-sm">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <Brain className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl font-bold">AI Insights Dashboard</CardTitle>
+                  <p className="text-muted-foreground">
+                    Intelligent analysis of your financed emissions portfolio with actionable recommendations
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant={activeView === 'overview' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveView('overview')}
                 >
-                  ×
-                </button>
+                  <Eye className="h-4 w-4 mr-1" />
+                  Overview
+                </Button>
+                <Button 
+                  variant={activeView === 'advanced' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveView('advanced')}
+                >
+                  <BarChart3 className="h-4 w-4 mr-1" />
+                  Advanced
+                </Button>
               </div>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <AIAssistantPanel 
-                context={portfolioContext}
-                defaultAgent="advisory"
-                triggerQuery={triggerQuery}
-                onQueryProcessed={() => {
-                  setTriggerQuery("");
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </CardHeader>
+        </Card>
+
+        {activeView === 'overview' ? (
+          <>
+            {/* Executive Summary */}
+            <section>
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                Executive Summary
+              </h2>
+              <ExecutiveSummary />
+            </section>
+
+            {/* Critical Alerts */}
+            <CriticalAlerts />
+
+        {/* Main Dashboard */}
+        <section>
+          <DashboardContent 
+            onViewAdvanced={() => setActiveView('advanced')}
+          />
+        </section>
+      </>
+    ) : (
+      <section>
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-primary" />
+          Advanced Analytics
+        </h2>
+        <AdvancedAnalyticsEngine />
+      </section>
+        )}
+      </main>
+    </AnalyticsDataProvider>
   );
 }
