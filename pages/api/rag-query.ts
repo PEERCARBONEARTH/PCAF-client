@@ -41,7 +41,7 @@ async function processRAGQuery(query: string, portfolioContext?: any): Promise<R
     tenant: process.env.CHROMA_TENANT || '',
     database: process.env.CHROMA_DATABASE || '',
     baseURL: 'https://api.trychroma.com',
-    collectionName: 'pcaf_calculation_optimized'
+    collectionName: 'pcaf_enhanced_v6'
   };
 
   // 1. Classify the query to determine optimal response structure
@@ -150,10 +150,15 @@ async function searchChromaDB(query: string, config: ChromaDBConfig): Promise<an
     'X-Chroma-Database': config.database
   };
 
+  // Enhanced search with metadata filtering based on query classification
+  const queryClassification = classifyQueryForMetadata(query);
+  
   const searchBody = {
     query_embeddings: [queryEmbedding],
-    n_results: 3,
-    include: ['documents', 'metadatas', 'distances']
+    n_results: 5, // Get more results to leverage enhanced metadata
+    include: ['documents', 'metadatas', 'distances'],
+    // Add metadata filtering for enhanced targeting
+    ...(queryClassification.metadataFilter && { where: queryClassification.metadataFilter })
   };
 
   const response = await fetch(
@@ -241,6 +246,67 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
 
   const result = await response.json();
   return result.data[0].embedding;
+}
+
+// Enhanced query classification for metadata filtering
+function classifyQueryForMetadata(query: string): { 
+  category?: string; 
+  complexity?: string; 
+  userRole?: string; 
+  bankingContext?: string[];
+  metadataFilter?: any;
+} {
+  const lowerQuery = query.toLowerCase();
+  
+  // Determine category preference
+  let categoryFilter = null;
+  if (lowerQuery.includes('portfolio') || lowerQuery.includes('risk') || lowerQuery.includes('benchmark')) {
+    categoryFilter = 'portfolio_analysis';
+  } else if (lowerQuery.includes('calculate') || lowerQuery.includes('formula') || lowerQuery.includes('attribution')) {
+    categoryFilter = 'calculation_methodology';
+  } else if (lowerQuery.includes('data quality') || lowerQuery.includes('validation') || lowerQuery.includes('improve')) {
+    categoryFilter = 'data_quality';
+  } else if (lowerQuery.includes('compliance') || lowerQuery.includes('audit') || lowerQuery.includes('regulatory')) {
+    categoryFilter = 'regulatory_compliance';
+  } else if (lowerQuery.includes('electric') || lowerQuery.includes('hybrid') || lowerQuery.includes('ev')) {
+    categoryFilter = 'vehicle_specific';
+  }
+  
+  // Determine complexity preference
+  let complexityFilter = null;
+  if (lowerQuery.includes('simple') || lowerQuery.includes('basic') || lowerQuery.includes('overview')) {
+    complexityFilter = 'simple';
+  } else if (lowerQuery.includes('detailed') || lowerQuery.includes('complex') || lowerQuery.includes('advanced')) {
+    complexityFilter = 'complex';
+  }
+  
+  // Determine banking context filters
+  const bankingContextFilters: any = {};
+  if (lowerQuery.includes('risk') || lowerQuery.includes('portfolio')) {
+    bankingContextFilters.has_risk_mgmt = true;
+  }
+  if (lowerQuery.includes('regulatory') || lowerQuery.includes('compliance') || lowerQuery.includes('audit')) {
+    bankingContextFilters.has_regulatory = true;
+  }
+  if (lowerQuery.includes('portfolio') || lowerQuery.includes('management')) {
+    bankingContextFilters.has_portfolio = true;
+  }
+  if (lowerQuery.includes('data quality') || lowerQuery.includes('validation')) {
+    bankingContextFilters.has_data_quality = true;
+  }
+  
+  // Build metadata filter
+  const metadataFilter: any = {};
+  if (categoryFilter) metadataFilter.category = categoryFilter;
+  if (complexityFilter) metadataFilter.complexity = complexityFilter;
+  Object.assign(metadataFilter, bankingContextFilters);
+  
+  return {
+    category: categoryFilter,
+    complexity: complexityFilter,
+    bankingContext: Object.keys(bankingContextFilters),
+    metadataFilter: Object.keys(metadataFilter).length > 0 ? metadataFilter : null
+  };
 }/
 / Helper functions for response formatting and matching
 function formatChromaDBResponse(bestMatch: any, allResults: any[]): string {
@@ -250,11 +316,39 @@ function formatChromaDBResponse(bestMatch: any, allResults: any[]): string {
   
   let response = `**${question}**\n\n${answer}`;
   
+  // Add enhanced metadata context
+  if (metadata.complexity || metadata.user_roles) {
+    response += '\n\n**Context:**';
+    if (metadata.complexity) {
+      response += `\n• Complexity: ${metadata.complexity}`;
+    }
+    if (metadata.user_roles) {
+      const roles = metadata.user_roles.split('|').map((role: string) => 
+        role.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
+      ).join(', ');
+      response += `\n• Relevant for: ${roles}`;
+    }
+  }
+  
+  // Add banking context indicators
+  const bankingContext = [];
+  if (metadata.has_risk_mgmt) bankingContext.push('Risk Management');
+  if (metadata.has_regulatory) bankingContext.push('Regulatory Compliance');
+  if (metadata.has_portfolio) bankingContext.push('Portfolio Management');
+  if (metadata.has_data_quality) bankingContext.push('Data Quality');
+  
+  if (bankingContext.length > 0) {
+    response += `\n• Banking Focus: ${bankingContext.join(', ')}`;
+  }
+  
+  // Enhanced related questions with metadata awareness
   if (allResults.length > 1) {
     response += '\n\n**Related Questions:**\n';
     allResults.slice(1, 3).forEach((result, index) => {
       const relatedQuestion = result.metadata.question || `Related question ${index + 1}`;
-      response += `• ${relatedQuestion}\n`;
+      const category = result.metadata.category || '';
+      const categoryLabel = category ? ` (${category.replace(/_/g, ' ')})` : '';
+      response += `• ${relatedQuestion}${categoryLabel}\n`;
     });
   }
   
@@ -287,29 +381,75 @@ function extractSources(result: any): string[] {
 function generateFollowUpFromChroma(result: any): string[] {
   const metadata = result.metadata;
   
-  if (metadata.followUp && Array.isArray(metadata.followUp)) {
-    return metadata.followUp.slice(0, 3);
+  // Use enhanced follow-up questions if available
+  if (metadata.followUp) {
+    const followUps = typeof metadata.followUp === 'string' 
+      ? metadata.followUp.split('|') 
+      : metadata.followUp;
+    return followUps.slice(0, 3);
   }
   
+  // Generate contextual follow-ups based on enhanced categories
   const category = metadata.category || '';
-  if (category.includes('calculation')) {
+  const userRoles = metadata.user_roles || '';
+  
+  if (category === 'portfolio_analysis') {
     return [
-      'How do I validate this calculation?',
-      'What data do I need for this?',
+      'How does this impact my portfolio risk profile?',
+      'What are the regulatory implications?',
+      'How do I benchmark against peers?'
+    ];
+  } else if (category === 'calculation_methodology') {
+    return [
+      'What data do I need for this calculation?',
+      'How do I validate the results?',
       'What are common implementation challenges?'
     ];
-  } else if (category.includes('compliance')) {
+  } else if (category === 'data_quality') {
     return [
-      'What documentation is required?',
+      'How do I improve my data quality score?',
+      'What systems integration is required?',
+      'What are the cost-benefit considerations?'
+    ];
+  } else if (category === 'regulatory_compliance') {
+    return [
+      'What documentation is required for audit?',
       'How do regulators examine this?',
-      'What are the penalties for non-compliance?'
+      'What are the compliance deadlines?'
+    ];
+  } else if (category === 'vehicle_specific') {
+    return [
+      'How does this affect my portfolio composition?',
+      'What are the market trends?',
+      'How do I price this risk?'
+    ];
+  } else if (category === 'implementation') {
+    return [
+      'What resources do I need?',
+      'What is the implementation timeline?',
+      'How do I measure success?'
     ];
   } else {
-    return [
-      'Can you provide more details?',
-      'What are the implementation steps?',
-      'How does this relate to my portfolio?'
-    ];
+    // Fallback based on user roles
+    if (userRoles.includes('risk_manager')) {
+      return [
+        'How does this impact risk assessment?',
+        'What are the portfolio implications?',
+        'How do I monitor this ongoing?'
+      ];
+    } else if (userRoles.includes('compliance_officer')) {
+      return [
+        'What are the regulatory requirements?',
+        'How do I document this for audit?',
+        'What are the compliance deadlines?'
+      ];
+    } else {
+      return [
+        'Can you provide more details?',
+        'What are the implementation steps?',
+        'How does this relate to PCAF standards?'
+      ];
+    }
   }
 }
 
