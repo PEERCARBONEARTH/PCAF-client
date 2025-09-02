@@ -6,6 +6,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+require('dotenv').config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +16,22 @@ const CHROMA_API_KEY = process.env.CHROMA_API_KEY;
 const CHROMA_TENANT = process.env.CHROMA_TENANT;
 const CHROMA_DATABASE = process.env.CHROMA_DATABASE;
 const CHROMA_BASE_URL = 'https://api.trychroma.com'; // ChromaDB Cloud endpoint
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// Validate required environment variables
+if (!CHROMA_API_KEY || !CHROMA_TENANT || !CHROMA_DATABASE) {
+  console.error('❌ Missing ChromaDB configuration. Please check your .env file.');
+  console.error('Required: CHROMA_API_KEY, CHROMA_TENANT, CHROMA_DATABASE');
+  process.exit(1);
+}
+
+if (!OPENAI_API_KEY) {
+  console.error('❌ Missing OpenAI API key. Please check your .env file.');
+  console.error('Required: OPENAI_API_KEY');
+  process.exit(1);
+}
+
+console.log('✅ Environment variables loaded successfully');
 
 // Middleware
 app.use(cors());
@@ -307,6 +324,155 @@ app.delete('/api/chroma/collections/:collectionName', async (req, res) => {
       success: false,
       error: error.message,
       message: 'Failed to delete collection from hosted ChromaDB'
+    });
+  }
+});
+
+/**
+ * RAG Query Endpoint - Main interface for RAG queries
+ */
+app.post('/api/rag-query', async (req, res) => {
+  try {
+    const { query, portfolioContext } = req.body;
+
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    console.log(`🔍 Processing RAG query: "${query}"`);
+
+    // Use the enhanced collection
+    const collectionName = 'pcaf_enhanced_v6';
+    
+    // First, get the collection ID
+    console.log(`📊 Getting collection ID for: ${collectionName}`);
+    const collectionResponse = await fetch(`${CHROMA_BASE_URL}/api/v2/tenants/${CHROMA_TENANT}/databases/${CHROMA_DATABASE}/collections/${collectionName}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${CHROMA_API_KEY}`,
+        'X-Chroma-Token': CHROMA_API_KEY,
+        'X-Chroma-Tenant': CHROMA_TENANT,
+        'X-Chroma-Database': CHROMA_DATABASE
+      }
+    });
+
+    if (!collectionResponse.ok) {
+      const errorText = await collectionResponse.text();
+      console.error(`Failed to get collection: ${collectionResponse.status} - ${errorText}`);
+      throw new Error(`Collection not found: ${collectionResponse.status}`);
+    }
+
+    const collectionInfo = await collectionResponse.json();
+    const collectionId = collectionInfo.id;
+    console.log(`✅ Found collection ID: ${collectionId}`);
+
+    // Generate embedding for the query
+    console.log(`🧠 Generating embedding for query`);
+    const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        input: query,
+        model: 'text-embedding-3-small'
+      })
+    });
+
+    if (!embeddingResponse.ok) {
+      throw new Error(`OpenAI API error: ${embeddingResponse.status}`);
+    }
+
+    const embeddingResult = await embeddingResponse.json();
+    const queryEmbedding = embeddingResult.data[0].embedding;
+    console.log(`✅ Generated embedding with ${queryEmbedding.length} dimensions`);
+    
+    // Build search request
+    const searchBody = {
+      query_embeddings: [queryEmbedding],
+      n_results: 5,
+      include: ['documents', 'metadatas', 'distances']
+    };
+
+    console.log(`📊 Searching collection: ${collectionName} (ID: ${collectionId})`);
+
+    const response = await fetch(`${CHROMA_BASE_URL}/api/v2/tenants/${CHROMA_TENANT}/databases/${CHROMA_DATABASE}/collections/${collectionId}/query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${CHROMA_API_KEY}`,
+        'X-Chroma-Token': CHROMA_API_KEY,
+        'X-Chroma-Tenant': CHROMA_TENANT,
+        'X-Chroma-Database': CHROMA_DATABASE
+      },
+      body: JSON.stringify(searchBody)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`ChromaDB search failed: ${response.status} - ${errorText}`);
+      throw new Error(`ChromaDB search failed: ${response.status}`);
+    }
+
+    const results = await response.json();
+    console.log(`✅ ChromaDB returned ${results.documents?.[0]?.length || 0} results`);
+
+    // Process results
+    if (results.documents && results.documents[0] && results.documents[0].length > 0) {
+      const bestMatch = {
+        document: results.documents[0][0],
+        metadata: results.metadatas[0][0],
+        distance: results.distances[0][0],
+        relevance_score: Math.max(0, 1 - results.distances[0][0])
+      };
+
+      console.log(`🎯 Best match relevance: ${bestMatch.relevance_score.toFixed(3)}`);
+
+      // Format response based on ChromaDB results
+      let responseText = bestMatch.metadata.answer || bestMatch.document;
+      
+      // Add portfolio context if provided
+      if (portfolioContext && responseText.includes('{')) {
+        responseText = responseText
+          .replace(/{totalLoans}/g, portfolioContext.totalLoans || 'N/A')
+          .replace(/{wdqs}/g, portfolioContext.dataQuality?.averageScore?.toFixed(1) || 'N/A')
+          .replace(/{complianceStatus}/g, portfolioContext.dataQuality?.complianceStatus || 'Unknown');
+      }
+
+      const confidence = bestMatch.relevance_score > 0.8 ? 'high' : 
+                        bestMatch.relevance_score > 0.6 ? 'medium' : 'low';
+
+      const ragResponse = {
+        response: responseText,
+        confidence: confidence,
+        sources: bestMatch.metadata.sources ? bestMatch.metadata.sources.split('|') : ['PCAF Enhanced Dataset'],
+        followUpQuestions: bestMatch.metadata.followUp ? bestMatch.metadata.followUp.split('|').slice(0, 3) : []
+      };
+
+      console.log(`📤 Returning response with confidence: ${confidence}`);
+      res.json(ragResponse);
+    } else {
+      console.log('⚠️ No results found, returning fallback');
+      // Fallback response
+      res.json({
+        response: `I couldn't find a specific answer to "${query}" in my PCAF knowledge base. Please try rephrasing your question or ask about specific PCAF topics like data quality options, attribution factors, or compliance requirements.`,
+        confidence: 'low',
+        sources: ['PCAF System'],
+        followUpQuestions: [
+          'What are the PCAF data quality options?',
+          'How do I calculate attribution factors?',
+          'What are the compliance requirements?'
+        ]
+      });
+    }
+
+  } catch (error) {
+    console.error('RAG query error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
     });
   }
 });
