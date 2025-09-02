@@ -83,6 +83,7 @@ export function RAGChatbot({
     const [isConnected, setIsConnected] = useState(false);
     const [currentMode, setCurrentMode] = useState<ChatMode>('general');
     const [autoDetectModeState, setAutoDetectMode] = useState(autoDetectMode);
+    const [processingFollowUp, setProcessingFollowUp] = useState<string | null>(null);
     const { toast } = useToast();
 
     // Enhanced chat modes for different user personas
@@ -268,7 +269,12 @@ export function RAGChatbot({
         };
 
         setMessages(prev => [...prev, userMessage]);
-        setInputMessage('');
+        
+        // Clear input field (important for follow-up questions)
+        if (!messageContent) {
+            setInputMessage('');
+        }
+        
         setIsLoading(true);
 
         try {
@@ -518,12 +524,47 @@ export function RAGChatbot({
                                 {message.followUpQuestions.map((question, index) => (
                                     <Button
                                         key={index}
-                                        variant="outline"
+                                        variant={processingFollowUp === question ? "default" : "outline"}
                                         size="sm"
-                                        className="text-xs h-auto py-1 px-2"
-                                        onClick={() => sendMessage(question)}
-                                        disabled={isLoading}
+                                        className={cn(
+                                            "text-xs h-auto py-1 px-2 transition-all duration-200",
+                                            processingFollowUp === question 
+                                                ? "bg-primary text-primary-foreground" 
+                                                : "hover:bg-primary/10"
+                                        )}
+                                        onClick={async () => {
+                                            // Set processing state
+                                            setProcessingFollowUp(question);
+                                            
+                                            // Clear input field and send the follow-up question
+                                            setInputMessage('');
+                                            
+                                            // Show feedback toast
+                                            toast({
+                                                title: 'Follow-up Question',
+                                                description: `Asking: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`,
+                                                duration: 2000,
+                                            });
+                                            
+                                            try {
+                                                await sendMessage(question);
+                                            } catch (error) {
+                                                toast({
+                                                    title: 'Error',
+                                                    description: 'Failed to send follow-up question. Please try again.',
+                                                    variant: 'destructive',
+                                                });
+                                            } finally {
+                                                // Clear processing state after message is sent
+                                                setProcessingFollowUp(null);
+                                            }
+                                        }}
+                                        disabled={isLoading || processingFollowUp === question}
+                                        title={`Ask: ${question}`}
                                     >
+                                        {processingFollowUp === question && (
+                                            <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+                                        )}
                                         {question}
                                     </Button>
                                 ))}
