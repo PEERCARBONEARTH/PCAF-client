@@ -1,7 +1,4 @@
-import { portfolioService } from './portfolioService';
-import { responseValidator } from './responseValidator';
-
-// Surgical RAG Service - Laser-focused responses for motor vehicle PCAF questions
+// Surgical RAG Service - Secure server-side ChromaDB queries for PCAF questions
 export class SurgicalRAGService {
   private static instance: SurgicalRAGService;
 
@@ -224,143 +221,52 @@ WDQS = Σ(Outstanding Amount × Data Quality Score) ÷ Total Outstanding
     followUpQuestions: string[];
     portfolioInsights?: any;
   }> {
-    
-    const lowerQuery = query.toLowerCase();
-    
-    // 1. Try to match against surgical responses first
-    const surgicalMatch = this.findSurgicalMatch(lowerQuery);
-    if (surgicalMatch) {
-      let response = surgicalMatch.response;
-      
-      // 2. Enhance with portfolio context if available and relevant
-      if (portfolioContext && this.needsPortfolioContext(lowerQuery)) {
-        const portfolioEnhancement = await this.enhanceWithPortfolioData(
-          surgicalMatch.responseKey,
+    try {
+      // Call secure server-side API endpoint
+      const response = await fetch('/api/rag-query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
           portfolioContext
-        );
-        response = this.combineResponses(response, portfolioEnhancement);
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
       }
 
-      return {
-        response,
-        confidence: surgicalMatch.confidence as 'high' | 'medium' | 'low',
-        sources: surgicalMatch.sources,
-        followUpQuestions: surgicalMatch.followUp,
-        portfolioInsights: portfolioContext ? this.generatePortfolioInsights(portfolioContext) : undefined
-      };
-    }
-
-    // 3. Handle portfolio-specific queries
-    if (portfolioContext && this.isPortfolioQuery(lowerQuery)) {
-      return await this.generatePortfolioResponse(lowerQuery, portfolioContext);
-    }
-
-    // 4. Fallback to focused methodology response
-    return this.generateMethodologyFallback(lowerQuery);
-  }
-
-  private findSurgicalMatch(query: string): any {
-    for (const pattern of this.QUESTION_PATTERNS) {
-      if (pattern.patterns.some(p => query.includes(p))) {
-        return {
-          ...this.SURGICAL_RESPONSES[pattern.responseKey as keyof typeof this.SURGICAL_RESPONSES],
-          responseKey: pattern.responseKey,
-          intent: pattern.intent
-        };
+      const result = await response.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
       }
-    }
-    return null;
-  }
 
-  private needsPortfolioContext(query: string): boolean {
-    const portfolioIndicators = [
-      'my portfolio', 'our portfolio', 'my loans', 'our loans',
-      'current score', 'my score', 'my data quality'
-    ];
-    return portfolioIndicators.some(indicator => query.includes(indicator));
-  }
-
-  private isPortfolioQuery(query: string): boolean {
-    const portfolioQueries = [
-      'analyze my portfolio', 'portfolio performance', 'portfolio emissions',
-      'which loans', 'how many loans', 'total emissions', 'emission intensity'
-    ];
-    return portfolioQueries.some(pq => query.includes(pq));
-  }
-
-  private async enhanceWithPortfolioData(responseKey: string, portfolioContext: any): Promise<string> {
-    if (!portfolioContext) return '';
-
-    const dq = portfolioContext.dataQuality;
-    const totalLoans = portfolioContext.totalLoans;
-
-    switch (responseKey) {
-      case 'pcaf_options':
-        return `\n\n**Your Portfolio Status:**\n• ${totalLoans} motor vehicle loans\n• Current WDQS: ${dq.averageScore.toFixed(1)} ${dq.complianceStatus === 'compliant' ? '✅ Compliant' : '⚠️ Needs Improvement'}\n• Distribution: ${this.formatDistribution(dq.distribution)}`;
-
-      case 'compliance_requirements':
-        const complianceStatus = dq.averageScore <= 3.0 ? '✅ COMPLIANT' : '❌ NON-COMPLIANT';
-        return `\n\n**Your Compliance Status:**\n• Portfolio WDQS: ${dq.averageScore.toFixed(1)} ${complianceStatus}\n• ${dq.loansNeedingImprovement} loans need improvement\n• Target: Reduce WDQS to ≤ 3.0`;
-
-      case 'improve_data_quality':
-        return `\n\n**Your Improvement Opportunities:**\n• ${portfolioContext.improvements.option_5_to_4.length} loans can move Option 5→4\n• ${portfolioContext.improvements.option_4_to_3.length} loans can move Option 4→3\n• Focus on ${Math.min(50, portfolioContext.improvements.option_4_to_3.length)} highest-value loans first`;
-
-      default:
-        return '';
+      return result;
+    } catch (error) {
+      console.error('RAG query failed:', error);
+      
+      // Fallback to basic response if API fails
+      return this.generateMethodologyFallback(query);
     }
   }
 
-  private combineResponses(surgical: string, portfolio: string): string {
-    return surgical + portfolio;
-  }
 
-  private formatDistribution(distribution: Record<number, number>): string {
-    return Object.entries(distribution)
-      .map(([score, count]) => `Option ${score}: ${count}`)
-      .join(', ');
-  }
 
-  private async generatePortfolioResponse(query: string, portfolioContext: any): Promise<any> {
-    const dq = portfolioContext.dataQuality;
-    
-    if (query.includes('current score') || query.includes('data quality score')) {
-      return {
-        response: `**Your Portfolio Data Quality Analysis**\n\n📊 **Current Status:**\n• Total loans: ${portfolioContext.totalLoans}\n• Weighted Data Quality Score: ${dq.averageScore.toFixed(1)}\n• Compliance status: ${dq.complianceStatus === 'compliant' ? '✅ Compliant (≤ 3.0)' : '⚠️ Needs improvement (> 3.0)'}\n\n📈 **Distribution:**\n${Object.entries(dq.distribution).map(([score, count]) => `• Option ${score}: ${count} loans`).join('\n')}\n\n🎯 **Next Steps:**\n• ${dq.loansNeedingImprovement} loans need data improvements\n• Focus on moving Option 5 and 4 loans to Option 3\n• Target: Achieve WDQS ≤ 3.0 for full compliance`,
-        confidence: 'high' as const,
-        sources: ['Your Portfolio Analysis', 'PCAF Compliance Standards'],
-        followUpQuestions: [
-          'Which specific loans should I prioritize?',
-          'How do I collect missing vehicle data?',
-          'What\'s my improvement timeline?'
-        ]
-      };
-    }
-
-    // Add more portfolio-specific responses as needed
-    return this.generateMethodologyFallback(query);
-  }
-
-  private generatePortfolioInsights(portfolioContext: any): any {
-    const dq = portfolioContext.dataQuality;
-    return {
-      complianceStatus: dq.complianceStatus,
-      currentScore: dq.averageScore,
-      loansNeedingImprovement: dq.loansNeedingImprovement,
-      quickWins: portfolioContext.improvements.option_5_to_4.length,
-      majorImprovements: portfolioContext.improvements.option_4_to_3.length
-    };
-  }
+  // Fallback method for when API fails
 
   private generateMethodologyFallback(query: string): any {
     return {
-      response: `**PCAF Motor Vehicle Methodology**\n\nI specialize in motor vehicle PCAF questions. I can help with:\n\n• **Data Quality Options** (1-5) and scoring\n• **Calculations** (attribution factors, financed emissions)\n• **Compliance** requirements and thresholds\n• **Portfolio Analysis** (with your loan data)\n• **Improvement** strategies and priorities\n\nPlease ask a specific question about motor vehicle PCAF methodology or your portfolio.`,
+      response: `**PCAF Motor Vehicle Knowledge Base**\n\nI have access to 200+ comprehensive PCAF questions covering:\n\n• **Core Methodology** - Attribution factors, emission calculations, data quality scoring\n• **Vehicle Types** - EVs, hybrids, fleets, commercial vehicles, specialty vehicles\n• **Regulatory Compliance** - Supervisory expectations, audit requirements, documentation\n• **Implementation** - System integration, data collection, validation procedures\n• **Global Coverage** - Country-specific factors, international standards\n\n**Try asking specific questions like:**\n• "How do I calculate attribution factors for electric vehicles?"\n• "What PCAF data quality score do I need for compliance?"\n• "How do I handle fleet financing aggregation?"\n• "What are the emission factors for hybrid vehicles?"\n\nI can provide detailed, technical answers from our comprehensive PCAF dataset.`,
       confidence: 'medium' as const,
-      sources: ['PCAF Global Standard - Motor Vehicle Asset Class'],
+      sources: ['PCAF Comprehensive Dataset (200 Q&As)', 'PCAF Global Standard'],
       followUpQuestions: [
-        'What are the PCAF data quality options?',
-        'How do I calculate attribution factors?',
-        'What are PCAF compliance requirements?',
-        'How can I improve my portfolio data quality?'
+        'What are the PCAF data quality options for motor vehicles?',
+        'How do I calculate financed emissions?',
+        'What are regulatory compliance requirements?',
+        'How do I handle electric vehicle calculations?'
       ]
     };
   }

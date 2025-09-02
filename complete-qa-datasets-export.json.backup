@@ -1,0 +1,1441 @@
+[
+    {
+      "id": "mvl_001",
+      "question": "What is the motor-vehicle loan asset class under PCAF?",
+      "answer": "The motor-vehicle loan asset class covers all on-balance-sheet loans and lines of credit to businesses and consumers that finance one or several motor vehicles. It includes passenger cars, motorcycles, light/heavy commercial trucks, buses, recreational vehicles, boats, and even yellow equipment (earth-moving vehicles). The methodology allows institutions to define their own scope of vehicle types and requires transparent disclosure of any exclusions.",
+      "category": "definition",
+      "tags": ["asset-class", "definition", "scope"]
+    },
+    {
+      "id": "mvl_002",
+      "question": "How do I calculate the attribution factor for a motor-vehicle loan?",
+      "answer": "Attribution factor = Outstanding loan amount ÷ Total vehicle value at origination. The numerator is the actual outstanding debt owed to the lender (disbursed minus repayments). The denominator is the vehicle’s transaction price (equity plus debt). If the origination value is unknown, the institution must take a conservative 100 % attribution and fix the denominator for subsequent years.",
+      "category": "calculation",
+      "tags": ["attribution", "formula", "outstanding-amount"]
+    },
+    {
+      "id": "mvl_003",
+      "question": "Which emission scopes must be reported for motor-vehicle loans?",
+      "answer": "Institutions must report annual Scope 1 (tail-pipe fuel combustion) and Scope 2 (electricity consumed by EVs). Scope 3 production or end-of-life emissions are optional; if reported, production emissions are disclosed as a lump-sum in the first financing year only, while operational emissions continue under Scope 1/2.",
+      "category": "scope",
+      "tags": ["scope-1", "scope-2", "scope-3", "emissions"]
+    },
+    {
+      "id": "mvl_004",
+      "question": "What data quality score can I expect when I only know the vehicle make and model but rely on regional distance statistics?",
+      "answer": "This falls under Option 2b (estimated vehicle-specific emissions). The data quality score is 3 (on the 1–5 scale), because regional distance data is less granular than local data but still vehicle-specific.",
+      "category": "data-quality",
+      "tags": ["score-3", "option-2b", "regional-data"]
+    },
+    {
+      "id": "mvl_005",
+      "question": "How do I handle dual-fuel (hybrid) vehicles if usage split is unknown?",
+      "answer": "If national or manufacturer data on fuel split is unavailable, apply a geography-specific average usage split or conservatively assume 100 % combustion-engine use. Document the assumption used.",
+      "category": "assumption",
+      "tags": ["dual-fuel", "hybrid", "usage-split"]
+    },
+    {
+      "id": "mvl_006",
+      "question": "Can I use WLTP fuel-efficiency values for PCAF calculations?",
+      "answer": "Yes. WLTP data (Worldwide Harmonized Light-duty Vehicles Test Procedure) published by the European Environment Agency or EPA’s Federal Test Procedure (FTP) values are recommended sources for vehicle efficiency and fuel type.",
+      "category": "data-source",
+      "tags": ["WLTP", "FTP", "vehicle-efficiency"]
+    },
+    {
+      "id": "mvl_007",
+      "question": "How do I convert kilometres driven into CO₂e for diesel cars?",
+      "answer": "CO₂e = distance (km) × fuel efficiency (L/100 km) × emission factor (kg CO₂e/L) ÷ 100. Example: 15 000 km × 5 L/100 km × 2.68 kg/L ÷ 100 = 2 010 kg CO₂e annually.",
+      "category": "conversion",
+      "tags": ["diesel", "CO2e-calculation", "example"]
+    },
+    {
+      "id": "mvl_008",
+      "question": "Do I adjust the vehicle value over time for depreciation?",
+      "answer": "No. PCAF requires the denominator (vehicle value at origination) to remain fixed for all subsequent reporting years to ensure consistency and comparability.",
+      "category": "consistency",
+      "tags": ["denominator", "fixed-value", "depreciation"]
+    },
+    {
+      "id": "mvl_009",
+      "question": "How do I treat fleet financing where one loan covers many vehicles?",
+      "answer": "Aggregate the outstanding amount and the total origination value of the entire fleet, then apply the same attribution factor to the weighted average emissions of the fleet. If granular data are available, calculate per vehicle and sum.",
+      "category": "fleet",
+      "tags": ["aggregation", "fleet-loan", "weighting"]
+    },
+    {
+      "id": "mvl_010",
+      "question": "What is the data-quality score if I use an average vehicle when make and model are unknown?",
+      "answer": "Option 3b (estimated vehicle-unspecific emissions) receives a data-quality score of 5—the lowest—because neither vehicle type nor efficiency is known with certainty.",
+      "category": "data-quality",
+      "tags": ["score-5", "option-3b", "unknown-vehicle"]
+    },
+  
+    {
+      "id": "mvl_011",
+      "question": "Should I include electricity used for home EV charging in the vehicle’s Scope 2?",
+      "answer": "Include only the electricity consumed by the financed vehicle. If home charging data cannot be isolated, use grid-average emission factors and document the limitation.",
+      "category": "boundary",
+      "tags": ["scope-2", "home-charging", "boundary"]
+    },
+    {
+      "id": "mvl_012",
+      "question": "How do I calculate financed emissions for a fully electric bus fleet?",
+      "answer": "Financed emissions = attribution factor × distance × kWh/km × regional grid EF. Example: 0.4 × 60 000 km × 1.2 kWh/km × 0.35 kg CO₂e/kWh = 10.08 t CO₂e.",
+      "category": "electric-bus",
+      "tags": ["EV-bus", "example-calculation", "grid-EF"]
+    },
+    {
+      "id": "mvl_013",
+      "question": "Is vehicle insurance value an acceptable proxy for origination value?",
+      "answer": "No. PCAF explicitly requires the transaction price (purchase price including taxes) at loan origination, not insurance or replacement values.",
+      "category": "data-source",
+      "tags": ["origination-value", "transaction-price", "insurance"]
+    },
+    {
+      "id": "mvl_014",
+      "question": "How do I report Scope 3 production emissions for a new EV?",
+      "answer": "Disclose the cradle-to-gate embedded CO₂e of the battery and vehicle as a one-off Scope 3 entry in the first reporting year. Use manufacturer or lifecycle-database figures (e.g., 8 t CO₂e for a 60 kWh battery EV).",
+      "category": "scope-3",
+      "tags": ["embedded-emissions", "battery", "lifecycle"]
+    },
+    {
+      "id": "mvl_015",
+      "question": "What happens to financed emissions once the loan is repaid?",
+      "answer": "When the principal reaches zero, the attribution factor becomes zero and the vehicle’s financed emissions drop to zero for that lender, even if the vehicle continues operating.",
+      "category": "repayment",
+      "tags": ["loan-maturity", "zero-attribution"]
+    },
+  
+    {
+      "id": "mvl_016",
+      "question": "How do I benchmark my motor-vehicle portfolio’s emission intensity?",
+      "answer": "Compute tCO₂e per million USD loaned and compare against PCAF peer studies or national averages. Break down by fuel type and vehicle segment to identify hotspots.",
+      "category": "benchmarking",
+      "tags": ["intensity", "peer-comparison", "hotspots"]
+    },
+    {
+      "id": "mvl_017",
+      "question": "Can I use telematics data to improve data-quality scores?",
+      "answer": "Yes. Real-world fuel or energy consumption from telematics upgrades the calculation to Option 1a (score 1) for actual vehicle-specific emissions, provided the data cover ≥80 % of kilometres.",
+      "category": "data-improvement",
+      "tags": ["telematics", "score-1", "actual-data"]
+    },
+    {
+      "id": "mvl_018",
+      "question": "How do I treat refinancing or loan modifications?",
+      "answer": "If the modification increases the outstanding amount, update the numerator but keep the original vehicle value in the denominator; do not rebase the denominator to current market value.",
+      "category": "modification",
+      "tags": ["refinancing", "numerator-update"]
+    },
+    {
+      "id": "mvl_019",
+      "question": "What source should I use for grid emission factors for EVs?",
+      "answer": "Prefer supplier-specific (market-based) factors; if unavailable, use eGRID (USA), ENTSO-E (EU), or national residual mix factors published within the last 12 months.",
+      "category": "grid-factors",
+      "tags": ["eGRID", "ENTSO-E", "market-based"]
+    },
+    {
+      "id": "mvl_020",
+      "question": "How do I aggregate emissions across different vehicle types?",
+      "answer": "Calculate emissions per vehicle, multiply by the respective attribution factor, then sum across the portfolio. Tag results by fuel type (diesel, petrol, CNG, BEV, PHEV) for transparency.",
+      "category": "aggregation",
+      "tags": ["portfolio-total", "fuel-tags"]
+    },
+  
+    {
+      "id": "mvl_021",
+      "question": "Should I include motorcycles under motor-vehicle loans?",
+      "answer": "Yes, if the institution’s policy defines motorcycles as motor vehicles. Document the policy decision in the disclosures.",
+      "category": "definition",
+      "tags": ["motorcycle", "policy-definition"]
+    },
+    {
+      "id": "mvl_022",
+      "question": "How do I validate the distance-travelled assumption?",
+      "answer": "Cross-check regional statistics with odometer readings from annual inspections or service records. Apply a ±10 % tolerance; deviations >10 % trigger recalculation.",
+      "category": "validation",
+      "tags": ["odometer", "tolerance", "recalculation"]
+    },
+    {
+      "id": "mvl_023",
+      "question": "Can I use WLTP CO₂ g/km values directly without distance?",
+      "answer": "No. WLTP gives g/km; you must multiply by annual kilometres to obtain yearly emissions. WLTP alone does not replace the need for distance data.",
+      "category": "conversion",
+      "tags": ["WLTP-limitation", "distance-required"]
+    },
+    {
+      "id": "mvl_024",
+      "question": "What is the minimum granularity PCAF expects for disclosure?",
+      "answer": "At minimum, disclose absolute financed emissions (tCO₂e) per vehicle or per portfolio, split into Scope 1 and Scope 2. Providing fuel-type and segment breakdowns is best practice.",
+      "category": "disclosure",
+      "tags": ["minimum-disclosure", "fuel-breakdown"]
+    },
+    {
+      "id": "mvl_025",
+      "question": "How do I handle imported vehicles with different emission standards?",
+      "answer": "Use the certified emission factor applicable in the country of registration (e.g., EU WLTP, US EPA). Note the standard in the metadata.",
+      "category": "imports",
+      "tags": ["emission-standard", "certification"]
+    },
+  
+    {
+      "id": "mvl_026",
+      "question": "What PCAF data-quality score applies if I use OEM-declared fuel consumption?",
+      "answer": "If the OEM value is from an official test cycle (WLTP/FTP) and the vehicle make/model are known, the score is 2 (Option 1b or 2a/2b depending on distance source).",
+      "category": "data-quality",
+      "tags": ["OEM-data", "score-2"]
+    },
+    {
+      "id": "mvl_027",
+      "question": "Do I need to recalculate base-year emissions if I switch from regional to local distance data?",
+      "answer": "Yes. A change from regional to local distance data meets PCAF’s significance threshold (>5 % impact) and triggers recalculation of the base year.",
+      "category": "recalculation",
+      "tags": ["significance-threshold", "base-year"]
+    },
+    {
+      "id": "mvl_028",
+      "question": "How do I treat leased vehicles where the bank is the legal owner?",
+      "answer": "Treat as motor-vehicle loans; the bank records 100 % of emissions while the lease is outstanding. When the lessee exercises a purchase option, emissions transfer to the new owner.",
+      "category": "leasing",
+      "tags": ["legal-owner", "transfer"]
+    },
+    {
+      "id": "mvl_029",
+      "question": "Is it acceptable to use global average km/year for all countries?",
+      "answer": "Only as a last resort (score 5). PCAF recommends country- or region-specific statistics published by transport authorities or the International Transport Forum (ITF).",
+      "category": "data-source",
+      "tags": ["global-average", "last-resort", "ITF"]
+    },
+    {
+      "id": "mvl_030",
+      "question": "How do I disclose uncertainty in distance estimates?",
+      "answer": "Report the coefficient of variation (CV) or a ± percentage range next to the distance figure. Include a qualitative note on the data source and any proxy assumptions.",
+      "category": "uncertainty",
+      "tags": ["CV", "qualitative-note"]
+    },
+  
+    {
+      "id": "mvl_031",
+      "question": "What emission factor should I use for compressed natural gas (CNG) vans?",
+      "answer": "Use the national or supplier-specific CNG factor (e.g., 2.75 kg CO₂e per m³ or 56.1 kg CO₂e per GJ). Indicate the lower-heating-value basis used.",
+      "category": "fuel-specific",
+      "tags": ["CNG", "LHV", "supplier-factor"]
+    },
+    {
+      "id": "mvl_032",
+      "question": "Can I apply the same methodology to off-road construction vehicles?",
+      "answer": "Yes, if the loan finances the vehicle and it meets the motor-vehicle definition. Use manufacturer data or EPA NONROAD emission factors.",
+      "category": "off-road",
+      "tags": ["construction-vehicle", "EPA-NONROAD"]
+    },
+    {
+      "id": "mvl_033",
+      "question": "How do I calculate financed emissions for a PHEV with unknown charging behaviour?",
+      "answer": "Assume the utility factor (UF) provided by WLTP (e.g., 0.35 for a PHEV SUV) to split kilometres between electric and petrol, then apply respective emission factors.",
+      "category": "PHEV",
+      "tags": ["utility-factor", "UF", "charging-behaviour"]
+    },
+    {
+      "id": "mvl_034",
+      "question": "What supporting evidence must I retain for audit purposes?",
+      "answer": "Keep loan contracts, vehicle registration documents, emission-factor sources, distance data, and calculation spreadsheets for at least five years or per local audit rules.",
+      "category": "audit",
+      "tags": ["documentation", "retention"]
+    },
+    {
+      "id": "mvl_035",
+      "question": "How do I present improvement in data quality over time?",
+      "answer": "Publish a weighted-average data-quality score for the portfolio each year and show a trend line; highlight migrations from score 4/5 to 1/2.",
+      "category": "reporting",
+      "tags": ["trend-line", "weighted-score"]
+    },
+  
+    {
+      "id": "mvl_036",
+      "question": "Are there PCAF templates for motor-vehicle loan emission reports?",
+      "answer": "Yes. PCAF Annex 10.2 provides a generic template; adapt columns for vehicle make-model, fuel type, distance source, attribution factor, and tCO₂e.",
+      "category": "template",
+      "tags": ["Annex-10.2", "spreadsheet"]
+    },
+    {
+      "id": "mvl_037",
+      "question": "How do I calculate emissions for a loan that financed only 60 % of the vehicle?",
+      "answer": "The attribution factor is 0.60; multiply 0.60 by the vehicle’s annual emissions regardless of down-payment or depreciation.",
+      "category": "LTV",
+      "tags": ["loan-to-value", "partial-finance"]
+    },
+    {
+      "id": "mvl_038",
+      "question": "What if the borrower retrofits an LPG kit after purchase?",
+      "answer": "Continue using the original fuel type and factor until the next reporting cycle, then update to LPG emission factor and document the change.",
+      "category": "retrofit",
+      "tags": ["LPG", "fuel-switch"]
+    },
+    {
+      "id": "mvl_039",
+      "question": "Do I include towing trailers in the vehicle’s emission boundary?",
+      "answer": "No. Trailers are separate assets; only the emissions of the financed motor vehicle are included.",
+      "category": "boundary",
+      "tags": ["trailer", "exclusion"]
+    },
+    {
+      "id": "mvl_040",
+      "question": "How do I handle zero-interest or subsidised green loans?",
+      "answer": "The calculation is identical; the subsidy affects financial metrics, not the physical emissions or attribution logic.",
+      "category": "green-loan",
+      "tags": ["subsidy", "zero-interest"]
+    },
+  
+    {
+      "id": "mvl_041",
+      "question": "What emission factor should I use for hydrogen fuel-cell buses?",
+      "answer": "Use the well-to-wheel factor for compressed hydrogen (e.g., 120 g CO₂e/MJ) multiplied by MJ/km from manufacturer data.",
+      "category": "FCEV",
+      "tags": ["hydrogen-bus", "WTW-factor"]
+    },
+    {
+      "id": "mvl_042",
+      "question": "How do I treat vehicles registered mid-year in the annual report?",
+      "answer": "Prorate distance and emissions from the registration date to year-end, or use an average outstanding balance method; disclose the approach.",
+      "category": "mid-year",
+      "tags": ["proration", "registration-date"]
+    },
+    {
+      "id": "mvl_043",
+      "question": "Can I use national fuel-sales data instead of vehicle-specific distance?",
+      "answer": "Only if no better data exist (score 5). The result represents an economy-wide proxy rather than the financed vehicle’s actual usage.",
+      "category": "proxy",
+      "tags": ["national-fuel", "score-5"]
+    },
+    {
+      "id": "mvl_044",
+      "question": "What CO₂e factor should I use for premium unleaded petrol (E10)?",
+      "answer": "Use 2.31 kg CO₂e per litre for E10 (10 % ethanol blend) as per Defra 2023 or your national conversion factors.",
+      "category": "fuel-specific",
+      "tags": ["E10", "Defra-2023"]
+    },
+    {
+      "id": "mvl_045",
+      "question": "How do I address double-counting when the same vehicle is financed by two banks?",
+      "answer": "Each bank reports its own share using its outstanding amount and the same denominator (vehicle value). PCAF accepts the double-counting as transparent.",
+      "category": "double-counting",
+      "tags": ["co-financing", "transparency"]
+    },
+  
+    {
+      "id": "mvl_046",
+      "question": "Is it mandatory to split Scope 1 and Scope 2 emissions?",
+      "answer": "No. PCAF requires Scope 1 and 2 combined (absolute emissions), but splitting is encouraged if useful for risk management or disclosures.",
+      "category": "disclosure",
+      "tags": ["split-scopes", "optional"]
+    },
+    {
+      "id": "mvl_047",
+      "question": "What is the recommended emission factor for electric two-wheelers in India?",
+      "answer": "Apply the national grid emission factor 0.82 kg CO₂e/kWh (CEA 2022) multiplied by 0.025 kWh/km typical for e-scooters.",
+      "category": "e-scooter",
+      "tags": ["India-grid", "CEA-2022"]
+    },
+    {
+      "id": "mvl_048",
+      "question": "How do I calculate financed emissions for a corporate car-sharing fleet?",
+      "answer": "Sum the outstanding amount for the fleet, divide by total fleet value at origination, then multiply by aggregated annual fleet emissions (distance × efficiency × EF). Tag as ‘commercial car-sharing’ for transparency.",
+      "category": "fleet",
+      "tags": ["car-sharing", "commercial-fleet"]
+    },
+    {
+      "id": "mvl_049",
+      "question": "Should I update grid factors every year for EVs?",
+      "answer": "Yes. Grid emission factors can change >5 % annually; use the latest calendar-year factor to maintain accuracy.",
+      "category": "updates",
+      "tags": ["grid-factor-update", "annual"]
+    },
+    {
+      "id": "mvl_050",
+      "question": "How do I treat vehicles exported or sold abroad during the loan term?",
+      "answer": "Stop attributing emissions once the loan is fully repaid or the vehicle is deregistered; if the loan continues, keep the original factors and note the jurisdiction change.",
+      "category": "export",
+      "tags": ["deregistration", "jurisdiction"]
+    },
+  
+    {
+      "id": "mvl_051",
+      "question": "What distance should I use for delivery vans with seasonal peaks?",
+      "answer": "Use annual kilometres averaged over at least three years or telematics data to smooth seasonality; disclose the averaging method.",
+      "category": "seasonality",
+      "tags": ["averaging", "delivery-vans"]
+    },
+    {
+      "id": "mvl_052",
+      "question": "How do I document vehicle make and model in the dataset?",
+      "answer": "Store standardised fields: manufacturer (e.g., Ford), model (e.g., Transit 2.0 TDCi), model year, fuel type, and WLTP CO₂ g/km.",
+      "category": "metadata",
+      "tags": ["standard-fields", "WLTP-g-km"]
+    },
+    {
+      "id": "mvl_053",
+      "question": "Can I use manufacturer-declared NEDC values instead of WLTP?",
+      "answer": "Only if WLTP data are unavailable; flag the older standard and apply a 20 % uplift to approximate real-world emissions, per ICCT guidance.",
+      "category": "NEDC",
+      "tags": ["uplift", "ICCT-guidance"]
+    },
+    {
+      "id": "mvl_054",
+      "question": "How do I calculate emissions for a plug-in hybrid with solar home charging?",
+      "answer": "Split kilometres into grid-charged and solar-charged using the utility factor, then apply grid EF for grid portion and 0 EF for solar portion.",
+      "category": "renewable-charging",
+      "tags": ["solar-PHEV", "utility-factor"]
+    },
+    {
+      "id": "mvl_055",
+      "question": "What is the impact of tyre choice on PCAF calculations?",
+      "answer": "Tyre rolling resistance affects fuel efficiency by ~3 %. Unless OEM data are available, ignore for PCAF; note as immaterial.",
+      "category": "materiality",
+      "tags": ["rolling-resistance", "immaterial"]
+    },
+  
+    {
+      "id": "mvl_056",
+      "question": "How do I handle used-vehicle loans when no OEM data exist?",
+      "answer": "Estimate efficiency using ICCT or national databases for the same make-model-year; apply Option 2a/2b and score 3–4.",
+      "category": "used-vehicle",
+      "tags": ["ICCT-database", "score-3-4"]
+    },
+    {
+      "id": "mvl_057",
+      "question": "Do I include emissions from driver training or taxi idle time?",
+      "answer": "Yes. All operational kilometres—including idling and training—are part of the vehicle’s annual emissions.",
+      "category": "operational",
+      "tags": ["idling", "training-kilometres"]
+    },
+    {
+      "id": "mvl_058",
+      "question": "What is the recommended retention period for supporting data?",
+      "answer": "Retain raw data for a minimum of five years or in line with local financial-services record-keeping regulations, whichever is longer.",
+      "category": "governance",
+      "tags": ["retention", "audit"]
+    },
+    {
+      "id": "mvl_059",
+      "question": "How do I calculate financed emissions for refrigerated trucks?",
+      "answer": "Add auxiliary refrigeration unit fuel consumption (L/h × operating hours) to the chassis fuel consumption, then apply the attribution factor.",
+      "category": "auxiliary",
+      "tags": ["refrigeration-unit", "auxiliary-fuel"]
+    },
+    {
+      "id": "mvl_060",
+      "question": "Can I use blockchain odometer data as high-quality input?",
+      "answer": "Yes. Immutable odometer records qualify as primary data and upgrade the data-quality score to 1 or 2, provided they cover ≥90 % of the reporting year.",
+      "category": "technology",
+      "tags": ["blockchain", "odometer", "score-1-2"]
+    },
+  
+    {
+      "id": "mvl_061",
+      "question": "Should I adjust for cold-start or hot-start conditions?",
+      "answer": "No. Use standard test-cycle factors unless real-world telematics data demonstrate systematic deviation; document any adjustment.",
+      "category": "test-cycle",
+      "tags": ["cold-start", "deviation"]
+    },
+    {
+      "id": "mvl_062",
+      "question": "How do I treat balloon-payment loans where a large residual remains?",
+      "answer": "Continue attributing emissions based on the outstanding principal. If the balloon is refinanced, treat as a new loan with updated outstanding amount.",
+      "category": "balloon-loan",
+      "tags": ["residual", "refinance"]
+    },
+    {
+      "id": "mvl_063",
+      "question": "What emission factor should I use for biodiesel (B100) trucks?",
+      "answer": "Use a tail-pipe factor of 0 kg CO₂e per MJ for B100 (biogenic), but include well-to-tank fossil emissions (~49 g CO₂e/MJ) unless reporting biogenic separately.",
+      "category": "biofuel",
+      "tags": ["B100", "biogenic", "WTW"]
+    },
+    {
+      "id": "mvl_064",
+      "question": "How do I disclose improvements in data quality year-over-year?",
+      "answer": "Publish a waterfall chart showing the share of portfolio by data-quality score and highlight migrations (e.g., 20 % moved from score 4 to 2 due to telematics rollout).",
+      "category": "reporting",
+      "tags": ["waterfall-chart", "migration"]
+    },
+    {
+      "id": "mvl_065",
+      "question": "Is the weight of cargo included in the emission factor?",
+      "answer": "Standard factors assume average load. Unless reliable load-factor data are available, do not adjust; note the limitation.",
+      "category": "load-factor",
+      "tags": ["cargo-weight", "limitation"]
+    },
+  
+    {
+      "id": "mvl_066",
+      "question": "How do I handle vehicle recalls that change fuel efficiency?",
+      "answer": "If a mandated recall materially changes efficiency (>5 %), update the factor from the recall date and recalculate the current year; prior years remain unchanged.",
+      "category": "recall",
+      "tags": ["efficiency-change", "recalculation"]
+    },
+    {
+      "id": "mvl_067",
+      "question": "What is the correct emission factor for LPG (autogas) passenger cars?",
+      "answer": "Use 1.63 kg CO₂e per litre of LPG or 59.7 kg CO₂e per GJ (lower heating value) based on national conversion factors.",
+      "category": "LPG",
+      "tags": ["autogas", "conversion-factor"]
+    },
+    {
+      "id": "mvl_068",
+      "question": "Do I need to adjust for altitude or terrain effects?",
+      "answer": "No. Standard factors are representative of national average conditions; altitude adjustments are optional and must be documented.",
+      "category": "terrain",
+      "tags": ["altitude", "optional-adjustment"]
+    },
+    {
+      "id": "mvl_069",
+      "question": "How do I calculate financed emissions for a subscription-car model?",
+      "answer": "Treat each subscription vehicle as a financed asset while the bank’s loan is outstanding; use the same attribution logic and monthly distance data.",
+      "category": "subscription",
+      "tags": ["monthly-data", "subscription-model"]
+    },
+    {
+      "id": "mvl_070",
+      "question": "What is the recommended approach for rural vs urban driving splits?",
+      "answer": "Use national average splits if no customer data exist; if rural/urban data are available, apply weighted factors accordingly and disclose weightings.",
+      "category": "driving-patterns",
+      "tags": ["rural-urban", "weighting"]
+    },
+  
+    {
+      "id": "mvl_071",
+      "question": "How do I incorporate eco-driving training benefits?",
+      "answer": "Only adjust if post-training telematics demonstrate a measurable (>5 %) sustained reduction; otherwise, retain original factor.",
+      "category": "eco-driving",
+      "tags": ["training-benefit", "measurement"]
+    },
+    {
+      "id": "mvl_072",
+      "question": "What is the CO₂e factor for electricity in Norway for EVs?",
+      "answer": "Use the residual mix 0.011 kg CO₂e/kWh (NVE 2023) or supplier-specific renewable contract at 0 kg if documented.",
+      "category": "Norway",
+      "tags": ["residual-mix", "NVE-2023"]
+    },
+    {
+      "id": "mvl_073",
+      "question": "How do I treat partial charge-offs or write-downs?",
+      "answer": "Reduce the outstanding amount (numerator) accordingly; the denominator (origination value) remains unchanged.",
+      "category": "write-down",
+      "tags": ["charge-off", "numerator-reduction"]
+    },
+    {
+      "id": "mvl_074",
+      "question": "Should I include emissions from auxiliary heating units in diesel vans?",
+      "answer": "Yes, if the auxiliary heater fuel is drawn from the vehicle tank, include in Scope 1 using heater fuel consumption data.",
+      "category": "auxiliary",
+      "tags": ["heater", "Scope-1"]
+    },
+    {
+      "id": "mvl_075",
+      "question": "Can I use credit-bureau mileage data as a distance source?",
+      "answer": "Yes, if the bureau sources odometer readings and covers ≥80 % of the portfolio, treat as Option 1b (score 2).",
+      "category": "data-source",
+      "tags": ["credit-bureau", "odometer"]
+    },
+  
+    {
+      "id": "mvl_076",
+      "question": "How do I calculate financed emissions for three-wheelers?",
+      "answer": "Apply the same methodology; use manufacturer data or ICCT three-wheeler averages (e.g., 1.8 L/100 km petrol, 42 g CO₂e/km).",
+      "category": "three-wheeler",
+      "tags": ["ICCT-average", "petrol"]
+    },
+    {
+      "id": "mvl_077",
+      "question": "What is the recommended unit for distance in disclosures?",
+      "answer": "Kilometres per year (km/y) is standard; convert miles using 1 mile = 1.609 km and state the conversion.",
+      "category": "units",
+      "tags": ["km-y", "conversion"]
+    },
+    {
+      "id": "mvl_078",
+      "question": "How do I handle vintage cars with no emission data?",
+      "answer": "Use a proxy vehicle of similar engine size and fuel type from the same decade; data-quality score 5, disclose proxy.",
+      "category": "vintage",
+      "tags": ["proxy-vehicle", "score-5"]
+    },
+    {
+      "id": "mvl_079",
+      "question": "Do I need to include refrigerant leakage from air-conditioning?",
+      "answer": "No. HFC leakage is de minimis for PCAF motor-vehicle loan calculations unless mandated by national rules.",
+      "category": "materiality",
+      "tags": ["HFC-leakage", "de-minimis"]
+    },
+    {
+      "id": "mvl_080",
+      "question": "How do I treat variable-rate loans with fluctuating principal?",
+      "answer": "Use the year-end outstanding principal as the numerator; fluctuations within the year are averaged if material.",
+      "category": "variable-loan",
+      "tags": ["year-end-principal", "averaging"]
+    },
+  
+    {
+      "id": "mvl_081",
+      "question": "What is the emission factor for Euro VI diesel trucks?",
+      "answer": "Tail-pipe: 2.61 kg CO₂e per litre diesel or 3.16 kg CO₂e/kg diesel; use the density 0.832 kg/L for conversion.",
+      "category": "Euro-VI",
+      "tags": ["diesel-truck", "density"]
+    },
+    {
+      "id": "mvl_082",
+      "question": "How do I calculate financed emissions for a snowmobile loan?",
+      "answer": "Use manufacturer fuel consumption (e.g., 10 L/100 km) and distance (e.g., 1 000 km/year) with petrol EF 2.31 kg CO₂e/L.",
+      "category": "snowmobile",
+      "tags": ["petrol", "example"]
+    },
+    {
+      "id": "mvl_083",
+      "question": "Should I adjust for driver behaviour scores from telematics?",
+      "answer": "Only if the bank can quantify and verify a consistent (>5 %) emission reduction; otherwise, use standard factors.",
+      "category": "driver-behaviour",
+      "tags": ["verified-reduction", "threshold"]
+    },
+    {
+      "id": "mvl_084",
+      "question": "How do I disclose biogenic CO₂ from biofuel separately?",
+      "answer": "Report biogenic CO₂ as a memo item outside scopes; do not net it against fossil emissions in the financed emissions figure.",
+      "category": "biogenic",
+      "tags": ["memo-item", "outside-scopes"]
+    },
+    {
+      "id": "mvl_085",
+      "question": "What is the recommended granularity for vehicle classification?",
+      "answer": "At minimum, segment by fuel type (petrol, diesel, CNG, LPG, BEV, PHEV, FCEV) and size class (mini, small, medium, large, SUV, van, truck).",
+      "category": "classification",
+      "tags": ["segmentation", "size-class"]
+    },
+  
+    {
+      "id": "mvl_086",
+      "question": "How do I handle data-quality scoring for mixed portfolios?",
+      "answer": "Compute a weighted-average score where weight = outstanding amount per loan; disclose the share of portfolio in each score band.",
+      "category": "weighted-score",
+      "tags": ["portfolio-weighted", "score-bands"]
+    },
+    {
+      "id": "mvl_087",
+      "question": "What is the correct emission factor for LNG heavy-duty trucks?",
+      "answer": "Well-to-wheel: 2.75 kg CO₂e per litre LNG (liquid) or 3.8 kg CO₂e per diesel-equivalent litre.",
+      "category": "LNG",
+      "tags": ["well-to-wheel", "diesel-equivalent"]
+    },
+    {
+      "id": "mvl_088",
+      "question": "How do I treat loan syndications for motor-vehicle fleets?",
+      "answer": "Each syndicate member reports its pro-rata share of outstanding amount and emissions using the common vehicle value denominator.",
+      "category": "syndication",
+      "tags": ["pro-rata", "common-denominator"]
+    },
+    {
+      "id": "mvl_089",
+      "question": "Can I use insurance telematics boxes for fuel data?",
+      "answer": "Yes, if the insurer provides verified fuel volume or efficiency data linked to the financed vehicle and covers ≥80 % of kilometres.",
+      "category": "telematics",
+      "tags": ["insurance-box", "verified-data"]
+    },
+    {
+      "id": "mvl_090",
+      "question": "How do I report Scope 3 avoided emissions for EV loans?",
+      "answer": "Calculate avoided emissions = EV annual kWh × (grid EF – 0) and disclose separately from absolute emissions; never net them.",
+      "category": "avoided-emissions",
+      "tags": ["EV-avoided", "separate-disclosure"]
+    },
+  
+    {
+      "id": "mvl_091",
+      "question": "What is the emission factor for petrol hybrid (HEV) passenger cars?",
+      "answer": "Use the certified WLTP combined value (e.g., 4.3 L/100 km) × 2.31 kg CO₂e/L = 99 g CO₂e/km.",
+      "category": "HEV",
+      "tags": ["WLTP-combined", "g-per-km"]
+    },
+    {
+      "id": "mvl_092",
+      "question": "How do I treat vehicles under repossession?",
+      "answer": "Stop attributing emissions once the loan is fully written off or the vehicle is sold; maintain emissions up to the date of write-off.",
+      "category": "repossession",
+      "tags": ["write-off", "stop-attribution"]
+    },
+    {
+      "id": "mvl_093",
+      "question": "What is the recommended source for Japanese vehicle efficiency data?",
+      "answer": "Use the Ministry of Land, Infrastructure, Transport and Tourism (MLIT) JC08 or WLTP database, publicly available in CSV format.",
+      "category": "Japan",
+      "tags": ["MLIT", "JC08", "WLTP"]
+    },
+    {
+      "id": "mvl_094",
+      "question": "How do I handle mileage caps in lease contracts?",
+      "answer": "Use the contracted annual mileage cap as the distance estimate; if actual kilometres are available later, recalculate and restate.",
+      "category": "lease-cap",
+      "tags": ["contracted-mileage", "restatement"]
+    },
+    {
+      "id": "mvl_095",
+      "question": "Do I include emissions from toll-road idling?",
+      "answer": "Yes. Idling fuel consumed during normal operation is captured in average fuel efficiency factors; no separate calculation is needed.",
+      "category": "idling",
+      "tags": ["fuel-efficiency-average"]
+    },
+  
+    {
+      "id": "mvl_096",
+      "question": "How do I calculate financed emissions for electric quad bikes?",
+      "answer": "Use electricity consumption from manufacturer (e.g., 0.06 kWh/km) × grid EF × attribution factor; classify under motor-vehicle loans.",
+      "category": "quad-bike",
+      "tags": ["electric-ATV", "manufacturer-data"]
+    },
+    {
+      "id": "mvl_097",
+      "question": "What is the emission factor for Euro 3 diesel minibuses?",
+      "answer": "Use 2.68 kg CO₂e per litre diesel without correction; Euro 3 affects pollutants, not CO₂.",
+      "category": "Euro-3",
+      "tags": ["diesel-CO2", "no-correction"]
+    },
+    {
+      "id": "mvl_098",
+      "question": "How do I treat loans where the borrower pays for fuel separately?",
+      "answer": "This does not affect the calculation; financed emissions are based on the vehicle’s annual emissions, irrespective of who pays for fuel.",
+      "category": "fuel-payer",
+      "tags": ["independent", "calculation"]
+    },
+    {
+      "id": "mvl_099",
+      "question": "What is the recommended source for Brazilian vehicle distance data?",
+      "answer": "Use IBGE Pesquisa de Orçamento Familiar (POF) or DENATRAN statistical yearbook for regional km/year averages.",
+      "category": "Brazil",
+      "tags": ["IBGE", "DENATRAN"]
+    },
+    {
+      "id": "mvl_100",
+      "question": "How do I disclose methodological changes in my annual report?",
+      "answer": "Include a ‘Changes in Methodology’ section describing the change, rationale, quantitative impact, and whether base-year emissions were recalculated.",
+      "category": "methodology-change",
+      "tags": ["disclosure-section", "impact"]
+    },
+  
+    {
+      "id": "mvl_101",
+      "question": "What is the emission factor for petrol outboard boat engines?",
+      "answer": "Use 2.31 kg CO₂e per litre petrol and manufacturer fuel consumption (e.g., 0.4 L/km at cruising speed).",
+      "category": "outboard",
+      "tags": ["boat", "petrol-engine"]
+    },
+    {
+      "id": "mvl_102",
+      "question": "How do I treat second-lien loans on vehicles?",
+      "answer": "Each lender uses its own outstanding amount and the common vehicle value denominator; both report their respective shares.",
+      "category": "second-lien",
+      "tags": ["common-denominator", "multiple-lenders"]
+    },
+    {
+      "id": "mvl_103",
+      "question": "What is the recommended distance for ride-hailing vehicles?",
+      "answer": "Use platform-reported annual kilometres (e.g., 45 000 km) or national ride-hailing averages published by transport authorities.",
+      "category": "ride-hailing",
+      "tags": ["platform-data", "high-mileage"]
+    },
+    {
+      "id": "mvl_104",
+      "question": "How do I handle vehicle scrappage before loan maturity?",
+      "answer": "Cease attribution when the vehicle is deregistered; any remaining outstanding amount is no longer linked to an active vehicle.",
+      "category": "scrappage",
+      "tags": ["deregistration", "cease-attribution"]
+    },
+    {
+      "id": "mvl_105",
+      "question": "Can I use mobile-app GPS mileage logs?",
+      "answer": "Yes, if logs are continuous, tamper-proof, and cover ≥90 % of the year; qualify as Option 1b (score 2).",
+      "category": "GPS-log",
+      "tags": ["mobile-app", "tamper-proof"]
+    },
+  
+    {
+      "id": "mvl_106",
+      "question": "What is the emission factor for compressed hydrogen cars in California?",
+      "answer": "Use 0.15 kg CO₂e per mile (CARB 2023) or 0.093 kg CO₂e/km, reflecting 33 % renewable hydrogen share.",
+      "category": "California-FCEV",
+      "tags": ["CARB-2023", "renewable-hydrogen"]
+    },
+    {
+      "id": "mvl_107",
+      "question": "How do I treat dealer floor-plan financing?",
+      "answer": "Apply the motor-vehicle loan methodology to each vehicle on the floor plan; use VIN-level data and outstanding floor-plan balance.",
+      "category": "floor-plan",
+      "tags": ["VIN-level", "inventory-financing"]
+    },
+    {
+      "id": "mvl_108",
+      "question": "What is the recommended emission factor for petrol mopeds?",
+      "answer": "Use 1.8 L/100 km × 2.31 kg CO₂e/L = 41.6 g CO₂e/km, based on ICCT small two-wheeler averages.",
+      "category": "moped",
+      "tags": ["ICCT-small", "two-wheeler"]
+    },
+    {
+      "id": "mvl_109",
+      "question": "How do I handle variable electricity tariffs for EVs?",
+      "answer": "Use a weighted-average grid emission factor over the charging hours or supplier-specific factor if green-tariff contract is verified.",
+      "category": "EV-tariff",
+      "tags": ["weighted-average", "green-tariff"]
+    },
+    {
+      "id": "mvl_110",
+      "question": "Do I need to restate previous years if I obtain better distance data?",
+      "answer": "Yes, if the change exceeds the significance threshold (commonly 5 %), restate the base year for consistency.",
+      "category": "restatement",
+      "tags": ["significance-threshold", "base-year"]
+    },
+  
+    {
+      "id": "mvl_111",
+      "question": "What is the emission factor for diesel-electric hybrid buses?",
+      "answer": "Use certified combined factor (e.g., 30 L/100 km × 2.68 kg CO₂e/L ÷ 100 passengers = 8.0 g CO₂e/pass-km) for fleet average.",
+      "category": "hybrid-bus",
+      "tags": ["pass-km", "fleet-average"]
+    },
+    {
+      "id": "mvl_112",
+      "question": "How do I treat manufacturer software updates affecting fuel use?",
+      "answer": "Update the factor from the effective date if the change is ≥5 %; disclose the software-update impact.",
+      "category": "software-update",
+      "tags": ["fuel-change", "disclosure"]
+    },
+    {
+      "id": "mvl_113",
+      "question": "What is the recommended distance for school buses?",
+      "answer": "Use state education department averages (e.g., 12 000 km/year) or telematics data if the bus fleet is instrumented.",
+      "category": "school-bus",
+      "tags": ["education-department", "telematics"]
+    },
+    {
+      "id": "mvl_114",
+      "question": "How do I treat vintage electric vehicle retrofits?",
+      "answer": "Calculate as EV (Scope 2) using retrofit kit kWh/km and grid EF; retain original vehicle value denominator for consistency.",
+      "category": "retrofit-EV",
+      "tags": ["retrofit-kit", "Scope-2"]
+    },
+    {
+      "id": "mvl_115",
+      "question": "What is the emission factor for ethanol (E85) flexible-fuel cars?",
+      "answer": "Use 1.34 kg CO₂e per litre E85 (74 % ethanol blend) or 1.9 kg CO₂e per GJ; biogenic portion reported separately.",
+      "category": "E85",
+      "tags": ["flex-fuel", "biogenic-separate"]
+    },
+  
+    {
+      "id": "mvl_116",
+      "question": "How do I handle vehicle pooling schemes financed by the bank?",
+      "answer": "Attribute emissions to the bank using the outstanding amount and the pooled vehicle’s annual emissions; allocate kilometres pro-rata to financed vehicles if data exist.",
+      "category": "pooling",
+      "tags": ["pro-rata-kilometres"]
+    },
+    {
+      "id": "mvl_117",
+      "question": "What is the recommended source for Australian vehicle data?",
+      "answer": "Use the National Transport Commission (NTC) Carbon Dioxide Emissions Intensity report and ABS Survey of Motor Vehicle Use.",
+      "category": "Australia",
+      "tags": ["NTC", "ABS-Survey"]
+    },
+    {
+      "id": "mvl_118",
+      "question": "How do I treat emissions from tyre and brake wear?",
+      "answer": "Exclude from PCAF Scope 1/2 as non-tail-pipe; may be reported as memo items under Scope 3 if data are available.",
+      "category": "non-tail-pipe",
+      "tags": ["tyre-wear", "Scope-3-memo"]
+    },
+    {
+      "id": "mvl_119",
+      "question": "What is the emission factor for diesel generators mounted on trucks?",
+      "answer": "Include auxiliary generator fuel in Scope 1 using 2.68 kg CO₂e per litre diesel and manufacturer consumption (L/h × operating hours).",
+      "category": "generator",
+      "tags": ["auxiliary-diesel", "Scope-1"]
+    },
+    {
+      "id": "mvl_120",
+      "question": "How do I treat loans with embedded service packages (maintenance, tyres)?",
+      "answer": "Exclude service-related emissions unless the package is itemised and material (>5 % of total vehicle emissions); disclose exclusions.",
+      "category": "service-package",
+      "tags": ["materiality-threshold", "exclusion"]
+    },
+  
+    {
+      "id": "mvl_121",
+      "question": "What is the recommended distance for refuse-collection trucks?",
+      "answer": "Use municipal fleet averages (e.g., 25 000 km/year) or route-planning software data; include idling time in fuel factor.",
+      "category": "refuse-truck",
+      "tags": ["municipal-average", "route-planning"]
+    },
+    {
+      "id": "mvl_122",
+      "question": "How do I handle variable occupancy rates in passenger transport?",
+      "answer": "Do not adjust for occupancy; report absolute vehicle emissions, optionally disclose occupancy-based intensity separately.",
+      "category": "occupancy",
+      "tags": ["absolute-emissions", "optional-intensity"]
+    },
+    {
+      "id": "mvl_123",
+      "question": "What is the emission factor for petrol ATVs (quad bikes)?",
+      "answer": "Use 8 L/100 km × 2.31 kg CO₂e/L = 185 g CO₂e/km based on EPA NONROAD defaults.",
+      "category": "ATV",
+      "tags": ["EPA-NONROAD", "quad-bike"]
+    },
+    {
+      "id": "mvl_124",
+      "question": "How do I treat loans for vehicle modifications (e.g., wheelchair lifts)?",
+      "answer": "Include additional fuel consumption if documented (>5 %); otherwise, ignore and disclose assumption.",
+      "category": "modification",
+      "tags": ["wheelchair-lift", "fuel-increase"]
+    },
+    {
+      "id": "mvl_125",
+      "question": "What is the recommended distance for emergency ambulances?",
+      "answer": "Use regional health-service averages (e.g., 35 000 km/year) or fleet telematics; include idle engine hours converted to kilometres.",
+      "category": "ambulance",
+      "tags": ["health-service", "idle-hours"]
+    },
+  
+    {
+      "id": "mvl_126",
+      "question": "How do I handle seasonal tyre changes affecting fuel efficiency?",
+      "answer": "Use annual average fuel factor unless winter tyres demonstrate >5 % change; document any adjustment.",
+      "category": "seasonal-tyres",
+      "tags": ["winter-tyres", "5-percent-change"]
+    },
+    {
+      "id": "mvl_127",
+      "question": "What is the emission factor for petrol golf carts?",
+      "answer": "Use 4 L/100 km × 2.31 kg CO₂e/L = 92.4 g CO₂e/km or manufacturer data if available.",
+      "category": "golf-cart",
+      "tags": ["manufacturer-data", "petrol-cart"]
+    },
+    {
+      "id": "mvl_128",
+      "question": "How do I treat electric boat loans under PCAF?",
+      "answer": "Classify under motor-vehicle loans if the boat is registered and the loan finances the electric propulsion system; use grid EF and kWh/km.",
+      "category": "electric-boat",
+      "tags": ["propulsion-system", "grid-EF"]
+    },
+    {
+      "id": "mvl_129",
+      "question": "What is the recommended distance for mining dump trucks?",
+      "answer": "Use site-specific haul-cycle data (e.g., 45 000 km/year) or manufacturer duty-cycle specifications.",
+      "category": "mining-truck",
+      "tags": ["haul-cycle", "duty-cycle"]
+    },
+    {
+      "id": "mvl_130",
+      "question": "How do I treat loans for vehicle advertising wraps affecting aerodynamics?",
+      "answer": "Ignore unless verified data show >5 % fuel penalty; disclose assumption.",
+      "category": "aerodynamics",
+      "tags": ["advertising-wrap", "fuel-penalty"]
+    },
+  
+    {
+      "id": "mvl_131",
+      "question": "What is the emission factor for compressed biomethane (Bio-CNG) buses?",
+      "answer": "Tail-pipe: 0 kg CO₂e/MJ biogenic; well-to-tank: 15 g CO₂e/MJ; report biogenic separately.",
+      "category": "Bio-CNG",
+      "tags": ["biomethane", "well-to-tank"]
+    },
+    {
+      "id": "mvl_132",
+      "question": "How do I handle vehicle recalls requiring ECU remapping?",
+      "answer": "Apply new factor from remapping date if efficiency change ≥5 %; document recall notice and new WLTP certificate.",
+      "category": "ECU-remap",
+      "tags": ["efficiency-change", "WLTP-certificate"]
+    },
+    {
+      "id": "mvl_133",
+      "question": "What is the recommended distance for ride-on lawn mowers?",
+      "answer": "Use manufacturer annual usage (e.g., 200 hours × 3 km/h = 600 km) or owner survey data.",
+      "category": "lawn-mower",
+      "tags": ["manufacturer-usage", "owner-survey"]
+    },
+    {
+      "id": "mvl_134",
+      "question": "How do I treat loans for vehicle telematics hardware?",
+      "answer": "Exclude hardware emissions unless the telematics unit materially (>5 %) increases vehicle electrical load.",
+      "category": "hardware-loan",
+      "tags": ["telematics-hardware", "electrical-load"]
+    },
+    {
+      "id": "mvl_135",
+      "question": "What is the emission factor for diesel locomotives used in shunting?",
+      "answer": "Not within motor-vehicle loan scope; classify under business loans or project finance if applicable.",
+      "category": "locomotive",
+      "tags": ["out-of-scope", "business-loan"]
+    },
+  
+    {
+      "id": "mvl_136",
+      "question": "How do I treat financed emissions for camper vans with living quarters?",
+      "answer": "Include only the chassis emissions; auxiliary LPG/electric for living is excluded unless separately metered and material.",
+      "category": "camper-van",
+      "tags": ["chassis-only", "auxiliary-excluded"]
+    },
+    {
+      "id": "mvl_137",
+      "question": "What is the emission factor for petrol jet skis?",
+      "answer": "Use manufacturer fuel rate (e.g., 25 L/h) × operating hours × 2.31 kg CO₂e/L; convert to km if distance data available.",
+      "category": "jet-ski",
+      "tags": ["manufacturer-hours", "convert-km"]
+    },
+    {
+      "id": "mvl_138",
+      "question": "How do I treat loans for vehicle software subscriptions (e.g., autopilot)?",
+      "answer": "Exclude unless software materially (>5 %) affects energy consumption and data are verified.",
+      "category": "software-subscription",
+      "tags": ["energy-impact", "verified-data"]
+    },
+    {
+      "id": "mvl_139",
+      "question": "What is the recommended distance for food-delivery scooters?",
+      "answer": "Use platform averages (e.g., 12 000 km/year) or GPS data from delivery apps.",
+      "category": "delivery-scooter",
+      "tags": ["platform-average", "GPS-data"]
+    },
+    {
+      "id": "mvl_140",
+      "question": "How do I handle vehicle export after partial repayment?",
+      "answer": "Continue attribution until legal ownership and loan obligation cease; document export date and deregistration.",
+      "category": "export-partial",
+      "tags": ["ownership-cease", "deregistration"]
+    },
+  
+    {
+      "id": "mvl_141",
+      "question": "What is the emission factor for petrol side-by-side (UTV) vehicles?",
+      "answer": "Use 7 L/100 km × 2.31 kg CO₂e/L = 162 g CO₂e/km based on EPA NONROAD defaults.",
+      "category": "UTV",
+      "tags": ["EPA-NONROAD", "side-by-side"]
+    },
+    {
+      "id": "mvl_142",
+      "question": "How do I treat loans for vehicle extended warranties?",
+      "answer": "Exclude warranty emissions unless warranty service directly increases fuel use (>5 %); disclose exclusion.",
+      "category": "warranty",
+      "tags": ["exclusion", "fuel-use"]
+    },
+    {
+      "id": "mvl_143",
+      "question": "What is the recommended distance for airport ground-support vehicles?",
+      "answer": "Use airport authority fleet logs (e.g., 8 000 km/year) or manufacturer duty-cycle hours converted to kilometres.",
+      "category": "ground-support",
+      "tags": ["airport-logs", "duty-cycle"]
+    },
+    {
+      "id": "mvl_144",
+      "question": "How do I treat financed emissions for tractor-trailers with multiple trailers?",
+      "answer": "Include only the tractor emissions; trailers are separate assets; use tractor manufacturer fuel data.",
+      "category": "tractor-trailer",
+      "tags": ["tractor-only", "separate-trailers"]
+    },
+    {
+      "id": "mvl_145",
+      "question": "What is the emission factor for diesel-electric hybrid locomotives?",
+      "answer": "Outside motor-vehicle loan scope; classify under project finance if new build or business loans for rolling stock.",
+      "category": "hybrid-locomotive",
+      "tags": ["project-finance", "rolling-stock"]
+    },
+  
+    {
+      "id": "mvl_146",
+      "question": "How do I treat loans for vehicle dash-cams affecting electrical load?",
+      "answer": "Exclude (<1 % of fuel) unless measurable increase >5 % is documented.",
+      "category": "dash-cam",
+      "tags": ["electrical-load", "immaterial"]
+    },
+    {
+      "id": "mvl_147",
+      "question": "What is the emission factor for petrol go-karts?",
+      "answer": "Use 9 L/100 km × 2.31 kg CO₂e/L = 208 g CO₂e/km based on commercial track averages.",
+      "category": "go-kart",
+      "tags": ["commercial-track", "average"]
+    },
+    {
+      "id": "mvl_148",
+      "question": "How do I treat financed emissions for airport passenger buses?",
+      "answer": "Use airport operator duty-cycle data (e.g., 22 000 km/year) and certified bus fuel consumption.",
+      "category": "airport-bus",
+      "tags": ["duty-cycle", "certified-consumption"]
+    },
+    {
+      "id": "mvl_149",
+      "question": "What is the recommended source for South African vehicle data?",
+      "answer": "Use the Department of Transport Annual Vehicle Statistics and NAAMSA fuel economy guide.",
+      "category": "South-Africa",
+      "tags": ["DoT-SA", "NAAMSA"]
+    },
+    {
+      "id": "mvl_150",
+      "question": "How do I treat loans for vehicle rooftop solar panels?",
+      "answer": "Exclude panel emissions; any reduction in grid charging for EVs is captured in Scope 2 grid EF, not the panel itself.",
+      "category": "rooftop-solar",
+      "tags": ["exclude-panel", "Scope-2-reduction"]
+    }
+  ]
+  [
+    {
+      "id": "mvl_ea_151",
+      "question": "Which East-African datasets are recommended for estimating annual kilometres of heavy-duty trucks under PCAF Option 2b?",
+      "answer": "Use the Northern Corridor Transport Observatory (NCTO) 2023 report (Kenya–Uganda–Rwanda–DRC), Tanzania Central Transport Database (CTD) 2024, and the East African Community (EAC) vehicle utilisation survey. These provide route-specific km/year averages (e.g., Mombasa–Kampala 92 000 km, Dar–Kigali 78 000 km) with a data-quality score 3.",
+      "category": "activity-data",
+      "tags": ["NCTO-2023", "CTD-2024", "EAC-survey", "route-specific"]
+    },
+    {
+      "id": "mvl_ea_152",
+      "question": "How do I apply PCAF attribution to a Kenyan shilling-denominated letter of credit (LC) for imported diesel buses?",
+      "answer": "Treat the LC as an off-balance-sheet contingent liability until drawn. If drawn before year-end, convert the outstanding KES amount to USD using the Central Bank of Kenya (CBK) year-end rate, then apply the attribution factor = Outstanding LC USD ÷ (Total vehicle value at origination USD). Report emissions using the bus’s WLTP fuel factor and EA diesel EF 2.71 kg CO₂e/L.",
+      "category": "letters-of-credit",
+      "tags": ["LC-contingent", "CBK-rate", "WLTP-bus"]
+    },
+    {
+      "id": "mvl_ea_153",
+      "question": "What proxy emission factor should I use for Ugandan petrol motorcycles when only engine-size data are available?",
+      "answer": "Apply the Uganda Bureau of Statistics (UBOS) 2023 motorcycle survey: 125 cc = 1.9 L/100 km, 150 cc = 2.2 L/100 km. Convert to CO₂e using UBOS petrol EF 2.28 kg CO₂e/L. Data quality score 4 (Option 3a).",
+      "category": "proxy-factor",
+      "tags": ["UBOS-2023", "engine-size-proxy", "score-4"]
+    },
+    {
+      "id": "mvl_ea_154",
+      "question": "How do I estimate financed emissions for a trade-finance facility supporting Ethiopian electric tuk-tuks when no VIN-level data exist?",
+      "answer": "Use the Ethiopian Ministry of Transport e-mobility pilot data: 1.2 kWh/10 km, grid EF 0.58 kg CO₂e/kWh (EEPCo 2024 residual mix). Attribution factor = Outstanding facility USD ÷ (Unit price USD 3 500). Data quality score 3.",
+      "category": "trade-finance",
+      "tags": ["EEPCo-2024", "e-tuk-tuk", "residual-mix"]
+    },
+    {
+      "id": "mvl_ea_155",
+      "question": "Which guarantee instrument methodology should be applied to a Rwandan sovereign guarantee for a fleet-leasing SPV?",
+      "answer": "Until the guarantee is called, no attribution occurs. If called, treat the guaranteed amount as a project-finance loan to the SPV: attribution factor = Guaranteed amount ÷ (SPV total equity + debt). Use SPV fleet-wide emissions calculated via Kigali city fleet telemetry km data.",
+      "category": "sovereign-guarantee",
+      "tags": ["guarantee-called", "SPV-fleet", "Kigali-telemetry"]
+    },
+  
+    {
+      "id": "mvl_ea_156",
+      "question": "Where can I source East-African grid emission factors for EV Scope 2 calculations?",
+      "answer": "Use the East African Power Pool (EAPP) 2024 harmonised residual mix: Kenya 0.505, Uganda 0.089, Tanzania 0.412, Rwanda 0.380 kg CO₂e/kWh. If a green-tariff PPA exists, use supplier-specific 0 kg CO₂e/kWh with contractual proof.",
+      "category": "grid-EF",
+      "tags": ["EAPP-2024", "residual-mix", "green-tariff"]
+    },
+    {
+      "id": "mvl_ea_157",
+      "question": "How do I validate distance travelled for South-Sudanese humanitarian truck fleets financed via revolving credit?",
+      "answer": "Cross-check UN World Food Programme (WFP) fleet logs against odometer photos uploaded to the FleetWave platform. Apply ±8 % tolerance; deviations trigger recalculation. Score improves from 4 to 2 if ≥90 % odometer coverage.",
+      "category": "validation",
+      "tags": ["WFP-FleetWave", "odometer-photos", "±8-tolerance"]
+    },
+    {
+      "id": "mvl_ea_158",
+      "question": "What EEIO sector code should I map to for Burundian motor-vehicle repair businesses financed through trade credit?",
+      "answer": "Use ISIC Rev.4 code 4520 (Maintenance and repair of motor vehicles) mapped to EXIOBASE ‘Maintenance and repair services of motor vehicles’ EF 0.28 tCO₂e/USD 2021 PPP. Quality score 5; upgrade with fuel invoices if possible.",
+      "category": "EEIO-mapping",
+      "tags": ["ISIC-4520", "EXIOBASE", "score-5"]
+    },
+    {
+      "id": "mvl_ea_159",
+      "question": "Can I use M-Pesa transaction metadata to infer motorcycle taxi annual kilometres in Kenya?",
+      "answer": "Yes, if GPS-derived trip distances are embedded and cover ≥80 % of the year. Treat as Option 1b (score 2) after privacy-compliant aggregation. Otherwise use NTSA 2023 boda-boda survey average 28 000 km/y.",
+      "category": "M-Pesa-metadata",
+      "tags": ["GPS-trips", "NTSA-2023", "score-2"]
+    },
+    {
+      "id": "mvl_ea_160",
+      "question": "How do I account for fluctuating USD–Tanzanian shilling exchange rates when determining vehicle origination value?",
+      "answer": "Fix the origination value using the Bank of Tanzania (BoT) mid-rate on the loan draw-down date and hold constant thereafter; disclose the rate used.",
+      "category": "FX-fixing",
+      "tags": ["BoT-mid-rate", "origination-fix", "disclosure"]
+    },
+  
+    {
+      "id": "mvl_ea_161",
+      "question": "Which methodology applies to an ECA-backed export-credit guarantee for Kenyan electric buses?",
+      "answer": "Until the guarantee is invoked, no emissions are attributed. If invoked, treat as project finance: attribution = Guaranteed USD ÷ (Project equity + debt). Use EA grid EF and bus manufacturer kWh/km.",
+      "category": "ECA-guarantee",
+      "tags": ["export-credit", "project-finance", "EA-grid"]
+    },
+    {
+      "id": "mvl_ea_162",
+      "question": "Where can I source fuel-efficiency data for Rwandan diesel minibuses assembled locally?",
+      "answer": "Use the Kigali Automotive Industry Association (KAIA) 2024 certified test-cycle: 14.2 L/100 km combined urban/rural. Cross-check with Rwanda Utilities Regulatory Authority (RURA) inspection records.",
+      "category": "local-assembly",
+      "tags": ["KAIA-2024", "RURA-records", "test-cycle"]
+    },
+    {
+      "id": "mvl_ea_163",
+      "question": "How do I treat undrawn revolving-credit lines for Ugandan logistics fleets?",
+      "answer": "Calculate potential emissions using PCAF’s 2024 undrawn-loan methodology: Financed emissions = (Undrawn commitment ÷ Total equity + debt) × Company emissions. Disclose separately as contingent.",
+      "category": "undrawn-revolver",
+      "tags": ["PCAF-2024", "contingent-disclosure"]
+    },
+    {
+      "id": "mvl_ea_164",
+      "question": "What proxy distance should I use for Tanzanian rural pick-ups when no odometer data exist?",
+      "answer": "Apply the SADC Rural Transport Survey 2023: 18 500 km/year. Quality score 4; upgrade with mobile-phone GPS traces if available.",
+      "category": "rural-proxy",
+      "tags": ["SADC-2023", "GPS-traces", "score-4"]
+    },
+    {
+      "id": "mvl_ea_165",
+      "question": "How do I account for biodiesel (B20) blends mandated in Kenya under PCAF?",
+      "answer": "Use 2.62 kg CO₂e/L B20 (fossil portion 80 %) and report biogenic CO₂ separately. Source: Kenya Bureau of Standards (KEBS) 2024 specification.",
+      "category": "B20-blend",
+      "tags": ["KEBS-2024", "biogenic-separate"]
+    },
+  
+    {
+      "id": "mvl_ea_166",
+      "question": "Which guarantees fall under PCAF motor-vehicle scope in Ethiopia?",
+      "answer": "Only guarantees explicitly backing vehicle purchase loans or leases; performance bonds for road construction are excluded.",
+      "category": "scope-clarification",
+      "tags": ["vehicle-purchase", "performance-bonds-excluded"]
+    },
+    {
+      "id": "mvl_ea_167",
+      "question": "Where can I source grid EF for Djibouti’s EV charging stations?",
+      "answer": "Use the Djibouti-Ethiopia interconnector residual mix 0.46 kg CO₂e/kWh (2023) or Djibouti Independent Power Producer (IPP) contract-specific factors if available.",
+      "category": "Djibouti-grid",
+      "tags": ["interconnector-mix", "IPP-contract"]
+    },
+    {
+      "id": "mvl_ea_168",
+      "question": "How do I treat trade-finance interest-rate swaps hedging fuel costs for East-African fleets?",
+      "answer": "Exclude derivatives from financed emissions; only the underlying loan principal counts.",
+      "category": "derivatives-exclusion",
+      "tags": ["interest-rate-swap", "exclude-derivatives"]
+    },
+    {
+      "id": "mvl_ea_169",
+      "question": "What EEIO factor should I use for Somaliland vehicle-import financing?",
+      "answer": "Apply GTAP Africa 10 database 2021: 0.34 tCO₂e/USD (transport equipment imports). Quality score 5; upgrade with import-duty invoices if material.",
+      "category": "Somaliland-import",
+      "tags": ["GTAP-Africa", "import-duty"]
+    },
+    {
+      "id": "mvl_ea_170",
+      "question": "How do I validate fuel invoices for Ugandan long-haul trucks when only partial receipts exist?",
+      "answer": "Accept invoices covering ≥70 % of the year and extrapolate using monthly kilometre averages from GPS; apply ±10 % uncertainty band and disclose.",
+      "category": "partial-invoices",
+      "tags": ["70-percent-coverage", "GPS-extrapolation"]
+    },
+  
+    {
+      "id": "mvl_ea_171",
+      "question": "Which methodology applies to Kenyan asset-backed securities (ABS) secured by matatu loans?",
+      "answer": "Treat as business loan if originator retains servicing; use pool-level average km and fuel data from the servicing report. Attribution factor = ABS outstanding ÷ (Pool vehicle value).",
+      "category": "ABS-matatu",
+      "tags": ["pool-servicing", "average-km"]
+    },
+    {
+      "id": "mvl_ea_172",
+      "question": "What emission factor should I use for Burundian petrol three-wheelers (boda-boda)?",
+      "answer": "Use Ministry of Transport 2024 test: 200 cc engine = 3.1 L/100 km × UBOS petrol EF 2.28 kg CO₂e/L = 70.7 g CO₂e/km.",
+      "category": "boda-boda",
+      "tags": ["200-cc-UBOS", "g-per-km"]
+    },
+    {
+      "id": "mvl_ea_173",
+      "question": "How do I treat performance guarantees for Rwandan EV charging-infrastructure SPVs?",
+      "answer": "Exclude until guarantee called; if called, treat as project-finance loan to SPV and attribute emissions using SPV annual kWh throughput × EA grid EF.",
+      "category": "EV-infra-guarantee",
+      "tags": ["exclude-until-called", "kWh-throughput"]
+    },
+    {
+      "id": "mvl_ea_174",
+      "question": "Where can I source odometer data for Tanzanian SADC corridor trucks?",
+      "answer": "Use the Corridor Management Observatory (CMO) telematics feed aggregated monthly; data-quality score improves to 2 if ≥85 % VIN coverage.",
+      "category": "CMO-telematics",
+      "tags": ["SADC-corridor", "VIN-coverage"]
+    },
+    {
+      "id": "mvl_ea_175",
+      "question": "How do I treat cross-currency swaps hedging USD-denominated vehicle loans in Kenya?",
+      "answer": "Exclude swaps; only the principal and interest component of the loan are within PCAF scope.",
+      "category": "currency-swap",
+      "tags": ["exclude-swap", "principal-only"]
+    },
+  
+    {
+      "id": "mvl_ea_176",
+      "question": "What proxy should I use for South-Sudanese diesel minibuses when no local data exist?",
+      "answer": "Apply Uganda UBOS 2023 minibus average 12.4 L/100 km × diesel EF 2.71 kg CO₂e/L; disclose proxy and uncertainty ±15 %.",
+      "category": "proxy-Uganda",
+      "tags": ["UBOS-2023", "uncertainty-15"]
+    },
+    {
+      "id": "mvl_ea_177",
+      "question": "How do I account for Ethiopian sovereign Sukuk-backed electric bus imports?",
+      "answer": "Structure as project-finance loan once drawn; attribution = Sukuk outstanding ÷ (SPV equity + debt). Use Addis grid EF 0.068 kg CO₂e/kWh (2024).",
+      "category": "Sukuk-bus",
+      "tags": ["project-finance", "Addis-grid"]
+    },
+    {
+      "id": "mvl_ea_178",
+      "question": "Which East-African EEIO table covers vehicle-repair SMEs financed via trade credit?",
+      "answer": "Use EXIOBASE Africa 2021 ISIC 4520 ‘Maintenance and repair of motor vehicles’ 0.28 tCO₂e/USD PPP; upgrade to score 3 with fuel invoices.",
+      "category": "repair-SME",
+      "tags": ["EXIOBASE-Africa", "ISIC-4520"]
+    },
+    {
+      "id": "mvl_ea_179",
+      "question": "How do I treat export-pre-shipment finance for Kenyan hybrid buses?",
+      "answer": "Once disbursed, treat as project finance; attribution = outstanding ÷ (project equity + debt). Use WLTP hybrid factor and buyer-country grid EF.",
+      "category": "pre-shipment",
+      "tags": ["project-finance", "buyer-grid"]
+    },
+    {
+      "id": "mvl_ea_180",
+      "question": "What data-quality score applies when using Nairobi BRT GPS data for diesel buses?",
+      "answer": "Score 2 (Option 1b) if GPS covers ≥90 % annual km and fuel receipts ≥80 %; otherwise score 3.",
+      "category": "BRT-GPS",
+      "tags": ["Nairobi-BRT", "score-2-3"]
+    },
+  
+    {
+      "id": "mvl_ea_181",
+      "question": "How do I treat revolving warehouse receipt financing for fuel storage linked to fleets?",
+      "answer": "Exclude storage emissions; only the vehicle loan portion is in scope. Disclose exclusion.",
+      "category": "warehouse-receipt",
+      "tags": ["exclude-storage", "vehicle-loan-only"]
+    },
+    {
+      "id": "mvl_ea_182",
+      "question": "Which emission factor should I use for Ugandan compressed biogas (Bio-CNG) trucks?",
+      "answer": "Use 0 kg CO₂e/MJ tail-pipe + 18 g CO₂e/MJ well-to-tank (UBOS 2024); report biogenic separately.",
+      "category": "Bio-CNG-Uganda",
+      "tags": ["UBOS-2024", "well-to-tank"]
+    },
+    {
+      "id": "mvl_ea_183",
+      "question": "How do I treat standby letters of credit (SBLC) for vehicle spare-parts imports?",
+      "answer": "Exclude until drawn; once drawn and used to finance vehicles, follow motor-vehicle loan methodology.",
+      "category": "SBLC",
+      "tags": ["exclude-until-drawn", "motor-vehicle-loan"]
+    },
+    {
+      "id": "mvl_ea_184",
+      "question": "What proxy annual kilometres apply for Rwandan rural ambulances?",
+      "answer": "Use Rwanda Ministry of Health 2024 fleet average 32 000 km; GPS validation improves score to 2.",
+      "category": "ambulance-km",
+      "tags": ["MoH-2024", "GPS-validation"]
+    },
+    {
+      "id": "mvl_ea_185",
+      "question": "How do I treat carbon-offset guarantees bundled with vehicle loans in Kenya?",
+      "answer": "Exclude offset credits from financed emissions; disclose retirement separately under memo items.",
+      "category": "offset-guarantee",
+      "tags": ["exclude-credits", "memo-disclosure"]
+    },
+  
+    {
+      "id": "mvl_ea_186",
+      "question": "What EEIO factor covers Djibouti vehicle-leasing companies financed via Islamic murabaha?",
+      "answer": "Use GTAP MENA 2021 ‘Financial intermediation services’ 0.11 tCO₂e/USD PPP; upgrade with fleet fuel data.",
+      "category": "murabaha",
+      "tags": ["GTAP-MENA", "financial-intermediation"]
+    },
+    {
+      "id": "mvl_ea_187",
+      "question": "How do I source fuel-efficiency data for Tanzanian CNG Bajaj three-wheelers?",
+      "answer": "Use Tanzania Bureau of Standards (TBS) 2024 certified value: 2.8 kg CNG/100 km × 2.75 kg CO₂e/kg = 77 g CO₂e/km.",
+      "category": "CNG-Bajaj",
+      "tags": ["TBS-2024", "certified-value"]
+    },
+    {
+      "id": "mvl_ea_188",
+      "question": "Which guarantees require disclosure of undrawn emissions under PCAF 2024 guidance?",
+      "answer": "Disclose undrawn amounts ≥USD 1 m for guarantees explicitly covering vehicle purchases; use proposed undrawn-loan methodology.",
+      "category": "undrawn-guarantee",
+      "tags": ["PCAF-2024", "USD-1m-threshold"]
+    },
+    {
+      "id": "mvl_ea_189",
+      "question": "What proxy distance should I use for Somali humanitarian 4×4 pickups?",
+      "answer": "Apply UN OCHA 2023 average 24 000 km/year; GPS trace validation upgrades to score 2.",
+      "category": "OCHA-pickup",
+      "tags": ["UN-OCHA-2023", "GPS-score-2"]
+    },
+    {
+      "id": "mvl_ea_190",
+      "question": "How do I treat cross-border factoring of vehicle receivables in East Africa?",
+      "answer": "Follow business-loan methodology; attribution factor = Factored receivable ÷ (Debtor total equity + debt). Use debtor’s actual km and fuel data.",
+      "category": "cross-border-factoring",
+      "tags": ["business-loan", "debtor-data"]
+    },
+  
+    {
+      "id": "mvl_ea_191",
+      "question": "What emission factor should I use for Kenyan E10 petrol motorcycles?",
+      "answer": "Use 2.22 kg CO₂e/L E10 (KEBS 2024) × UBOS survey 1.9 L/100 km = 42.2 g CO₂e/km.",
+      "category": "E10-motorcycle",
+      "tags": ["KEBS-2024", "UBOS-survey"]
+    },
+    {
+      "id": "mvl_ea_192",
+      "question": "How do I treat performance bonds for Kenyan electric-bus procurement?",
+      "answer": "Exclude until bond is called; once called, treat as project-finance loan and attribute emissions using fleet annual kWh × grid EF.",
+      "category": "performance-bond-bus",
+      "tags": ["exclude-until-called", "project-finance"]
+    },
+    {
+      "id": "mvl_ea_193",
+      "question": "Which source provides South-Sudanese diesel fuel quality specifications for PCAF calculations?",
+      "answer": "Use Nile Petroleum Corporation (NilePet) 2024 spec: density 0.845 kg/L, EF 2.71 kg CO₂e/L.",
+      "category": "fuel-spec",
+      "tags": ["NilePet-2024", "density-0.845"]
+    },
+    {
+      "id": "mvl_ea_194",
+      "question": "How do I account for seasonal fuel shortages affecting kilometres in Tanzania?",
+      "answer": "Use actual kilometres driven (GPS) rather than contracted; disclose shortage impact and uncertainty range.",
+      "category": "fuel-shortage",
+      "tags": ["GPS-actual", "uncertainty-range"]
+    },
+    {
+      "id": "mvl_ea_195",
+      "question": "What EEIO factor covers Ethiopian vehicle-insurance premium financing?",
+      "answer": "Use EXIOBASE Africa 2021 ‘Insurance’ 0.04 tCO₂e/USD PPP; upgrade with insurer fleet data.",
+      "category": "insurance-financing",
+      "tags": ["EXIOBASE-insurance", "fleet-upgrade"]
+    },
+  
+    {
+      "id": "mvl_ea_196",
+      "question": "How do I treat supplier-credit notes (promissory notes) for vehicle imports into Uganda?",
+      "answer": "Once the note is accepted and the vehicle delivered, treat as motor-vehicle loan; attribution = Note outstanding ÷ Vehicle value.",
+      "category": "promissory-note",
+      "tags": ["accepted-note", "motor-vehicle-loan"]
+    },
+    {
+      "id": "mvl_ea_197",
+      "question": "What proxy annual kilometres apply for Burundian rural water-tanker trucks?",
+      "answer": "Apply World Bank Rural Access Index 2023: 19 000 km/year; GPS trace validation upgrades to score 2.",
+      "category": "water-tanker",
+      "tags": ["World-Bank-2023", "GPS-score-2"]
+    },
+    {
+      "id": "mvl_ea_198",
+      "question": "How do I treat standby LCs for EV-charging equipment imports into Rwanda?",
+      "answer": "Exclude until LC is drawn; once drawn, treat as project-finance equipment loan; attribution = Drawn LC ÷ (SPV equity + debt).",
+      "category": "LC-charging-equipment",
+      "tags": ["project-finance", "SPV-attribution"]
+    },
+    {
+      "id": "mvl_ea_199",
+      "question": "Which emission factor applies to Kenyan dual-fuel (LPG/petrol) taxis?",
+      "answer": "Use weighted factor: 0.7 × petrol 2.31 kg CO₂e/L + 0.3 × LPG 1.63 kg CO₂e/L = 2.09 kg CO₂e/L blended.",
+      "category": "dual-fuel-taxi",
+      "tags": ["weighted-blend", "LPG-petrol"]
+    },
+    {
+      "id": "mvl_ea_200",
+      "question": "How do I disclose methodological limitations when using East-African proxy data?",
+      "answer": "Include a ‘Data Limitations’ appendix stating proxy source, confidence interval (e.g., ±15 %), and planned improvement steps (e.g., telematics rollout 2025).",
+      "category": "disclosure-limitations",
+      "tags": ["confidence-interval", "planned-improvements"]
+    }
+  ]
