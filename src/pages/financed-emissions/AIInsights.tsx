@@ -1154,7 +1154,7 @@ function AnomalyDetection() {
   );
 }
 
-export default function AIInsightsPage() {
+function AIInsightsPage() {
   const [activeView, setActiveView] = useState<'overview' | 'advanced'>('overview');
   const [portfolioData, setPortfolioData] = useState<any>(null);
   const [aiInsights, setAiInsights] = useState<AIInsightResponse | null>(null);
@@ -1322,3 +1322,5 @@ export default function AIInsightsPage() {
       </main>
     );
 }
+
+export default AIInsightsPage;
