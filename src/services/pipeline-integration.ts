@@ -3,7 +3,7 @@
  * Provides a unified interface for the complete data pipeline architecture
  */
 
-import { dataPipelineService } from './data-pipeline-service';
+import { enhancedDataPipelineService as dataPipelineService } from './enhanced-data-pipeline-service';
 import { pipelineOrchestrator } from './pipeline-orchestrator';
 import { climateNarrativeService } from './climate-narrative-service';
 import { portfolioService } from './portfolioService';

@@ -3,7 +3,7 @@
  * Coordinates between data extraction, transformation, embedding, and storage
  */
 
-import { dataPipelineService } from './data-pipeline-service';
+import { enhancedDataPipelineService as dataPipelineService } from './enhanced-data-pipeline-service';
 import { climateNarrativeService } from './climate-narrative-service';
 import { portfolioService } from './portfolioService';
 
