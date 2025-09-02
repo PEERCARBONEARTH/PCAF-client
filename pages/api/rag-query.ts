@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ResponseFormatter } from '../../src/services/responseFormatter';
 import { RAGResponse, ResponseType } from '../../src/types/ragTypes';
+import { type } from 'os';
+import { type } from 'os';
 
 interface ChromaDBConfig {
   apiKey: string;
@@ -51,12 +53,26 @@ async function processRAGQuery(query: string, portfolioContext?: any): Promise<R
 
   try {
     // 2. Try ChromaDB search first
+    console.log('🔍 Attempting ChromaDB search for query:', query);
+    console.log('📋 ChromaDB Config:', {
+      hasApiKey: !!chromaDBConfig.apiKey,
+      hasTenant: !!chromaDBConfig.tenant,
+      hasDatabase: !!chromaDBConfig.database,
+      apiKeyPrefix: chromaDBConfig.apiKey?.substring(0, 10) + '...'
+    });
+    
     const chromaResults = await searchChromaDB(query, chromaDBConfig);
     
     if (chromaResults && chromaResults.length > 0) {
       const bestMatch = chromaResults[0];
+      console.log('✅ ChromaDB results found:', {
+        resultCount: chromaResults.length,
+        bestMatchScore: bestMatch.relevance_score,
+        questionId: bestMatch.metadata?.question_id
+      });
       
-      if (bestMatch.relevance_score > 0.3) {
+      if (bestMatch.relevance_score > 0.1) {
+        console.log('🎯 Using ChromaDB result (score > 0.1)');
         rawResponse = formatChromaDBResponse(bestMatch, chromaResults);
         confidence = getConfidenceFromRelevance(bestMatch.relevance_score);
         sources = extractSources(bestMatch);
@@ -71,15 +87,22 @@ async function processRAGQuery(query: string, portfolioContext?: any): Promise<R
         
         // 3. Apply structured formatting
         return ResponseFormatter.formatResponse(rawResponse, classification, responseType, portfolioContext);
+      } else {
+        console.log('⚠️ ChromaDB score too low:', bestMatch.relevance_score);
       }
+    } else {
+      console.log('❌ No ChromaDB results found');
     }
   } catch (error) {
-    console.warn('ChromaDB search failed, falling back to static responses:', error);
+    console.error('💥 ChromaDB search failed:', error.message);
+    console.warn('Falling back to static responses');
   }
 
   // 4. Fallback to surgical responses
+  console.log('🔄 Trying surgical response matching...');
   const surgicalMatch = findSurgicalMatch(query.toLowerCase());
   if (surgicalMatch) {
+    console.log('✅ Found surgical match:', surgicalMatch.responseKey);
     rawResponse = surgicalMatch.response;
     confidence = surgicalMatch.confidence as 'high' | 'medium' | 'low';
     sources = surgicalMatch.sources;
@@ -93,9 +116,12 @@ async function processRAGQuery(query: string, portfolioContext?: any): Promise<R
 
     // Apply structured formatting
     return ResponseFormatter.formatResponse(rawResponse, classification, responseType, portfolioContext);
+  } else {
+    console.log('❌ No surgical match found for query patterns');
   }
 
   // 5. Final fallback with structured formatting
+  console.log('🔄 Using final fallback response');
   const fallbackResponse = generateMethodologyFallback(query);
   return ResponseFormatter.formatResponse(
     fallbackResponse.response, 
@@ -287,7 +313,7 @@ function generateFollowUpFromChroma(result: any): string[] {
   }
 }
 
-// Static surgical responses (same as before)
+// Static surgical responses with comprehensive coverage
 const SURGICAL_RESPONSES = {
   'pcaf_options': {
     confidence: 'high',
@@ -325,8 +351,135 @@ const SURGICAL_RESPONSES = {
       'What data do I need for Option 3?',
       'How do I calculate my weighted score?'
     ]
+  },
+  
+  'attribution_factor': {
+    confidence: 'high',
+    response: `**Attribution Factor Calculation**
+
+**Formula:** Outstanding Amount ÷ Asset Value
+
+**Example:**
+• Loan: $25,000 outstanding
+• Vehicle value: $40,000
+• Attribution Factor = $25,000 ÷ $40,000 = 0.625 (62.5%)
+
+**Key Points:**
+• Use current outstanding balance, not original loan amount
+• Asset value should be current market value when possible
+• If asset value unknown, use outstanding amount (attribution = 1.0)
+• For leases, use lease liability as outstanding amount
+
+**Common Scenarios:**
+• Outstanding > Asset Value: Use actual ratio (may exceed 1.0)
+• Total loss vehicle: Attribution factor becomes 0
+• Refinanced loan: Use new outstanding amount`,
+    sources: ['PCAF Global Standard - Attribution Methodology'],
+    followUp: [
+      'How do I get accurate vehicle valuations?',
+      'What if outstanding exceeds asset value?',
+      'How do I handle lease vs loan products?'
+    ]
+  },
+  
+  'financed_emissions': {
+    confidence: 'high',
+    response: `**Financed Emissions Calculation**
+
+**Formula:** Attribution Factor × Annual Vehicle Emissions
+
+**Step-by-Step:**
+1. **Calculate Attribution Factor**
+   Outstanding Amount ÷ Asset Value
+
+2. **Calculate Annual Vehicle Emissions**
+   Annual Mileage × Emission Factor (kg CO₂e/km)
+
+3. **Calculate Financed Emissions**
+   Attribution Factor × Annual Vehicle Emissions
+
+**Example:**
+• Attribution Factor: 0.75 (75%)
+• Annual mileage: 15,000 km
+• Emission factor: 0.2 kg CO₂e/km
+• Vehicle emissions: 15,000 × 0.2 = 3,000 kg CO₂e
+• **Financed emissions: 0.75 × 3,000 = 2,250 kg CO₂e**
+
+**Units:** Always express in kg CO₂e or tCO₂e (tonnes)`,
+    sources: ['PCAF Global Standard - Calculation Methodology'],
+    followUp: [
+      'What emission factors should I use?',
+      'How do I estimate annual mileage?',
+      'What about electric vehicles?'
+    ]
+  },
+  
+  'compliance_requirements': {
+    confidence: 'high',
+    response: `**PCAF Compliance Requirements for Motor Vehicles**
+
+**Primary Requirement:**
+Portfolio weighted data quality score ≤ 3.0
+
+**Calculation:**
+WDQS = Σ(Outstanding Amount × Data Quality Score) ÷ Total Outstanding
+
+**Example:**
+• $50M at Option 2 (score 2): $50M × 2 = $100M
+• $30M at Option 4 (score 4): $30M × 4 = $120M
+• Total: $80M portfolio
+• WDQS = ($100M + $120M) ÷ $80M = 2.75 ✅ Compliant
+
+**Additional Requirements:**
+• Methodology disclosure and documentation
+• Annual recalculation and reporting
+• Data quality improvement plan if WDQS > 3.0
+• Scope 3 Category 15 reporting under TCFD
+
+**Documentation Needed:**
+• Data sources and collection methods
+• Calculation procedures and assumptions
+• Quality assurance processes
+• Improvement initiatives and timelines`,
+    sources: ['PCAF Global Standard - Compliance Requirements'],
+    followUp: [
+      'How do I calculate my current WDQS?',
+      'What if my score exceeds 3.0?',
+      'What documentation do I need for audit?'
+    ]
+  },
+  
+  'electric_vehicles': {
+    confidence: 'high',
+    response: `**Electric Vehicle PCAF Calculations**
+
+**Key Differences:**
+• Zero direct emissions (no tailpipe emissions)
+• Emissions come from electricity generation
+• Use grid emission factors by region
+
+**Calculation Steps:**
+1. **Energy Consumption:** kWh per km driven
+2. **Grid Emission Factor:** kg CO₂e per kWh (by region)
+3. **Annual Emissions:** Annual km × kWh/km × Grid Factor
+
+**Example:**
+• Annual mileage: 15,000 km
+• EV efficiency: 0.2 kWh/km
+• Grid factor (US avg): 0.4 kg CO₂e/kWh
+• Annual emissions: 15,000 × 0.2 × 0.4 = 1,200 kg CO₂e
+
+**Data Quality Options:**
+• Option 1: Actual charging data + grid factors
+• Option 2: Vehicle efficiency + mileage + grid factors
+• Option 3: Vehicle specs + average mileage + grid factors`,
+    sources: ['PCAF Global Standard - Electric Vehicle Methodology'],
+    followUp: [
+      'Where do I find grid emission factors?',
+      'How do I handle renewable energy charging?',
+      'What about plug-in hybrids?'
+    ]
   }
-  // Add other surgical responses as needed...
 };
 
 const QUESTION_PATTERNS = [
@@ -334,8 +487,27 @@ const QUESTION_PATTERNS = [
     patterns: ['pcaf options', 'data quality options', '5 options', 'option 1', 'option 2', 'option 3', 'option 4', 'option 5'],
     responseKey: 'pcaf_options',
     intent: 'methodology'
+  },
+  {
+    patterns: ['attribution factor', 'calculate attribution', 'outstanding amount', 'asset value'],
+    responseKey: 'attribution_factor',
+    intent: 'calculation'
+  },
+  {
+    patterns: ['financed emissions', 'calculate emissions', 'emission calculation', 'annual emissions'],
+    responseKey: 'financed_emissions',
+    intent: 'calculation'
+  },
+  {
+    patterns: ['compliance', 'pcaf compliant', 'weighted score', 'wdqs', 'score 3.0'],
+    responseKey: 'compliance_requirements',
+    intent: 'compliance'
+  },
+  {
+    patterns: ['electric vehicle', 'ev', 'electric car', 'zero emission', 'grid factor'],
+    responseKey: 'electric_vehicles',
+    intent: 'vehicle_specific'
   }
-  // Add other patterns as needed...
 ];
 
 function findSurgicalMatch(query: string): any {
