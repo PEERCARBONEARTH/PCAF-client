@@ -61,7 +61,10 @@ import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
 import PortfolioDeepAnalysisPresentation from "./pages/financed-emissions/PortfolioDeepAnalysisPresentation";
 import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
 import MethodologyPage from "./pages/financed-emissions/Methodology";
-import { lazy, Suspense, useEffect } from "react";
+import PipelineDemoPage from "./pages/pipeline-demo";
+import NarrativeInsightsDemoPage from "./pages/narrative-insights-demo";
+import LoanDataPipelineDemoPage from "./pages/loan-data-pipeline-demo";
+import React, { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "@/components/LoadingState";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
@@ -147,6 +150,9 @@ const FinancedEmissionsRoutes = () => {
             <AmortizationSettings />
           </Suspense>
         } />
+        <Route path="pipeline-demo" element={<PipelineDemoPage />} />
+        <Route path="narrative-insights" element={<NarrativeInsightsDemoPage />} />
+        <Route path="loan-data-pipeline" element={<LoanDataPipelineDemoPage />} />
         <Route path="settings" element={<FinancedEmissionsSettings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

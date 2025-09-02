@@ -90,6 +90,18 @@ const navigation = [
     href: '/financed-emissions/methodology',
     icon: BookOpen,
     description: 'Data quality methodology & sources'
+  },
+  {
+    name: 'Pipeline Demo',
+    href: '/financed-emissions/pipeline-demo',
+    icon: Zap,
+    description: 'Data pipeline demonstration and testing'
+  },
+  {
+    name: 'AI Narrative Insights',
+    href: '/financed-emissions/narrative-insights',
+    icon: Brain,
+    description: 'Humanized AI insights with actionable business strategy'
   }
 ];
 
