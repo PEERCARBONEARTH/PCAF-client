@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Brain, Upload, FileText } from "lucide-react";
-import { AIAgentDashboard } from "@/components/AIAgentDashboard";
+// Removed AIAgentDashboard - consolidated into main RAG chatbot
 
 interface AdvancedConfigurationProps {
   activeSubsection?: string;
@@ -11,7 +11,20 @@ interface AdvancedConfigurationProps {
 
 export function AdvancedConfiguration({ activeSubsection }: AdvancedConfigurationProps) {
   const renderAIAgentsSection = () => (
-    <AIAgentDashboard />
+    <div className="p-6 text-center">
+      <div className="mb-4">
+        <Brain className="h-12 w-12 mx-auto text-muted-foreground" />
+      </div>
+      <h3 className="text-lg font-semibold mb-2">AI Assistant Consolidated</h3>
+      <p className="text-muted-foreground mb-4">
+        The AI Assistant has been streamlined and is now available in the RAG Management module 
+        with enhanced modes for different user roles.
+      </p>
+      <Button onClick={() => window.location.href = '/financed-emissions/rag-management'}>
+        <Brain className="h-4 w-4 mr-2" />
+        Go to Enhanced AI Assistant
+      </Button>
+    </div>
   );
 
   const renderClientDocsSection = () => (

@@ -52,13 +52,26 @@ interface RAGChatbotProps {
     defaultSessionType?: 'general' | 'methodology' | 'portfolio_analysis' | 'compliance';
     defaultFocusArea?: string;
     embedded?: boolean;
+    showModeSelector?: boolean;
+}
+
+type ChatMode = 'general' | 'risk_manager' | 'compliance_officer' | 'data_analyst' | 'methodology_expert';
+
+interface ChatModeConfig {
+    id: ChatMode;
+    name: string;
+    description: string;
+    icon: any;
+    color: string;
+    systemPrompt: string;
 }
 
 export function RAGChatbot({
     className,
     defaultSessionType = 'general',
     defaultFocusArea,
-    embedded = false
+    embedded = false,
+    showModeSelector = true
 }: RAGChatbotProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputMessage, setInputMessage] = useState('');
@@ -66,7 +79,52 @@ export function RAGChatbot({
     const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
     const [sessionType, setSessionType] = useState(defaultSessionType);
     const [isConnected, setIsConnected] = useState(false);
+    const [currentMode, setCurrentMode] = useState<ChatMode>('general');
     const { toast } = useToast();
+
+    // Enhanced chat modes for different user personas
+    const chatModes: ChatModeConfig[] = [
+        {
+            id: 'general',
+            name: 'General Assistant',
+            description: 'General PCAF guidance and methodology',
+            icon: Brain,
+            color: 'bg-blue-500',
+            systemPrompt: 'You are a PCAF methodology expert providing comprehensive guidance.'
+        },
+        {
+            id: 'risk_manager',
+            name: 'Risk Manager',
+            description: 'Portfolio risk assessment and management',
+            icon: AlertCircle,
+            color: 'bg-red-500',
+            systemPrompt: 'You are a risk management specialist focusing on portfolio analysis and risk assessment.'
+        },
+        {
+            id: 'compliance_officer',
+            name: 'Compliance Officer',
+            description: 'Regulatory compliance and audit preparation',
+            icon: FileText,
+            color: 'bg-green-500',
+            systemPrompt: 'You are a compliance expert focusing on regulatory requirements and audit preparation.'
+        },
+        {
+            id: 'data_analyst',
+            name: 'Data Analyst',
+            description: 'Data quality and calculation methodology',
+            icon: Sparkles,
+            color: 'bg-purple-500',
+            systemPrompt: 'You are a data analysis expert focusing on data quality improvement and calculation methods.'
+        },
+        {
+            id: 'methodology_expert',
+            name: 'Methodology Expert',
+            description: 'Technical PCAF implementation guidance',
+            icon: Lightbulb,
+            color: 'bg-orange-500',
+            systemPrompt: 'You are a PCAF methodology expert providing technical implementation guidance.'
+        }
+    ];
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -472,29 +530,21 @@ export function RAGChatbot({
                 <CardHeader className="flex-shrink-0 pb-3">
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
-                            <div className="p-1 rounded bg-primary/10">
-                                <Brain className="w-4 h-4 text-primary" />
+                            <div className={cn("p-1 rounded", chatModes.find(m => m.id === currentMode)?.color || "bg-primary/10")}>
+                                {(() => {
+                                    const ModeIcon = chatModes.find(m => m.id === currentMode)?.icon || Brain;
+                                    return <ModeIcon className="w-4 h-4 text-white" />;
+                                })()}
                             </div>
                             PCAF AI Assistant
                             {isConnected && (
                                 <Badge variant="secondary" className="text-xs">
                                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
-                                    Connected
+                                    Enhanced Dataset
                                 </Badge>
                             )}
                         </CardTitle>
                         <div className="flex items-center gap-2">
-                            <select
-                                value={sessionType}
-                                onChange={(e) => setSessionType(e.target.value as any)}
-                                className="text-xs border rounded px-2 py-1"
-                                disabled={isLoading}
-                            >
-                                <option value="general">General</option>
-                                <option value="methodology">Methodology</option>
-                                <option value="portfolio_analysis">Portfolio Analysis</option>
-                                <option value="compliance">Compliance</option>
-                            </select>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -505,6 +555,34 @@ export function RAGChatbot({
                             </Button>
                         </div>
                     </div>
+                    
+                    {/* Enhanced Mode Selector */}
+                    {showModeSelector && (
+                        <div className="mt-3">
+                            <div className="text-xs text-muted-foreground mb-2">Assistant Mode:</div>
+                            <div className="flex flex-wrap gap-2">
+                                {chatModes.map((mode) => {
+                                    const ModeIcon = mode.icon;
+                                    return (
+                                        <Button
+                                            key={mode.id}
+                                            variant={currentMode === mode.id ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => setCurrentMode(mode.id)}
+                                            className="text-xs h-8"
+                                            disabled={isLoading}
+                                        >
+                                            <ModeIcon className="w-3 h-3 mr-1" />
+                                            {mode.name}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                                {chatModes.find(m => m.id === currentMode)?.description}
+                            </div>
+                        </div>
+                    )}
                 </CardHeader>
 
                 <Separator />

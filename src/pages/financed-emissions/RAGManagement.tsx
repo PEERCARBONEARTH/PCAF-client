@@ -827,14 +827,16 @@ export default function RAGManagementPage() {
                 AI Chat Assistant
               </CardTitle>
               <CardDescription>
-                Chat with AI about your uploaded documents and PCAF methodology
+                Enhanced AI Assistant with 200+ PCAF questions, banking intelligence, and role-specific modes
+                <Badge variant="secondary" className="ml-2">Enhanced Dataset v6.0</Badge>
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <RAGChatbot
                 defaultSessionType="general"
                 embedded={true}
-                className="h-[500px]"
+                className="h-[600px]"
+                showModeSelector={true}
               />
             </CardContent>
           </Card>
