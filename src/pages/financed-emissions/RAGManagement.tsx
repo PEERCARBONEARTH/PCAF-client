@@ -827,8 +827,8 @@ export default function RAGManagementPage() {
                 AI Chat Assistant
               </CardTitle>
               <CardDescription>
-                Enhanced AI Assistant with 200+ PCAF questions, banking intelligence, and role-specific modes
-                <Badge variant="secondary" className="ml-2">Enhanced Dataset v6.0</Badge>
+                Enhanced AI Assistant powered by ChromaDB with 200+ PCAF questions, banking intelligence, and intelligent mode detection
+                <Badge variant="secondary" className="ml-2">ChromaDB v6.0</Badge>
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -836,7 +836,8 @@ export default function RAGManagementPage() {
                 defaultSessionType="general"
                 embedded={true}
                 className="h-[600px]"
-                showModeSelector={true}
+                showModeSelector={false}
+                autoDetectMode={true}
               />
             </CardContent>
           </Card>

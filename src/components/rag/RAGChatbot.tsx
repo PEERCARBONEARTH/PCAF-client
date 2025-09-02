@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { pureDatasetRAGService } from '@/services/pureDatasetRAGService';
+// ChromaDB RAG service is accessed via API endpoint
 
 interface ChatMessage {
     id: string;
@@ -53,6 +53,7 @@ interface RAGChatbotProps {
     defaultFocusArea?: string;
     embedded?: boolean;
     showModeSelector?: boolean;
+    autoDetectMode?: boolean;
 }
 
 type ChatMode = 'general' | 'risk_manager' | 'compliance_officer' | 'data_analyst' | 'methodology_expert';
@@ -71,7 +72,8 @@ export function RAGChatbot({
     defaultSessionType = 'general',
     defaultFocusArea,
     embedded = false,
-    showModeSelector = true
+    showModeSelector = true,
+    autoDetectMode = true
 }: RAGChatbotProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputMessage, setInputMessage] = useState('');
@@ -80,6 +82,7 @@ export function RAGChatbot({
     const [sessionType, setSessionType] = useState(defaultSessionType);
     const [isConnected, setIsConnected] = useState(false);
     const [currentMode, setCurrentMode] = useState<ChatMode>('general');
+    const [autoDetectMode, setAutoDetectMode] = useState(true);
     const { toast } = useToast();
 
     // Enhanced chat modes for different user personas
@@ -144,6 +147,34 @@ export function RAGChatbot({
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Intelligent mode detection based on user query
+    const detectOptimalMode = (query: string): ChatMode => {
+        const lowerQuery = query.toLowerCase();
+        
+        // Risk management keywords
+        if (lowerQuery.match(/\b(risk|portfolio|exposure|assessment|analysis|monitor|alert|threshold|limit|concentration)\b/)) {
+            return 'risk_manager';
+        }
+        
+        // Compliance keywords  
+        if (lowerQuery.match(/\b(compliance|audit|regulation|requirement|standard|report|disclosure|mandate|policy)\b/)) {
+            return 'compliance_officer';
+        }
+        
+        // Data analysis keywords
+        if (lowerQuery.match(/\b(data|quality|calculation|score|improve|accuracy|validation|clean|missing|error)\b/)) {
+            return 'data_analyst';
+        }
+        
+        // Methodology keywords
+        if (lowerQuery.match(/\b(methodology|option|pcaf|implementation|technical|guidance|standard|framework)\b/)) {
+            return 'methodology_expert';
+        }
+        
+        // Default to general for broad questions
+        return 'general';
+    };
+
     const initializeChat = async () => {
         try {
             setIsLoading(true);
@@ -183,10 +214,10 @@ export function RAGChatbot({
 
     const getWelcomeMessage = (type: string): string => {
         const messages = {
-            general: "Hello! I'm your PCAF motor vehicle specialist. I can help you with data quality improvements, financed emissions calculations, and PCAF compliance for motor vehicle loans. What would you like to know?",
-            methodology: "Hi! I specialize in PCAF motor vehicle methodology. Ask me about the 5 data quality options, attribution factors, emission calculations, or how to improve your PCAF scores.",
-            portfolio_analysis: "Welcome! I can analyze your motor vehicle loan portfolio and provide specific recommendations for data quality improvements and PCAF compliance. What aspect would you like to explore?",
-            compliance: "Hello! I focus on PCAF compliance for motor vehicle portfolios. I can help with data quality requirements, scoring thresholds, and reporting standards for financed emissions."
+            general: "Hello! I'm your intelligent PCAF assistant powered by our enhanced ChromaDB knowledge base with 200+ validated Q&As. I automatically adapt my expertise based on your questions - whether you need help with risk management, compliance, data analysis, or methodology. What would you like to know?",
+            methodology: "Hi! I specialize in PCAF motor vehicle methodology using our comprehensive knowledge base. Ask me about the 5 data quality options, attribution factors, emission calculations, or how to improve your PCAF scores.",
+            portfolio_analysis: "Welcome! I can analyze your motor vehicle loan portfolio using our enhanced knowledge base and provide specific recommendations for data quality improvements and PCAF compliance. What aspect would you like to explore?",
+            compliance: "Hello! I focus on PCAF compliance for motor vehicle portfolios using our regulatory knowledge base. I can help with data quality requirements, scoring thresholds, and reporting standards for financed emissions."
         };
         return messages[type as keyof typeof messages] || messages.general;
     };
@@ -221,6 +252,14 @@ export function RAGChatbot({
         const content = messageContent || inputMessage.trim();
         if (!content || !currentSession || isLoading) return;
 
+        // Auto-detect optimal mode based on query
+        if (autoDetectMode) {
+            const detectedMode = detectOptimalMode(content);
+            if (detectedMode !== currentMode) {
+                setCurrentMode(detectedMode);
+            }
+        }
+
         const userMessage: ChatMessage = {
             id: Date.now().toString(),
             role: 'user',
@@ -233,10 +272,8 @@ export function RAGChatbot({
         setIsLoading(true);
 
         try {
-            // Try dataset RAG first for surgical precision with comprehensive Q&A coverage
+            // Use ChromaDB RAG service for enhanced knowledge base search
             try {
-                const { datasetRAGService } = await import('@/services/datasetRAGService');
-                
                 // Get portfolio context if query suggests it's needed
                 let portfolioContext = null;
                 const needsPortfolio = content.toLowerCase().includes('my') || 
@@ -287,40 +324,49 @@ export function RAGChatbot({
                     }
                 }
                 
-                // Use pure dataset service to prevent hallucinations
-                const response = await pureDatasetRAGService.processQuery({
-                    query: content,
-                    sessionId: sessionId,
-                    portfolioContext: portfolioContext,
-                    userRole: 'risk_manager' // TODO: Get from user context
+                // Call ChromaDB RAG API
+                const response = await fetch('/api/rag-query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: content,
+                        portfolioContext: portfolioContext
+                    })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`RAG API error: ${response.status}`);
+                }
+
+                const ragResponse = await response.json();
 
                 const assistantMessage: ChatMessage = {
                     id: Date.now().toString() + '_assistant',
                     role: 'assistant',
-                    content: response.response,
+                    content: ragResponse.response,
                     timestamp: new Date(),
-                    sources: response.sources?.map(source => ({
+                    sources: ragResponse.sources?.map((source: string) => ({
                         title: source,
                         content: `Reference from ${source}`,
-                        similarity: response.isExactMatch ? 0.95 : 0.8,
+                        similarity: ragResponse.confidence === 'high' ? 0.95 : 
+                                   ragResponse.confidence === 'medium' ? 0.8 : 0.6,
                         metadata: { 
                             verified: true, 
-                            dataset: true,
-                            questionId: response.matchedQuestionId,
-                            datasetSource: response.datasetSource,
-                            isExactMatch: response.isExactMatch
+                            chromadb: true,
+                            confidence: ragResponse.confidence
                         }
                     })) || [],
-                    confidence: response.confidence === 'high' ? 0.95 : 
-                               response.confidence === 'medium' ? 0.8 : 0.6,
-                    followUpQuestions: response.followUpQuestions || []
+                    confidence: ragResponse.confidence === 'high' ? 0.95 : 
+                               ragResponse.confidence === 'medium' ? 0.8 : 0.6,
+                    followUpQuestions: ragResponse.followUpQuestions || []
                 };
 
                 setMessages(prev => [...prev, assistantMessage]);
                 return;
-            } catch (datasetError) {
-                console.warn('Dataset RAG failed, falling back to focused service:', datasetError);
+            } catch (chromaError) {
+                console.warn('ChromaDB RAG failed, falling back to AI service:', chromaError);
             }
 
             // Fallback to existing AI service
@@ -540,7 +586,7 @@ export function RAGChatbot({
                             {isConnected && (
                                 <Badge variant="secondary" className="text-xs">
                                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
-                                    Enhanced Dataset
+                                    ChromaDB Knowledge Base
                                 </Badge>
                             )}
                         </CardTitle>
@@ -556,33 +602,67 @@ export function RAGChatbot({
                         </div>
                     </div>
                     
-                    {/* Enhanced Mode Selector */}
-                    {showModeSelector && (
-                        <div className="mt-3">
-                            <div className="text-xs text-muted-foreground mb-2">Assistant Mode:</div>
-                            <div className="flex flex-wrap gap-2">
-                                {chatModes.map((mode) => {
-                                    const ModeIcon = mode.icon;
-                                    return (
-                                        <Button
-                                            key={mode.id}
-                                            variant={currentMode === mode.id ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => setCurrentMode(mode.id)}
-                                            className="text-xs h-8"
-                                            disabled={isLoading}
-                                        >
-                                            <ModeIcon className="w-3 h-3 mr-1" />
-                                            {mode.name}
-                                        </Button>
-                                    );
-                                })}
+                    {/* Current Mode Display */}
+                    <div className="mt-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="text-xs text-muted-foreground">Current Mode:</div>
+                                <Badge variant="secondary" className="text-xs">
+                                    {(() => {
+                                        const ModeIcon = chatModes.find(m => m.id === currentMode)?.icon || Brain;
+                                        return (
+                                            <>
+                                                <ModeIcon className="w-3 h-3 mr-1" />
+                                                {chatModes.find(m => m.id === currentMode)?.name}
+                                            </>
+                                        );
+                                    })()}
+                                </Badge>
+                                {autoDetectMode && (
+                                    <Badge variant="outline" className="text-xs">
+                                        Auto-Detect
+                                    </Badge>
+                                )}
                             </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                                {chatModes.find(m => m.id === currentMode)?.description}
-                            </div>
+                            {showModeSelector && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setAutoDetectMode(!autoDetectMode)}
+                                    className="text-xs h-6"
+                                >
+                                    {autoDetectMode ? 'Manual' : 'Auto'}
+                                </Button>
+                            )}
                         </div>
-                    )}
+                        <div className="text-xs text-muted-foreground mt-1">
+                            {chatModes.find(m => m.id === currentMode)?.description}
+                        </div>
+                        
+                        {/* Manual Mode Selector - Only show when auto-detect is off */}
+                        {showModeSelector && !autoDetectMode && (
+                            <div className="mt-2">
+                                <div className="flex flex-wrap gap-2">
+                                    {chatModes.map((mode) => {
+                                        const ModeIcon = mode.icon;
+                                        return (
+                                            <Button
+                                                key={mode.id}
+                                                variant={currentMode === mode.id ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => setCurrentMode(mode.id)}
+                                                className="text-xs h-8"
+                                                disabled={isLoading}
+                                            >
+                                                <ModeIcon className="w-3 h-3 mr-1" />
+                                                {mode.name}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </CardHeader>
 
                 <Separator />

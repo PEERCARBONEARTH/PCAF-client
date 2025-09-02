@@ -10,22 +10,7 @@ interface AdvancedConfigurationProps {
 }
 
 export function AdvancedConfiguration({ activeSubsection }: AdvancedConfigurationProps) {
-  const renderAIAgentsSection = () => (
-    <div className="p-6 text-center">
-      <div className="mb-4">
-        <Brain className="h-12 w-12 mx-auto text-muted-foreground" />
-      </div>
-      <h3 className="text-lg font-semibold mb-2">AI Assistant Consolidated</h3>
-      <p className="text-muted-foreground mb-4">
-        The AI Assistant has been streamlined and is now available in the RAG Management module 
-        with enhanced modes for different user roles.
-      </p>
-      <Button onClick={() => window.location.href = '/financed-emissions/rag-management'}>
-        <Brain className="h-4 w-4 mr-2" />
-        Go to Enhanced AI Assistant
-      </Button>
-    </div>
-  );
+  // AI Agents section removed - functionality consolidated into RAG Management
 
   const renderClientDocsSection = () => (
     <Card>
@@ -125,12 +110,11 @@ export function AdvancedConfiguration({ activeSubsection }: AdvancedConfiguratio
     return <div className="space-y-6">{renderClientDocsSection()}</div>;
   }
 
-  // Default to AI agents or show all if no subsection
-  if (activeSubsection === "ai-agents" || !activeSubsection) {
+  // Default to client docs since AI agents section was removed
+  if (activeSubsection === "client-docs" || !activeSubsection) {
     return (
       <div className="space-y-6">
-        {renderAIAgentsSection()}
-        {!activeSubsection && renderClientDocsSection()}
+        {renderClientDocsSection()}
       </div>
     );
   }

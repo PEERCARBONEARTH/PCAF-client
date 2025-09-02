@@ -106,7 +106,7 @@ const settingsStructure: SettingsSection[] = [
     isRequired: false,
     isComplete: true,
     subsections: [
-      { id: "ai-agents", title: "AI Agents", icon: Brain, isRequired: false, isComplete: true },
+
       { id: "client-docs", title: "Client Documents", icon: Upload, isRequired: false, isComplete: true }
     ]
   }
