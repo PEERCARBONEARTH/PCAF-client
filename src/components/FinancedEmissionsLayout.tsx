@@ -71,13 +71,15 @@ const navigation = [
     name: 'RAG Management',
     href: '/financed-emissions/rag-management',
     icon: Database,
-    description: 'Upload and manage knowledge base documents'
+    description: 'Upload and manage knowledge base documents',
+    hidden: true
   },
   {
     name: 'AI Chat',
     href: '/financed-emissions/rag-chat',
     icon: MessageCircle,
-    description: 'Chat with AI assistant about PCAF methodology'
+    description: 'Chat with AI assistant about PCAF methodology',
+    hidden: true
   },
   {
     name: 'Settings',
@@ -175,7 +177,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         {/* Enhanced Navigation with premium interactions */}
         <nav className="flex-1 px-4 py-6">
           <div className="space-y-2">
-            {navigation.map((item, index) => {
+            {navigation.filter(item => !item.hidden).map((item, index) => {
               const isActive = isActiveRoute(item.href);
               return (
                 <button
