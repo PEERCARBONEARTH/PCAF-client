@@ -8,7 +8,8 @@ export interface AIInsightRequest {
     portfolioSummary?: any;
     loans?: any[];
     specificLoanId?: string;
-    analysisType?: 'portfolio' | 'loan' | 'compliance' | 'risk';
+    pipelineInsights?: any[];
+    analysisType?: 'portfolio' | 'loan' | 'compliance' | 'risk' | 'pipeline_enhanced';
   };
   agent?: 'advisory' | 'calculation' | 'compliance' | 'risk';
 }

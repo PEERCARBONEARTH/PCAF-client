@@ -4,12 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Brain, 
-  BarChart3, 
-  Target, 
-  AlertTriangle, 
-  TrendingUp, 
+import {
+  Brain,
+  BarChart3,
+  Target,
+  AlertTriangle,
+  TrendingUp,
   TrendingDown,
   Zap,
   ArrowRight,
@@ -32,13 +32,13 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
   if (!portfolioData) return null;
 
   // Safe destructuring with defaults
-  const { 
-    loans = [], 
-    totalEmissions = 0, 
-    avgDataQuality = 0, 
-    evPercentage = 0 
+  const {
+    loans = [],
+    totalEmissions = 0,
+    avgDataQuality = 0,
+    evPercentage = 0
   } = portfolioData || {};
-  
+
   const portfolioValue = 8200000; // $8.2M realistic demo value
   const safeDataQuality = Number(avgDataQuality) || 0;
   const riskLevel = safeDataQuality <= 3 ? 'Low' : safeDataQuality <= 4 ? 'Medium' : 'High';
@@ -110,7 +110,7 @@ function CriticalAlerts({ portfolioData }: { portfolioData: any }) {
   if (!portfolioData || !portfolioData.anomalies || portfolioData.anomalies.length === 0) return null;
 
   const criticalAnomalies = portfolioData.anomalies.filter((a: any) => a.severity === 'high').slice(0, 3);
-  
+
   if (criticalAnomalies.length === 0) return null;
 
   return (
@@ -147,8 +147,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
   onViewAdvanced?: () => void;
 }) {
   const navigate = useNavigate();
-  const { hasTargetsConfigured } = useAssumptions();
-  
+  const { isComplete: hasTargetsConfigured } = useAssumptions();
+
   if (!portfolioData) {
     return (
       <Card>
@@ -242,7 +242,7 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
             {Array.isArray(anomalies) && anomalies.length > 0 ? (
               <>
                 {anomalies.slice(0, 3).map((anomaly, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="p-3 border rounded-lg bg-muted/20"
                   >
@@ -281,8 +281,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4"
               onClick={() => navigate('/financed-emissions/insights/forecasting-detail')}
             >
@@ -291,8 +291,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="text-xs text-muted-foreground">12-month projections</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4"
               onClick={() => navigate('/financed-emissions/insights/portfolio-risk')}
             >
@@ -301,8 +301,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="text-xs text-muted-foreground">Climate & transition risks</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4"
               onClick={() => navigate('/financed-emissions/insights/green-finance')}
             >
@@ -311,8 +311,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="text-xs text-muted-foreground">Sustainable finance opportunities</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4"
               onClick={() => navigate('/financed-emissions/insights/data-quality')}
             >
@@ -321,8 +321,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="text-xs text-muted-foreground">Portfolio data analysis</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4"
               onClick={() => navigate('/financed-emissions/insights/ev-leadership')}
             >
@@ -331,8 +331,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="text-xs text-muted-foreground">Electric vehicle analysis</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="justify-start h-auto p-4 border-primary/20 bg-primary/5 hover:bg-primary/10"
               onClick={onViewAdvanced}
             >
@@ -351,12 +351,12 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
 }
 
 // Advanced Analytics Components
-function AdvancedAnalyticsDashboard({ 
-  setActiveView, 
-  aiInsights, 
-  narrativeInsights, 
-  portfolioData 
-}: { 
+function AdvancedAnalyticsDashboard({
+  setActiveView,
+  aiInsights,
+  narrativeInsights,
+  portfolioData
+}: {
   setActiveView: (view: 'overview' | 'advanced') => void;
   aiInsights: AIInsightResponse | null;
   narrativeInsights: NarrativeInsightCard[];
@@ -392,9 +392,9 @@ function AdvancedAnalyticsDashboard({
               <Badge variant="secondary" className="bg-green-600 text-white">
                 4 insights generated
               </Badge>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setActiveView('overview')}
                 className="border-white/20 text-white hover:bg-white/10"
               >
@@ -433,43 +433,16 @@ function AdvancedAnalyticsDashboard({
   );
 }
 
-function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: { 
+function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
   aiInsights: AIInsightResponse | null;
   narrativeInsights: NarrativeInsightCard[];
   portfolioData: any;
 }) {
-  // Generate insights from AI recommendations and narrative cards
+  // Generate insights from data pipeline and ChromaDB analysis
   const insights = React.useMemo(() => {
-    if (!aiInsights && narrativeInsights.length === 0) {
-      return []; // Return empty if no AI data available
-    }
-
     const generatedInsights = [];
 
-    // Convert AI recommendations to insight format
-    if (aiInsights?.recommendations) {
-      aiInsights.recommendations.forEach((rec, index) => {
-        generatedInsights.push({
-          title: rec.title,
-          category: rec.title.includes('EV') ? 'EV Leadership' : 
-                   rec.title.includes('Data') ? 'Data Quality' :
-                   rec.title.includes('Risk') ? 'Portfolio Risk' : 'Strategic',
-          priority: index + 1,
-          impact: rec.priority === 'high' ? 'high' : rec.priority === 'medium' ? 'medium' : 'low',
-          confidence: `${Math.round(aiInsights.confidence * 100)}%`,
-          description: rec.description,
-          recommendation: `AI Recommendation: ${rec.description}`,
-          timeline: "AI Generated",
-          metrics: {
-            confidence: `${Math.round(aiInsights.confidence * 100)}%`,
-            source: "Vector AI Analysis",
-            processingTime: `${aiInsights.metadata?.processingTime || 0}ms`
-          }
-        });
-      });
-    }
-
-    // Convert narrative insights to insight format
+    // Prioritize data pipeline insights (ChromaDB-enhanced)
     narrativeInsights.forEach((narrative, index) => {
       if (narrative.narrative) {
         generatedInsights.push({
@@ -484,11 +457,71 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           metrics: {
             confidence: `${Math.round(narrative.confidence * 100)}%`,
             type: narrative.type,
+            source: "ChromaDB Pipeline",
             lastUpdated: narrative.lastUpdated.toLocaleDateString()
           }
         });
       }
     });
+
+    // Supplement with AI insights if available
+    if (aiInsights?.recommendations) {
+      aiInsights.recommendations.forEach((rec, index) => {
+        generatedInsights.push({
+          title: rec.title,
+          category: rec.title.includes('EV') ? 'EV Leadership' :
+            rec.title.includes('Data') ? 'Data Quality' :
+              rec.title.includes('Risk') ? 'Portfolio Risk' : 'Strategic',
+          priority: index + narrativeInsights.length + 1,
+          impact: rec.priority === 'high' ? 'high' : rec.priority === 'medium' ? 'medium' : 'low',
+          confidence: `${Math.round(aiInsights.confidence * 100)}%`,
+          description: rec.description,
+          recommendation: `AI Enhancement: ${rec.description}`,
+          timeline: "AI Generated",
+          metrics: {
+            confidence: `${Math.round(aiInsights.confidence * 100)}%`,
+            source: "AI + ChromaDB",
+            processingTime: `${aiInsights.metadata?.processingTime || 0}ms`
+          }
+        });
+      });
+    }
+
+    // If no pipeline data, provide fallback insights
+    if (generatedInsights.length === 0) {
+      return [
+        {
+          title: "Portfolio Data Quality Enhancement",
+          category: "Data Quality",
+          priority: 1,
+          impact: "high",
+          confidence: "85%",
+          description: "Current portfolio shows opportunities for improved data collection and PCAF compliance scoring.",
+          recommendation: "Implement systematic data collection processes for better emissions tracking accuracy.",
+          timeline: "1-3 months",
+          metrics: {
+            confidence: "85%",
+            source: "Fallback Analysis",
+            lastUpdated: new Date().toLocaleDateString()
+          }
+        },
+        {
+          title: "EV Transition Strategy",
+          category: "EV Leadership",
+          priority: 2,
+          impact: "high",
+          confidence: "78%",
+          description: "Electric vehicle adoption presents significant decarbonization opportunities for the portfolio.",
+          recommendation: "Develop targeted EV financing products with competitive rates and terms.",
+          timeline: "3-6 months",
+          metrics: {
+            confidence: "78%",
+            source: "Fallback Analysis",
+            lastUpdated: new Date().toLocaleDateString()
+          }
+        }
+      ];
+    }
 
     return generatedInsights.slice(0, 4); // Limit to top 4 insights
   }, [aiInsights, narrativeInsights]);
@@ -544,9 +577,8 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    insight.impact === 'high' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                  }`}>
+                  <div className={`p-2 rounded-lg ${insight.impact === 'high' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                    }`}>
                     <Target className="h-5 w-5" />
                   </div>
                   <div>
@@ -555,13 +587,12 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                       <Badge variant="outline" className="text-xs">
                         {insight.category} • Priority {insight.priority}
                       </Badge>
-                      <Badge 
+                      <Badge
                         variant={insight.impact === 'high' ? 'default' : 'secondary'}
-                        className={`text-xs ${
-                          insight.impact === 'high' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-blue-100 text-blue-700'
-                        }`}
+                        className={`text-xs ${insight.impact === 'high'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-blue-100 text-blue-700'
+                          }`}
                       >
                         {insight.impact} impact
                       </Badge>
@@ -579,7 +610,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-muted-foreground">{insight.description}</p>
-                
+
                 <div className="bg-muted/50 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
@@ -686,11 +717,10 @@ function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AI
             <CardContent className="pt-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    factor.category.includes('Electric') ? 'bg-green-100 text-green-700' :
+                  <div className={`p-2 rounded-lg ${factor.category.includes('Electric') ? 'bg-green-100 text-green-700' :
                     factor.category.includes('Hybrid') ? 'bg-blue-100 text-blue-700' :
-                    'bg-orange-100 text-orange-700'
-                  }`}>
+                      'bg-orange-100 text-orange-700'
+                    }`}>
                     <Zap className="h-4 w-4" />
                   </div>
                   <div>
@@ -702,13 +732,12 @@ function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AI
                       <Badge variant="outline" className="text-xs">
                         {factor.confidence} confidence
                       </Badge>
-                      <Badge 
+                      <Badge
                         variant={factor.variance.startsWith('-') ? 'default' : 'secondary'}
-                        className={`text-xs ${
-                          factor.variance.startsWith('-') 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-orange-100 text-orange-700'
-                        }`}
+                        className={`text-xs ${factor.variance.startsWith('-')
+                          ? 'bg-green-600 text-white'
+                          : 'bg-orange-100 text-orange-700'
+                          }`}
                       >
                         {factor.variance} vs industry
                       </Badge>
@@ -719,7 +748,7 @@ function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AI
                   Update Factor
                 </Button>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <span className="font-medium">Emission Factor: </span>
@@ -757,11 +786,11 @@ function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AI
                 <li>• Diesel factors: Consider biodiesel blend ratios in calculations</li>
               </ul>
             </div>
-            
+
             <div className="p-4 border rounded-lg bg-green-50">
               <h5 className="font-medium text-green-800 mb-2">Quality Assurance</h5>
               <p className="text-sm text-green-700">
-                All emission factors are validated against EPA standards and updated quarterly. 
+                All emission factors are validated against EPA standards and updated quarterly.
                 Custom factors undergo peer review and documentation requirements.
               </p>
             </div>
@@ -804,7 +833,7 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="font-medium">Key Drivers</h4>
               <div className="space-y-2 text-sm">
@@ -892,7 +921,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="font-medium">Physical Risk Exposure</h4>
               <div className="space-y-3">
@@ -966,7 +995,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-orange-50 border-orange-200">
               <CardContent className="pt-4">
                 <h4 className="font-medium text-orange-800 mb-2">Disorderly Transition</h4>
@@ -977,7 +1006,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-red-50 border-red-200">
               <CardContent className="pt-4">
                 <h4 className="font-medium text-red-800 mb-2">Hot House World</h4>
@@ -1007,11 +1036,11 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                 <li>• Data quality improvements critical for accurate scenario modeling</li>
               </ul>
             </div>
-            
+
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h5 className="font-medium text-blue-800 mb-2">Strategic Recommendation</h5>
               <p className="text-sm text-blue-700">
-                Accelerate EV financing initiatives to maximize benefits from transition scenarios 
+                Accelerate EV financing initiatives to maximize benefits from transition scenarios
                 while maintaining diversification to manage disorderly transition risks.
               </p>
             </div>
@@ -1102,19 +1131,18 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
             <CardContent className="pt-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    anomaly.severity === 'high' ? 'bg-red-100 text-red-700' :
+                  <div className={`p-2 rounded-lg ${anomaly.severity === 'high' ? 'bg-red-100 text-red-700' :
                     anomaly.severity === 'medium' ? 'bg-orange-100 text-orange-700' :
-                    'bg-blue-100 text-blue-700'
-                  }`}>
+                      'bg-blue-100 text-blue-700'
+                    }`}>
                     <AlertTriangle className="h-4 w-4" />
                   </div>
                   <div>
                     <h4 className="font-medium">{anomaly.id}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge 
-                        variant={anomaly.severity === 'high' ? 'destructive' : 
-                                anomaly.severity === 'medium' ? 'secondary' : 'outline'}
+                      <Badge
+                        variant={anomaly.severity === 'high' ? 'destructive' :
+                          anomaly.severity === 'medium' ? 'secondary' : 'outline'}
                         className="text-xs"
                       >
                         {anomaly.severity} severity
@@ -1132,10 +1160,10 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   Investigate
                 </Button>
               </div>
-              
+
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">{anomaly.description}</p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Impact: </span>
@@ -1146,7 +1174,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                     <span className="text-muted-foreground">{anomaly.confidence}</span>
                   </div>
                 </div>
-                
+
                 <div className="bg-muted/50 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
                     <CheckCircle className="h-4 w-4 text-green-600" />
@@ -1176,7 +1204,7 @@ function AIInsightsPage() {
   // Load AI-powered insights on component mount
   useEffect(() => {
     loadAIInsights();
-    
+
     // Disable real-time service for this page to prevent WebSocket errors
     return () => {
       // Cleanup any real-time connections when leaving the page
@@ -1205,40 +1233,34 @@ function AIInsightsPage() {
       console.log('✅ Portfolio data loaded:', portfolio);
       setPortfolioData(portfolio);
 
-      // 2. Generate AI insights using vector semantic analysis
-      console.log('🧠 Generating AI insights...');
+      // 2. Generate AI insights using data pipeline and ChromaDB
+      console.log('🧠 Generating AI insights via data pipeline...');
+
+      // Use the data pipeline approach with ChromaDB for semantic analysis
+      const pipelineInsights = await narrativePipelineIntegration.generateNarrativeInsights();
+      console.log('✅ Pipeline insights generated:', pipelineInsights);
+      setNarrativeInsights(pipelineInsights);
+
+      // 3. Generate actionable AI insights from pipeline data
+      console.log('🎯 Processing actionable insights...');
       const insightRequest: AIInsightRequest = {
-        query: "Analyze portfolio financed emissions performance, identify key risks, opportunities, and provide strategic recommendations for PCAF compliance and decarbonization",
+        query: "Based on the data pipeline analysis, provide strategic insights for portfolio decarbonization and PCAF compliance",
         context: {
           portfolioSummary: portfolio,
-          analysisType: 'portfolio'
+          pipelineInsights: pipelineInsights,
+          analysisType: 'pipeline_enhanced'
         },
         agent: 'advisory'
       };
 
       const insights = await aiService.getAIInsights(insightRequest);
-      console.log('✅ AI insights generated:', insights);
+      console.log('✅ AI insights generated from pipeline:', insights);
       setAiInsights(insights);
 
-      // 3. Generate narrative insights using AI narrative builder
-      console.log('📝 Generating narrative insights...');
-      const narrativeContext: NarrativeContext = {
-        portfolioSize: portfolio?.totalInstruments || 247,
-        bankType: 'community', // Could be dynamic based on user profile
-        primaryMarket: 'Auto Lending',
-        experienceLevel: 'intermediate',
-        businessGoals: ['PCAF Compliance', 'Emission Reduction', 'Risk Management'],
-        currentChallenges: ['Data Quality', 'EV Transition', 'Regulatory Requirements']
-      };
-
-      const narrativeCards = await narrativePipelineIntegration.generateNarrativeInsights();
-      console.log('✅ Narrative insights generated:', narrativeCards);
-      setNarrativeInsights(narrativeCards);
-
-      // 4. Get AI recommendations
-      console.log('💡 Getting AI recommendations...');
+      // 4. Get ChromaDB-enhanced recommendations
+      console.log('💡 Getting ChromaDB-enhanced recommendations...');
       const recs = await aiService.getRecommendations();
-      console.log('✅ AI recommendations loaded:', recs);
+      console.log('✅ ChromaDB recommendations loaded:', recs);
       setRecommendations(recs);
 
       console.log('🎉 All AI insights loaded successfully!');
@@ -1250,9 +1272,9 @@ function AIInsightsPage() {
         stack: error instanceof Error ? error.stack : undefined,
         error
       });
-      
+
       setError('Failed to load AI insights. Using fallback data.');
-      
+
       // Fallback to basic portfolio data if AI services fail
       console.log('🔄 Using fallback data...');
       const fallbackData = {
@@ -1268,14 +1290,14 @@ function AIInsightsPage() {
         averageDataQualityScore: 2.8
       };
       setPortfolioData(fallbackData);
-      
+
       // Set empty AI insights to prevent undefined errors
       setAiInsights(null);
       setNarrativeInsights([]);
       setRecommendations([]);
-      
+
       console.log('✅ Fallback data set, component should render now');
-      
+
       toast({
         title: "AI Services Unavailable",
         description: "Using cached insights. Some features may be limited.",
@@ -1335,7 +1357,7 @@ function AIInsightsPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center space-y-4">
             <p className="text-destructive">{error}</p>
-            <button 
+            <button
               onClick={loadAIInsights}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
@@ -1351,75 +1373,75 @@ function AIInsightsPage() {
 
   return (
     <main className="container mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
-        <Card className="border border-border/50 bg-gradient-to-r from-card/50 to-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                  <Brain className="h-6 w-6" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl font-bold">AI Insights Dashboard</CardTitle>
-                  <p className="text-muted-foreground">
-                    Intelligent analysis of your financed emissions portfolio with actionable recommendations
-                  </p>
-                </div>
+      {/* Header */}
+      <Card className="border border-border/50 bg-gradient-to-r from-card/50 to-card/80 backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <Brain className="h-6 w-6" />
               </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant={activeView === 'overview' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setActiveView('overview')}
-                >
-                  <Eye className="h-4 w-4 mr-1" />
-                  Overview
-                </Button>
-                <Button 
-                  variant={activeView === 'advanced' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setActiveView('advanced')}
-                >
-                  <BarChart3 className="h-4 w-4 mr-1" />
-                  Advanced
-                </Button>
+              <div>
+                <CardTitle className="text-2xl font-bold">AI Insights Dashboard</CardTitle>
+                <p className="text-muted-foreground">
+                  Intelligent analysis of your financed emissions portfolio with actionable recommendations
+                </p>
               </div>
             </div>
-          </CardHeader>
-        </Card>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={activeView === 'overview' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveView('overview')}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Overview
+              </Button>
+              <Button
+                variant={activeView === 'advanced' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveView('advanced')}
+              >
+                <BarChart3 className="h-4 w-4 mr-1" />
+                Advanced
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
 
-        {activeView === 'overview' ? (
-          <>
-            {/* Executive Summary */}
-            <section>
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                Executive Summary
-              </h2>
-              <ExecutiveSummary portfolioData={portfolioData} />
-            </section>
+      {activeView === 'overview' ? (
+        <>
+          {/* Executive Summary */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              Executive Summary
+            </h2>
+            <ExecutiveSummary portfolioData={portfolioData} />
+          </section>
 
-            {/* Critical Alerts */}
-            <CriticalAlerts portfolioData={portfolioData} />
+          {/* Critical Alerts */}
+          <CriticalAlerts portfolioData={portfolioData} />
 
-        {/* Main Dashboard */}
-        <section>
-          <DashboardContent 
-            portfolioData={portfolioData}
-            onViewAdvanced={() => setActiveView('advanced')}
-          />
-        </section>
-      </>
-    ) : (
-      <AdvancedAnalyticsDashboard 
-        setActiveView={setActiveView}
-        aiInsights={aiInsights}
-        narrativeInsights={narrativeInsights}
-        portfolioData={portfolioData}
-      />
-        )}
-      </main>
-    );
+          {/* Main Dashboard */}
+          <section>
+            <DashboardContent
+              portfolioData={portfolioData}
+              onViewAdvanced={() => setActiveView('advanced')}
+            />
+          </section>
+        </>
+      ) : (
+        <AdvancedAnalyticsDashboard
+          setActiveView={setActiveView}
+          aiInsights={aiInsights}
+          narrativeInsights={narrativeInsights}
+          portfolioData={portfolioData}
+        />
+      )}
+    </main>
+  );
 }
 
 export default AIInsightsPage;
