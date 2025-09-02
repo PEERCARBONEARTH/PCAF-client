@@ -4,6 +4,7 @@ import Dexie, { type EntityTable } from 'dexie';
 export interface LoanPortfolioItem {
   id?: number;
   loan_id: string;
+  instrument_type?: 'loan' | 'lc' | 'guarantee'; // Added to support all instrument types
   loan_amount: number;
   
   // Enhanced PCAF vehicle data
@@ -231,9 +232,9 @@ const db = new Dexie('FinancedEmissionsDB') as Dexie & {
   amortization_schedules: EntityTable<AmortizationSchedule, 'id'>;
 };
 
-// Database schema - updated to version 2 for new tables
-db.version(2).stores({
-  loans: '++id, loan_id, vehicle_category, fuel_type, lending_type, outstanding_balance, financed_emissions, data_quality_score, pcaf_data_option, early_payoff_date, refinance_date, default_date, created_at',
+// Database schema - updated to version 3 for instrument types
+db.version(3).stores({
+  loans: '++id, loan_id, instrument_type, vehicle_category, fuel_type, lending_type, outstanding_balance, financed_emissions, data_quality_score, pcaf_data_option, early_payoff_date, refinance_date, default_date, created_at',
   emission_factors: '++id, vehicle_category, fuel_type, engine_size_range, data_quality_level, pcaf_data_option, country, created_at',
   grid_emission_factors: '++id, country, region, emission_factor_kg_co2_kwh, data_quality_level, valid_from, created_at',
   pcaf_data_quality_options: '++id, option_code, quality_score',

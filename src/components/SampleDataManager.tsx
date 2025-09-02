@@ -130,7 +130,7 @@ export function SampleDataManager() {
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {refreshing ? 'Loading status...' : stats?.hasData 
-                    ? `${stats.totalLoans} loans in database` 
+                    ? `${stats.totalInstruments || stats.totalLoans} instruments in database` 
                     : 'Load sample data to get started'
                   }
                 </p>
@@ -138,9 +138,18 @@ export function SampleDataManager() {
             </div>
             
             {stats?.hasData && (
-              <Badge variant="secondary">
-                {stats.totalLoans} loans
-              </Badge>
+              <div className="flex gap-2">
+                <Badge variant="secondary">
+                  {stats.totalInstruments || stats.totalLoans} total
+                </Badge>
+                {stats?.instrumentBreakdown && (
+                  <>
+                    <Badge variant="outline">{stats.instrumentBreakdown.loans} loans</Badge>
+                    <Badge variant="outline">{stats.instrumentBreakdown.lcs} LCs</Badge>
+                    <Badge variant="outline">{stats.instrumentBreakdown.guarantees} guarantees</Badge>
+                  </>
+                )}
+              </div>
             )}
           </div>
 
@@ -154,8 +163,13 @@ export function SampleDataManager() {
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="p-3 border rounded-lg">
-                  <p className="text-xs text-muted-foreground">Total Loans</p>
+                  <p className="text-xs text-muted-foreground">Total Instruments</p>
                   <p className="text-lg font-semibold">{stats.latestCalculation.total_loans}</p>
+                  {stats?.instrumentBreakdown && (
+                    <p className="text-xs text-muted-foreground">
+                      {stats.instrumentBreakdown.loans}L • {stats.instrumentBreakdown.lcs}LC • {stats.instrumentBreakdown.guarantees}G
+                    </p>
+                  )}
                 </div>
                 
                 <div className="p-3 border rounded-lg">
@@ -231,11 +245,13 @@ export function SampleDataManager() {
           <div className="p-4 bg-muted/50 rounded-sm space-y-2">
             <h4 className="font-medium">Sample Data Includes:</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• 50 realistic motor vehicle loans ($25k - $60k range)</li>
+              <li>• <strong>100 Motor Vehicle Loans</strong> ($25k - $60k range)</li>
+              <li>• <strong>25 Letters of Credit</strong> ($500k - $2.5M dealer/import financing)</li>
+              <li>• <strong>25 Guarantees</strong> ($100k - $900k residual value/performance/payment)</li>
               <li>• Mix of gasoline, diesel, electric, and hybrid vehicles</li>
               <li>• PCAF-compliant emissions calculations and attribution factors</li>
               <li>• Varied data quality scores (1-5 PCAF hierarchy)</li>
-              <li>• Temporal attribution for loans at different stages</li>
+              <li>• Risk-weighted attribution for contingent instruments</li>
             </ul>
           </div>
         </CardContent>
