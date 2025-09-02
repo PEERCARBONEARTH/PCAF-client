@@ -50,7 +50,7 @@ interface VehicleDistribution {
   byAge: Record<string, number>;
   byMake: Record<string, number>;
   electricVehiclePercentage: number;
-  avgVehicleAge: : number;
+  avgVehicleAge: number;
     description: string;
   }[];
 }

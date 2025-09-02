@@ -79,4 +79,4 @@ interface Comment {
   type: 'comment' | 'status-change' | 'assignment';
 }
 
-export function TeamWorkflow({ portfolioMetrics, currentUser }: TeamWor
+export function TeamWorkflow({ portfolioMetrics, currentUser }: TeamWorkflowProps) {

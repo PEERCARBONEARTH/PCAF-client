@@ -59,7 +59,7 @@ export function SimpleLoanLedger() {
     closeLoanDetail,
     navigateToPrevious,
     navigateToNext
-  } = useLoanNavigation(filteredInstruments as any);
+  } = useLoanNavigation(filteredInstruments);
 
   useEffect(() => {
     loadInstruments();
@@ -74,7 +74,7 @@ export function SimpleLoanLedger() {
       setLoading(true);
       // Load from local database which now includes all instrument types
       const allInstruments = await db.loans.toArray();
-      
+
       // Debug: Log instrument types
       console.log('Total instruments loaded:', allInstruments.length);
       const typeBreakdown = allInstruments.reduce((acc, instrument) => {
@@ -83,7 +83,7 @@ export function SimpleLoanLedger() {
         return acc;
       }, {} as Record<string, number>);
       console.log('Instrument type breakdown:', typeBreakdown);
-      
+
       setInstruments(allInstruments);
     } catch (error) {
       console.error('Failed to load instruments:', error);
@@ -495,7 +495,7 @@ export function SimpleLoanLedger() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => openLoanDetail(instrument as any)}
+                            onClick={() => openLoanDetail(instrument)}
                             className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
                           >
                             <Eye className="h-3 w-3" />
@@ -515,7 +515,7 @@ export function SimpleLoanLedger() {
       {/* Instrument Detail Modal */}
       {navigationState.selectedLoan && (
         <InstrumentDetailModal
-          instrument={navigationState.selectedLoan as LoanPortfolioItem}
+          instrument={navigationState.selectedLoan}
           isOpen={navigationState.isModalOpen}
           onClose={closeLoanDetail}
           onPrevious={navigateToPrevious}

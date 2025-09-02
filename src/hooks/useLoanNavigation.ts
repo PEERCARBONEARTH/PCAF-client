@@ -1,16 +1,16 @@
 import { useState, useCallback } from 'react';
-import { type LoanData } from '@/services/portfolioService';
+import { type LoanPortfolioItem } from '@/lib/db';
 
 export interface LoanNavigationState {
-  selectedLoan: LoanData | null;
+  selectedLoan: LoanPortfolioItem | null;
   isModalOpen: boolean;
-  previousLoan: LoanData | null;
-  nextLoan: LoanData | null;
+  previousLoan: LoanPortfolioItem | null;
+  nextLoan: LoanPortfolioItem | null;
   currentIndex: number;
   totalLoans: number;
 }
 
-export function useLoanNavigation(loans: LoanData[]) {
+export function useLoanNavigation(loans: LoanPortfolioItem[]) {
   const [navigationState, setNavigationState] = useState<LoanNavigationState>({
     selectedLoan: null,
     isModalOpen: false,
@@ -20,7 +20,7 @@ export function useLoanNavigation(loans: LoanData[]) {
     totalLoans: loans.length
   });
 
-  const openLoanDetail = useCallback((loan: LoanData) => {
+  const openLoanDetail = useCallback((loan: LoanPortfolioItem) => {
     const currentIndex = loans.findIndex(l => l.loan_id === loan.loan_id);
     const previousLoan = currentIndex > 0 ? loans[currentIndex - 1] : null;
     const nextLoan = currentIndex < loans.length - 1 ? loans[currentIndex + 1] : null;
