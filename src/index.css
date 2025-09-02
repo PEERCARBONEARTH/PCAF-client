@@ -163,6 +163,24 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Inter Font Class */
+  .inter-font {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+
+  /* Inter Font Weight Variations */
+  .inter-thin { font-weight: 100; }
+  .inter-extralight { font-weight: 200; }
+  .inter-light { font-weight: 300; }
+  .inter-regular { font-weight: 400; }
+  .inter-medium { font-weight: 500; }
+  .inter-semibold { font-weight: 600; }
+  .inter-bold { font-weight: 700; }
+  .inter-extrabold { font-weight: 800; }
+  .inter-black { font-weight: 900; }
 }
 
 /* Human-Centered Design Components */

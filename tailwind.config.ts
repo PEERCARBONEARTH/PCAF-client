@@ -273,6 +273,15 @@ export default {
 				'stagger-5': 'fade-in-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s both'
 			},
 			
+			// Enhanced Font System
+			fontFamily: {
+				'sans': ['Inter', 'Raleway', 'system-ui', '-apple-system', 'sans-serif'],
+				'inter': ['Inter', 'sans-serif'],
+				'raleway': ['Raleway', 'sans-serif'],
+				'display': ['Inter', 'Raleway', 'system-ui', 'sans-serif'],
+				'body': ['Inter', 'system-ui', 'sans-serif']
+			},
+			
 			// Enhanced Transition System  
 			transitionTimingFunction: {
 				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',

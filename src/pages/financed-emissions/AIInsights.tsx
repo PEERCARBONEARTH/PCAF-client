@@ -602,7 +602,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
   );
 }
 
-function EmissionFactorsAnalysis() {
+function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   const emissionFactors = [
     {
       category: 'Gasoline Vehicles',
@@ -772,7 +772,7 @@ function EmissionFactorsAnalysis() {
   );
 }
 
-function EmissionsForecasts() {
+function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   return (
     <div className="space-y-6">
       <Card>
@@ -854,7 +854,7 @@ function EmissionsForecasts() {
   );
 }
 
-function RiskAnalytics() {
+function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   return (
     <div className="space-y-6">
       <Card>
@@ -941,7 +941,7 @@ function RiskAnalytics() {
   );
 }
 
-function ClimateScenarios() {
+function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   return (
     <div className="space-y-6">
       <Card>
@@ -1022,7 +1022,7 @@ function ClimateScenarios() {
   );
 }
 
-function AnomalyDetection() {
+function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   const anomalies = [
     {
       id: 'AUTO0156',
@@ -1180,26 +1180,33 @@ function AIInsightsPage() {
     // Disable real-time service for this page to prevent WebSocket errors
     return () => {
       // Cleanup any real-time connections when leaving the page
-      if (typeof window !== 'undefined' && window.realTimeService) {
-        try {
-          window.realTimeService.disconnect();
-        } catch (error) {
-          console.warn('Error disconnecting real-time service:', error);
-        }
+      try {
+        // Import and disconnect realTimeService if available
+        import('@/services/realTimeService').then(({ realTimeService }) => {
+          realTimeService.disconnect();
+        }).catch(() => {
+          // Ignore import errors
+        });
+      } catch (error) {
+        console.warn('Error disconnecting real-time service:', error);
       }
     };
   }, []);
 
   const loadAIInsights = async () => {
     try {
+      console.log('🚀 Starting AI insights loading...');
       setLoading(true);
       setError(null);
 
       // 1. Load portfolio data from service
+      console.log('📊 Loading portfolio data...');
       const portfolio = await portfolioService.getPortfolioSummary();
+      console.log('✅ Portfolio data loaded:', portfolio);
       setPortfolioData(portfolio);
 
       // 2. Generate AI insights using vector semantic analysis
+      console.log('🧠 Generating AI insights...');
       const insightRequest: AIInsightRequest = {
         query: "Analyze portfolio financed emissions performance, identify key risks, opportunities, and provide strategic recommendations for PCAF compliance and decarbonization",
         context: {
@@ -1210,9 +1217,11 @@ function AIInsightsPage() {
       };
 
       const insights = await aiService.getAIInsights(insightRequest);
+      console.log('✅ AI insights generated:', insights);
       setAiInsights(insights);
 
       // 3. Generate narrative insights using AI narrative builder
+      console.log('📝 Generating narrative insights...');
       const narrativeContext: NarrativeContext = {
         portfolioSize: portfolio?.totalInstruments || 247,
         bankType: 'community', // Could be dynamic based on user profile
@@ -1223,25 +1232,49 @@ function AIInsightsPage() {
       };
 
       const narrativeCards = await narrativePipelineIntegration.generateNarrativeInsights();
+      console.log('✅ Narrative insights generated:', narrativeCards);
       setNarrativeInsights(narrativeCards);
 
       // 4. Get AI recommendations
+      console.log('💡 Getting AI recommendations...');
       const recs = await aiService.getRecommendations();
+      console.log('✅ AI recommendations loaded:', recs);
       setRecommendations(recs);
 
+      console.log('🎉 All AI insights loaded successfully!');
+
     } catch (error) {
-      console.error('Failed to load AI insights:', error);
+      console.error('❌ Failed to load AI insights:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        error
+      });
+      
       setError('Failed to load AI insights. Using fallback data.');
       
       // Fallback to basic portfolio data if AI services fail
+      console.log('🔄 Using fallback data...');
       const fallbackData = {
         loans: Array(247).fill(null).map((_, i) => ({ id: `AUTO${String(i + 1).padStart(4, '0')}` })),
         totalEmissions: 1847,
         avgDataQuality: 2.8,
         evPercentage: 18.2,
-        anomalies: []
+        anomalies: [],
+        totalInstruments: 247,
+        totalLoanAmount: 8200000,
+        totalOutstandingBalance: 7800000,
+        totalFinancedEmissions: 1847,
+        averageDataQualityScore: 2.8
       };
       setPortfolioData(fallbackData);
+      
+      // Set empty AI insights to prevent undefined errors
+      setAiInsights(null);
+      setNarrativeInsights([]);
+      setRecommendations([]);
+      
+      console.log('✅ Fallback data set, component should render now');
       
       toast({
         title: "AI Services Unavailable",
@@ -1249,6 +1282,7 @@ function AIInsightsPage() {
         variant: "destructive"
       });
     } finally {
+      console.log('🏁 Loading complete, setting loading to false');
       setLoading(false);
     }
   };
@@ -1276,8 +1310,47 @@ function AIInsightsPage() {
     }
   }, []);
 
+  console.log('🎯 AIInsightsPage render - loading:', loading, 'error:', error, 'portfolioData:', !!portfolioData);
+
+  // Loading state
+  if (loading) {
+    console.log('⏳ Rendering loading state');
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Loading AI insights...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state (only if no fallback data)
+  if (error && !portfolioData) {
+    console.log('❌ Rendering error state');
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <p className="text-destructive">{error}</p>
+            <button 
+              onClick={loadAIInsights}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  console.log('✅ Rendering main content with activeView:', activeView);
+
   return (
-    <main className="space-y-6">
+    <main className="container mx-auto px-4 py-8 space-y-6">
         {/* Header */}
         <Card className="border border-border/50 bg-gradient-to-r from-card/50 to-card/80 backdrop-blur-sm">
           <CardHeader>
@@ -1338,7 +1411,12 @@ function AIInsightsPage() {
         </section>
       </>
     ) : (
-      <AdvancedAnalyticsDashboard setActiveView={setActiveView} />
+      <AdvancedAnalyticsDashboard 
+        setActiveView={setActiveView}
+        aiInsights={aiInsights}
+        narrativeInsights={narrativeInsights}
+        portfolioData={portfolioData}
+      />
         )}
       </main>
     );
