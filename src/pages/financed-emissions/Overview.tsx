@@ -306,7 +306,7 @@ function OverviewPage() {
               >
                 {period}
               </Button>
-            ))}
+            ))} 
           </div>
 
           <Button className="gap-2" onClick={handleExportReport}>
