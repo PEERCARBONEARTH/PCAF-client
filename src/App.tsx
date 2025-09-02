@@ -60,13 +60,14 @@ import RAGManagementPage from "./pages/financed-emissions/RAGManagement";
 import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
 import PortfolioDeepAnalysisPresentation from "./pages/financed-emissions/PortfolioDeepAnalysisPresentation";
 import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
-import MethodologyPage from "./pages/financed-emissions/Methodology";
+
 import PipelineDemoPage from "./pages/pipeline-demo";
 import NarrativeInsightsDemoPage from "./pages/narrative-insights-demo";
 import LoanDataPipelineDemoPage from "./pages/loan-data-pipeline-demo";
 import React, { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "@/components/LoadingState";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+import { FloatingChatbot } from "@/components/chat/FloatingChatbot";
 
 import { DealPipelineProvider } from "./contexts/DealPipelineContext";
 import { PortfolioProvider } from "./contexts/PortfolioContext";
@@ -144,7 +145,7 @@ const FinancedEmissionsRoutes = () => {
         <Route path="reports/templates" element={<ReportTemplates />} />
         <Route path="reports/presentation/portfolio-deep-analysis" element={<PortfolioDeepAnalysisPresentation />} />
         <Route path="pcaf-calculator" element={<PCAFCalculator />} />
-        <Route path="methodology" element={<MethodologyPage />} />
+
         <Route path="amortization" element={
           <Suspense fallback={<div className="min-h-[120px] flex items-center justify-center">Loading…</div>}>
             <AmortizationSettings />
@@ -322,6 +323,8 @@ function App() {
               <Toaster />
               <Sonner />
               <PWAInstallPrompt />
+              {/* Global Floating Chatbot - only show for authenticated users */}
+              {user && <FloatingChatbot />}
               <BrowserRouter>
                 <Routes>
                   {/* Public route for authentication */}

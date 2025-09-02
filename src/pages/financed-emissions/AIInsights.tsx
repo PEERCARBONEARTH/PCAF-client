@@ -19,6 +19,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAssumptions } from "@/contexts/AssumptionsContext";
 import { portfolioService } from "@/services/portfolioService";
 import { useToast } from "@/hooks/use-toast";
 

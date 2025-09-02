@@ -4,6 +4,7 @@ import { CSVUploadInterface } from "@/components/CSVUploadInterface";
 import { SampleDataManager } from "@/components/SampleDataManager";
 import { CSVTemplateDownload } from "@/components/CSVTemplateDownload";
 import { APIKeyManagement } from "@/components/APIKeyManagement";
+import { DataIngestionWizard } from "@/components/data-ingestion/DataIngestionWizard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ export default function UploadPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const [showWizard, setShowWizard] = useState(true);
   const [errorCount, setErrorCount] = useState(0);
   const [activeUploads, setActiveUploads] = useState<Map<string, UploadProgress>>(new Map());
   const [uploadHistory, setUploadHistory] = useState<any[]>([]);
@@ -151,8 +153,51 @@ export default function UploadPage() {
 
   console.log('Upload page rendering');
   
+  const handleWizardComplete = (data: any) => {
+    console.log('Wizard completed with data:', data);
+    setShowWizard(false);
+    toast({
+      title: "Data Ingestion Complete",
+      description: "Your data has been processed with the configured methodology.",
+    });
+    // Navigate to overview or ledger to see results
+    navigate('/financed-emissions/overview');
+  };
+
   return (
     <div className="space-y-6">
+      {/* Methodology-First Data Ingestion Wizard */}
+      {showWizard && (
+        <DataIngestionWizard 
+          onComplete={handleWizardComplete}
+          className="mb-8"
+        />
+      )}
+
+      {/* Toggle between Wizard and Traditional Upload */}
+      {!showWizard && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">Traditional Upload Mode</h3>
+                <p className="text-sm text-muted-foreground">
+                  Using legacy upload without methodology validation
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowWizard(true)}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Use Methodology Wizard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Active Uploads Status */}
       {activeUploads.size > 0 && (
         <Card>

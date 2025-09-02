@@ -22,12 +22,14 @@ import {
   PieChart,
   Activity,
   Target,
-  Info
+  Info,
+  MessageCircle,
+  X,
+  Minimize2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/db";
 import { LineChart, Line, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { RAGChatbot } from "@/components/rag/RAGChatbot";
 
 interface PortfolioMetrics {
   totalInstruments: number;
@@ -571,6 +573,34 @@ function OverviewPage() {
                   );
                 })}
               </div>
+
+              {/* Summary Statistics */}
+              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS.success }}></div>
+                    <span className="text-xs font-medium">Electric</span>
+                  </div>
+                  <div className="text-lg font-bold">8.5%</div>
+                  <div className="text-xs text-muted-foreground">332.0 tCO2e</div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS.teal }}></div>
+                    <span className="text-xs font-medium">Hybrid</span>
+                  </div>
+                  <div className="text-lg font-bold">11.4%</div>
+                  <div className="text-xs text-muted-foreground">445.0 tCO2e</div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS.warning }}></div>
+                    <span className="text-xs font-medium">Gasoline</span>
+                  </div>
+                  <div className="text-lg font-bold">27.3%</div>
+                  <div className="text-xs text-muted-foreground">1,070.0 tCO2e</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -721,38 +751,25 @@ function OverviewPage() {
           </AlertDescription>
         </Alert>
 
-        <div className="relative">
-          <RAGChatbot
-            className="h-[500px]"
-            defaultSessionType="portfolio_analysis"
-            defaultFocusArea="motor_vehicle_portfolio"
-            embedded={false}
-            showModeSelector={true}
-            autoDetectMode={true}
-          />
-
-          {/* Support AI Badge */}
-          <div className="absolute top-4 right-4 z-10">
-            <Badge variant="secondary" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-              <Activity className="w-3 h-3 mr-1" />
-              Support AI Guide
-            </Badge>
-          </div>
-
-          {/* Helper Text */}
-          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium text-blue-900">Your AI Support Guide</p>
-                <p className="text-blue-700 mt-1">
-                  Ask me anything about your portfolio, PCAF methodology, data quality improvements, or compliance requirements.
-                  I automatically adapt my expertise based on your questions and can analyze your current portfolio data.
-                </p>
+        <Alert className="border-orange-200 bg-orange-50">
+          <AlertTriangle className="h-5 w-5 text-orange-600" />
+          <AlertDescription>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-semibold text-orange-800">Methodology & Assumptions</h4>
+                <p className="text-sm text-orange-700">Ensure data quality by configuring activity factors and validation rules before ingesting new data</p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => navigate('/financed-emissions/upload')} className="border-orange-300 text-orange-700 hover:bg-orange-100">
+                  Configure Methodology
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/financed-emissions/settings')} className="text-orange-700 hover:bg-orange-100">
+                  View Settings
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       </div>
     </div>
   );

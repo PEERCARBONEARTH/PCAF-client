@@ -50,10 +50,10 @@ const navigation = [
     description: 'Emissions attributed to loans breakdown'
   },
   {
-    name: 'Upload Data',
+    name: 'Data Ingestion',
     href: '/financed-emissions/upload',
     icon: Upload,
-    description: 'Import loan portfolio for carbon attribution'
+    description: 'Import data with methodology validation & assumptions'
   },
   {
     name: 'Reports',
@@ -86,12 +86,6 @@ const navigation = [
     href: '/financed-emissions/settings',
     icon: Settings,
     description: 'Carbon-linked exposure configuration'
-  },
-  {
-    name: 'Methodology',
-    href: '/financed-emissions/methodology',
-    icon: BookOpen,
-    description: 'Data quality methodology & sources'
   },
   {
     name: 'Pipeline Demo',
