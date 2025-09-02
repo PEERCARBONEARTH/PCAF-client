@@ -87,18 +87,7 @@ const navigation = [
     icon: Settings,
     description: 'Carbon-linked exposure configuration'
   },
-  {
-    name: 'Pipeline Demo',
-    href: '/financed-emissions/pipeline-demo',
-    icon: Zap,
-    description: 'Data pipeline demonstration and testing'
-  },
-  {
-    name: 'AI Narrative Insights',
-    href: '/financed-emissions/narrative-insights',
-    icon: Brain,
-    description: 'Humanized AI insights with actionable business strategy'
-  }
+
 ];
 
 const quickStats = [

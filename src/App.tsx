@@ -150,9 +150,7 @@ const FinancedEmissionsRoutes = () => {
             <AmortizationSettings />
           </Suspense>
         } />
-        <Route path="pipeline-demo" element={<PipelineDemoPage />} />
-        <Route path="narrative-insights" element={<NarrativeInsightsDemoPage />} />
-        <Route path="loan-data-pipeline" element={<LoanDataPipelineDemoPage />} />
+
         <Route path="settings" element={<FinancedEmissionsSettings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
