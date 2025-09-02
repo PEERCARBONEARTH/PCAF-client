@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     MessageCircle,
     X,
-    Minimize2,
     Activity,
-    Info
+    ChevronDown,
+    ChevronUp
 } from "lucide-react";
 import { RAGChatbot } from "@/components/rag/RAGChatbot";
 
@@ -17,67 +17,67 @@ interface FloatingChatbotProps {
 
 export function FloatingChatbot({ className = "" }: FloatingChatbotProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [isMinimized, setIsMinimized] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const toggleChat = () => {
-        if (isOpen && !isMinimized) {
-            setIsOpen(false);
+        if (isOpen && !isCollapsed) {
+            setIsCollapsed(true);
+        } else if (isOpen && isCollapsed) {
+            setIsCollapsed(false);
         } else {
             setIsOpen(true);
-            setIsMinimized(false);
+            setIsCollapsed(false);
         }
-    };
-
-    const minimizeChat = () => {
-        setIsMinimized(true);
     };
 
     const closeChat = () => {
         setIsOpen(false);
-        setIsMinimized(false);
+        setIsCollapsed(false);
     };
 
     return (
         <>
             {/* Floating Chat Button */}
-            {(!isOpen || isMinimized) && (
+            {!isOpen && (
                 <Button
                     onClick={toggleChat}
-                    className={`fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 bg-blue-600 hover:bg-blue-700 ${className}`}
+                    className={`fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90 ${className}`}
                     size="icon"
                 >
-                    <MessageCircle className="h-6 w-6 text-white" />
+                    <MessageCircle className="h-6 w-6 text-primary-foreground" />
                 </Button>
             )}
 
-            {/* Floating Chat Window */}
-            {isOpen && !isMinimized && (
-                <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] transform transition-all duration-300 ease-in-out animate-in slide-in-from-bottom-4 slide-in-from-right-4">
-                    <Card className="h-full shadow-2xl border-2 border-blue-200 bg-white">
-                        <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+            {/* Floating Chat Window - Expanded */}
+            {isOpen && !isCollapsed && (
+                <div className="fixed bottom-6 right-6 z-50 w-[500px] h-[500px] transform transition-all duration-300 ease-in-out animate-in slide-in-from-bottom-4 slide-in-from-right-4">
+                    <Card className="h-full shadow-2xl border bg-background dark:bg-background">
+                        <CardHeader className="pb-3 bg-muted/50 dark:bg-muted/50 border-b">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="flex items-center gap-2 text-lg text-blue-900">
+                                <CardTitle className="flex items-center gap-2 text-lg">
                                     <MessageCircle className="h-5 w-5" />
                                     AI Support Guide
                                 </CardTitle>
                                 <div className="flex items-center gap-1">
-                                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                                    <Badge variant="secondary" className="text-xs">
                                         <Activity className="w-3 h-3 mr-1" />
                                         Live
                                     </Badge>
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={minimizeChat}
-                                        className="h-8 w-8 p-0 hover:bg-blue-200"
+                                        onClick={toggleChat}
+                                        className="h-8 w-8 p-0"
+                                        title="Collapse"
                                     >
-                                        <Minimize2 className="h-4 w-4" />
+                                        <ChevronDown className="h-4 w-4" />
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={closeChat}
-                                        className="h-8 w-8 p-0 hover:bg-blue-200"
+                                        className="h-8 w-8 p-0"
+                                        title="Close"
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
@@ -95,40 +95,36 @@ export function FloatingChatbot({ className = "" }: FloatingChatbotProps) {
                             />
                         </CardContent>
                     </Card>
-
-                    {/* Helper Text - Only show when first opened */}
-                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg shadow-lg">
-                        <div className="flex items-start gap-2">
-                            <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <div className="text-sm">
-                                <p className="font-medium text-blue-900">Your AI Support Guide</p>
-                                <p className="text-blue-700 mt-1">
-                                    Ask me anything about your portfolio, PCAF methodology, data quality improvements, or compliance requirements.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             )}
 
-            {/* Minimized Chat Window */}
-            {isOpen && isMinimized && (
-                <div className="fixed bottom-20 right-6 z-50 transform transition-all duration-300 ease-in-out">
+            {/* Collapsed Chat Window */}
+            {isOpen && isCollapsed && (
+                <div className="fixed bottom-6 right-6 z-50 transform transition-all duration-300 ease-in-out">
                     <Card
-                        className="w-64 shadow-lg border-2 border-blue-200 bg-white cursor-pointer hover:shadow-xl transition-shadow"
-                        onClick={() => setIsMinimized(false)}
+                        className="w-80 shadow-lg border bg-background dark:bg-background cursor-pointer hover:shadow-xl transition-shadow"
+                        onClick={toggleChat}
                     >
                         <CardContent className="p-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <MessageCircle className="h-4 w-4 text-blue-600" />
-                                    <span className="text-sm font-medium text-blue-900">AI Support Guide</span>
+                                    <MessageCircle className="h-4 w-4 text-primary" />
+                                    <span className="text-sm font-medium">AI Support Guide</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                    <Badge variant="secondary" className="text-xs">
                                         <Activity className="w-3 h-3 mr-1" />
                                         Live
                                     </Badge>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={toggleChat}
+                                        className="h-6 w-6 p-0"
+                                        title="Expand"
+                                    >
+                                        <ChevronUp className="h-3 w-3" />
+                                    </Button>
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -136,7 +132,8 @@ export function FloatingChatbot({ className = "" }: FloatingChatbotProps) {
                                             e.stopPropagation();
                                             closeChat();
                                         }}
-                                        className="h-6 w-6 p-0 hover:bg-blue-200"
+                                        className="h-6 w-6 p-0"
+                                        title="Close"
                                     >
                                         <X className="h-3 w-3" />
                                     </Button>
