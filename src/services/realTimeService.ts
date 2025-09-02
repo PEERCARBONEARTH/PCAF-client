@@ -30,6 +30,8 @@ class RealTimeService {
   private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private useWebSocket = true; // Prefer WebSocket over SSE
+  private initialConnectionAttempted = false;
+  private gracefulDegradation = false;
 
   static getInstance(): RealTimeService {
     if (!RealTimeService.instance) {
@@ -39,6 +41,30 @@ class RealTimeService {
   }
 
   connect(): void {
+    // Don't connect if already connected
+    if (this.connectionStatus.connected) {
+      console.log('Already connected to real-time service');
+      return;
+    }
+
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      console.warn('Real-time service not available in server environment');
+      return;
+    }
+
+    // Check network connectivity
+    if (navigator.onLine === false) {
+      console.warn('No network connectivity, delaying real-time connection');
+      window.addEventListener('online', () => {
+        console.log('Network connectivity restored, attempting connection');
+        this.connect();
+      }, { once: true });
+      return;
+    }
+
+    this.initialConnectionAttempted = true;
+
     if (this.useWebSocket) {
       this.connectWebSocket();
     } else {
@@ -75,11 +101,33 @@ class RealTimeService {
     const wsUrl = `${import.meta.env.VITE_WS_URL || 'ws://localhost:3001'}/ws`;
     const token = localStorage.getItem('auth_token');
 
+    // Don't attempt connection if no token available
+    if (!token) {
+      console.warn('No auth token available, skipping WebSocket connection');
+      return;
+    }
+
     try {
+      // Clean up existing connection
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
+
       this.websocket = new WebSocket(`${wsUrl}?token=${token}`);
 
+      // Set connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (this.websocket && this.websocket.readyState === WebSocket.CONNECTING) {
+          console.warn('WebSocket connection timeout, falling back to EventSource');
+          this.websocket.close();
+          this.fallbackToEventSource();
+        }
+      }, 10000); // 10 second timeout
+
       this.websocket.onopen = () => {
-        console.log('WebSocket connected');
+        clearTimeout(connectionTimeout);
+        console.log('WebSocket connected successfully');
         this.connectionStatus.connected = true;
         this.connectionStatus.reconnectAttempts = 0;
         this.connectionStatus.lastHeartbeat = new Date();
@@ -97,19 +145,33 @@ class RealTimeService {
       };
 
       this.websocket.onclose = (event) => {
+        clearTimeout(connectionTimeout);
         console.log('WebSocket disconnected:', event.code, event.reason);
         this.connectionStatus.connected = false;
         this.notifyStatusChange();
         
-        if (event.code !== 1000) { // Not a normal closure
+        // Handle different close codes
+        if (event.code === 1006) {
+          // Abnormal closure - likely network issue
+          console.warn('WebSocket closed abnormally, attempting reconnect');
+          this.scheduleReconnect();
+        } else if (event.code === 1011) {
+          // Server error - fallback to EventSource
+          console.warn('WebSocket server error, falling back to EventSource');
+          this.fallbackToEventSource();
+        } else if (event.code !== 1000 && event.code !== 1001) {
+          // Not a normal closure - attempt reconnect
           this.scheduleReconnect();
         }
       };
 
       this.websocket.onerror = (error) => {
+        clearTimeout(connectionTimeout);
         console.error('WebSocket error:', error);
         this.connectionStatus.connected = false;
         this.notifyStatusChange();
+        
+        // Don't immediately reconnect on error - let onclose handle it
       };
 
     } catch (error) {
@@ -119,17 +181,41 @@ class RealTimeService {
   }
 
   private connectEventSource(): void {
-    const sseUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1'}/events/stream`;
+    const sseUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}/events/stream`;
     const token = localStorage.getItem('auth_token');
 
+    // Don't attempt connection if no token available
+    if (!token) {
+      console.warn('No auth token available, enabling graceful degradation mode');
+      this.gracefulDegradation = true;
+      return;
+    }
+
     try {
+      // Clean up existing connection
+      if (this.eventSource) {
+        this.eventSource.close();
+        this.eventSource = null;
+      }
+
       this.eventSource = new EventSource(`${sseUrl}?token=${token}`);
 
+      // Set connection timeout for EventSource too
+      const connectionTimeout = setTimeout(() => {
+        if (this.eventSource && this.eventSource.readyState === EventSource.CONNECTING) {
+          console.warn('EventSource connection timeout, enabling graceful degradation');
+          this.eventSource.close();
+          this.gracefulDegradation = true;
+        }
+      }, 15000); // 15 second timeout for SSE
+
       this.eventSource.onopen = () => {
-        console.log('EventSource connected');
+        clearTimeout(connectionTimeout);
+        console.log('EventSource connected successfully');
         this.connectionStatus.connected = true;
         this.connectionStatus.reconnectAttempts = 0;
         this.connectionStatus.lastHeartbeat = new Date();
+        this.gracefulDegradation = false;
         this.notifyStatusChange();
       };
 
@@ -143,33 +229,63 @@ class RealTimeService {
       };
 
       this.eventSource.onerror = (error) => {
+        clearTimeout(connectionTimeout);
         console.error('EventSource error:', error);
         this.connectionStatus.connected = false;
         this.notifyStatusChange();
-        this.scheduleReconnect();
+        
+        // If this is the initial connection attempt, enable graceful degradation
+        if (!this.initialConnectionAttempted) {
+          console.warn('Initial EventSource connection failed, enabling graceful degradation');
+          this.gracefulDegradation = true;
+        } else {
+          this.scheduleReconnect();
+        }
       };
 
     } catch (error) {
       console.error('Failed to create EventSource connection:', error);
+      this.gracefulDegradation = true;
     }
   }
 
   private fallbackToEventSource(): void {
     console.log('Falling back to EventSource');
     this.useWebSocket = false;
+    this.connectionStatus.reconnectAttempts = 0; // Reset attempts for EventSource
+    
+    // Clean up WebSocket if it exists
+    if (this.websocket) {
+      this.websocket.close();
+      this.websocket = null;
+    }
+    
     this.connectEventSource();
   }
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer) return;
 
+    // Limit reconnection attempts
+    if (this.connectionStatus.reconnectAttempts >= 5) {
+      console.warn('Max reconnection attempts reached, falling back to EventSource');
+      this.fallbackToEventSource();
+      return;
+    }
+
     const delay = Math.min(1000 * Math.pow(2, this.connectionStatus.reconnectAttempts), 30000);
     this.connectionStatus.reconnectAttempts++;
 
+    console.log(`Scheduling reconnect attempt ${this.connectionStatus.reconnectAttempts} in ${delay}ms`);
+
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      console.log(`Attempting to reconnect (attempt ${this.connectionStatus.reconnectAttempts})`);
-      this.connect();
+      
+      // Check if we're still disconnected before attempting reconnect
+      if (!this.connectionStatus.connected) {
+        console.log(`Attempting to reconnect (attempt ${this.connectionStatus.reconnectAttempts})`);
+        this.connect();
+      }
     }, delay);
   }
 
@@ -339,6 +455,17 @@ class RealTimeService {
 
   getConnectionStatus(): ConnectionStatus {
     return { ...this.connectionStatus };
+  }
+
+  isGracefulDegradation(): boolean {
+    return this.gracefulDegradation;
+  }
+
+  // Enable graceful degradation mode (disables real-time features)
+  enableGracefulDegradation(): void {
+    console.log('Enabling graceful degradation mode - real-time features disabled');
+    this.gracefulDegradation = true;
+    this.disconnect();
   }
 
   // Optimistic update methods

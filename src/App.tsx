@@ -68,6 +68,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "@/components/LoadingState";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { FloatingChatbot } from "@/components/chat/FloatingChatbot";
+import { ConnectionStatus } from "@/components/ConnectionStatus";
 
 import { DealPipelineProvider } from "./contexts/DealPipelineContext";
 import { PortfolioProvider } from "./contexts/PortfolioContext";
@@ -229,13 +230,24 @@ function App() {
   // Initialize real-time service when user is authenticated
   useEffect(() => {
     if (user) {
-      realTimeService.connect();
+      // Delay real-time connection to avoid interfering with page load
+      const connectionTimer = setTimeout(() => {
+        try {
+          realTimeService.connect();
+        } catch (error) {
+          console.warn('Real-time service connection failed, continuing without real-time features:', error);
+          realTimeService.enableGracefulDegradation();
+        }
+      }, 2000); // 2 second delay
+
+      return () => {
+        clearTimeout(connectionTimer);
+        realTimeService.disconnect();
+      };
     }
 
     return () => {
-      if (user) {
-        realTimeService.disconnect();
-      }
+      realTimeService.disconnect();
     };
   }, [user]);
 
@@ -325,6 +337,8 @@ function App() {
               <PWAInstallPrompt />
               {/* Global Floating Chatbot - only show for authenticated users */}
               {user && <FloatingChatbot />}
+              {/* Connection Status Indicator */}
+              {user && <ConnectionStatus />}
               <BrowserRouter>
                 <Routes>
                   {/* Public route for authentication */}
