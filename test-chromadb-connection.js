@@ -96,7 +96,7 @@ async function runTests() {
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { testRAGAPI, testCollectionStatus, runTests };
-} else {
-  // Run if called directly
-  runTests().catch(console.error);
 }
+
+// Always run when called directly
+runTests().catch(console.error);

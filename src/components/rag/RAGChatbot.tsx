@@ -82,7 +82,7 @@ export function RAGChatbot({
     const [sessionType, setSessionType] = useState(defaultSessionType);
     const [isConnected, setIsConnected] = useState(false);
     const [currentMode, setCurrentMode] = useState<ChatMode>('general');
-    const [autoDetectMode, setAutoDetectMode] = useState(true);
+    const [autoDetectModeState, setAutoDetectMode] = useState(autoDetectMode);
     const { toast } = useToast();
 
     // Enhanced chat modes for different user personas
@@ -253,7 +253,7 @@ export function RAGChatbot({
         if (!content || !currentSession || isLoading) return;
 
         // Auto-detect optimal mode based on query
-        if (autoDetectMode) {
+        if (autoDetectModeState) {
             const detectedMode = detectOptimalMode(content);
             if (detectedMode !== currentMode) {
                 setCurrentMode(detectedMode);
@@ -618,7 +618,7 @@ export function RAGChatbot({
                                         );
                                     })()}
                                 </Badge>
-                                {autoDetectMode && (
+                                {autoDetectModeState && (
                                     <Badge variant="outline" className="text-xs">
                                         Auto-Detect
                                     </Badge>
@@ -628,10 +628,10 @@ export function RAGChatbot({
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setAutoDetectMode(!autoDetectMode)}
+                                    onClick={() => setAutoDetectMode(!autoDetectModeState)}
                                     className="text-xs h-6"
                                 >
-                                    {autoDetectMode ? 'Manual' : 'Auto'}
+                                    {autoDetectModeState ? 'Manual' : 'Auto'}
                                 </Button>
                             )}
                         </div>
@@ -640,7 +640,7 @@ export function RAGChatbot({
                         </div>
                         
                         {/* Manual Mode Selector - Only show when auto-detect is off */}
-                        {showModeSelector && !autoDetectMode && (
+                        {showModeSelector && !autoDetectModeState && (
                             <div className="mt-2">
                                 <div className="flex flex-wrap gap-2">
                                     {chatModes.map((mode) => {
