@@ -1,6 +1,5 @@
 import { handleAPIError } from './api';
 import { portfolioService } from './portfolioService';
-import { toast } from '@/hooks/use-toast';
 
 export interface AIInsightRequest {
   query: string;
@@ -27,6 +26,9 @@ export interface AIInsightResponse {
     description: string;
     priority: 'high' | 'medium' | 'low';
     actionable: boolean;
+    impact?: 'high' | 'medium' | 'low';
+    timeframe?: string;
+    category?: string;
   }>;
   metadata: {
     processingTime: number;
@@ -147,9 +149,9 @@ class AIService {
 This analysis is based on mock data as the AI service is currently unavailable.`,
       confidence: 0.75,
       sources: [
-        { title: "Portfolio Data Analysis", url: "/portfolio", relevance: 0.9 },
-        { title: "PCAF Guidelines", url: "/pcaf-standards", relevance: 0.8 },
-        { title: "EV Market Trends", url: "/market-analysis", relevance: 0.7 }
+        { title: "Portfolio Data Analysis", content: "Analysis of current portfolio composition and emissions data", relevance: 0.9 },
+        { title: "PCAF Guidelines", content: "Partnership for Carbon Accounting Financials methodology standards", relevance: 0.8 },
+        { title: "EV Market Trends", content: "Electric vehicle adoption trends and market analysis", relevance: 0.7 }
       ],
       recommendations: [
         {
@@ -158,7 +160,8 @@ This analysis is based on mock data as the AI service is currently unavailable.`
           priority: "high",
           impact: "high",
           timeframe: "3-6 months",
-          category: "product_development"
+          category: "product_development",
+          actionable: false
         },
         {
           title: "Enhance Data Quality Processes",
@@ -166,7 +169,8 @@ This analysis is based on mock data as the AI service is currently unavailable.`
           priority: "high",
           impact: "medium",
           timeframe: "1-3 months",
-          category: "data_quality"
+          category: "data_quality",
+          actionable: false
         },
         {
           title: "Create Green Lending Incentives",
@@ -174,7 +178,8 @@ This analysis is based on mock data as the AI service is currently unavailable.`
           priority: "medium",
           impact: "medium",
           timeframe: "6-12 months",
-          category: "risk_management"
+          category: "risk_management",
+          actionable: false
         }
       ],
       metadata: {
@@ -218,7 +223,7 @@ This analysis is based on mock data as the AI service is currently unavailable.`
 
       // Transform backend recommendations to frontend format
       return data.data.recommendations.map((rec: any) => ({
-        id: rec.id || `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: rec.id || `rec_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
         title: rec.title,
         description: rec.description,
         category: rec.category || 'business-intelligence',
@@ -249,7 +254,7 @@ This analysis is based on mock data as the AI service is currently unavailable.`
         id: 'rec_ev_financing',
         title: 'Accelerate EV Financing Programs',
         description: 'Develop competitive financing products for electric vehicles to capture market growth and reduce portfolio emissions.',
-        category: 'product_development',
+        category: 'business-intelligence',
         priority: 'high',
         confidence: 0.9,
         impact: 'high',
@@ -274,7 +279,7 @@ This analysis is based on mock data as the AI service is currently unavailable.`
         id: 'rec_data_quality',
         title: 'Enhance Data Quality Processes',
         description: 'Implement systematic data collection improvements to achieve better PCAF compliance and more accurate emissions tracking.',
-        category: 'data_quality',
+        category: 'data-quality',
         priority: 'high',
         confidence: 0.85,
         impact: 'medium',
@@ -294,7 +299,7 @@ This analysis is based on mock data as the AI service is currently unavailable.`
         id: 'rec_green_incentives',
         title: 'Create Green Lending Incentives',
         description: 'Offer preferential rates or terms for low-emission vehicle purchases to drive portfolio decarbonization.',
-        category: 'risk_management',
+        category: 'risk-management',
         priority: 'medium',
         confidence: 0.8,
         impact: 'medium',
@@ -556,7 +561,7 @@ export const aiService = AIService.getInstance();
 
 // AI Chat Service for contextual help
 export const aiChatService = {
-  async createChatSession(userId?: string, context?: any) {
+  async createChatSession(_userId?: string, _context?: any) {
     return `session_${Date.now()}`;
   },
 
@@ -566,7 +571,7 @@ export const aiChatService = {
     context?: any;
   }) {
     const message = request.message.toLowerCase();
-    
+
     // Enhanced pattern matching with multiple keywords and phrases
     const responsePatterns = [
       {

@@ -61,9 +61,7 @@ import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
 import PortfolioDeepAnalysisPresentation from "./pages/financed-emissions/PortfolioDeepAnalysisPresentation";
 import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
 
-import PipelineDemoPage from "./pages/pipeline-demo";
-import NarrativeInsightsDemoPage from "./pages/narrative-insights-demo";
-import LoanDataPipelineDemoPage from "./pages/loan-data-pipeline-demo";
+
 import React, { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "@/components/LoadingState";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
