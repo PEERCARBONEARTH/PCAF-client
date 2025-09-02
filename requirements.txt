@@ -1,0 +1,18 @@
+# ChromaDB RAG System Requirements
+# Install with: pip install -r requirements.txt
+
+# Core ChromaDB and dependencies
+chromadb>=0.4.15
+sentence-transformers>=2.2.2
+
+# Additional ML/NLP libraries
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Optional: Enhanced embedding models
+transformers>=4.30.0
+torch>=2.0.0
+
+# Utilities
+pathlib2>=2.3.7
+typing-extensions>=4.5.0
