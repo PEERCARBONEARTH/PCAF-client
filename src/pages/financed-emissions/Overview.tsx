@@ -310,6 +310,338 @@ function OverviewPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* PCAF Compliance Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-muted rounded-lg">
+                  <BarChart3 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">PCAF Data Quality Score</p>
+                  <p className="text-xs text-muted-foreground">Weighted average across portfolio</p>
+                </div>
+              </div>
+              <Badge variant={((portfolioMetrics?.pcafCompliance || 0) > 3) ? "destructive" : "default"} className="text-xs">
+                {(portfolioMetrics?.pcafCompliance || 0) > 3 ? 'Non-Compliant' : 'Compliant'}
+              </Badge>
+            </div>
+            <div className="space-y-3">
+              <p className="text-4xl font-bold">
+                {(portfolioMetrics?.pcafCompliance || 0).toFixed(2)}
+              </p>
+              <Progress
+                value={((portfolioMetrics?.pcafCompliance || 0) / 5) * 100}
+                className="h-2"
+              />
+              <p className="text-xs text-muted-foreground">
+                {(portfolioMetrics?.pcafCompliance || 0) > 3 ? 'Above PCAF threshold (3.0)' : 'Within PCAF guidelines'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-muted rounded-lg">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">ESG Performance Score</p>
+                  <p className="text-xs text-muted-foreground">Portfolio sustainability rating</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                B+ Rating
+              </Badge>
+            </div>
+            <div className="space-y-3">
+              <p className="text-4xl font-bold">{portfolioMetrics?.esgScore || 0}/10</p>
+              <Progress
+                value={(portfolioMetrics?.esgScore || 0) * 10}
+                className="h-2"
+              />
+              <p className="text-xs text-muted-foreground">+0.2 improvement this quarter</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Portfolio Performance Trends */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Performance Trends</h2>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="text-xs">Total Emissions</Badge>
+            <Badge variant="outline" className="text-xs">Emission Intensity</Badge>
+            <Badge variant="outline" className="text-xs">Data Quality</Badge>
+          </div>
+        </div>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Activity className="h-5 w-5" />
+                Portfolio Timeline Analysis
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Custom Range
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Chart
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={timelineData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="month"
+                    fontSize={12}
+                  />
+                  <YAxis
+                    fontSize={12}
+                  />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="totalEmissions"
+                    stroke={COLORS.success}
+                    strokeWidth={3}
+                    name="Total Emissions (tCO2e)"
+                    dot={{ fill: COLORS.success, strokeWidth: 2, r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="emissionIntensity"
+                    stroke={COLORS.primary}
+                    strokeWidth={3}
+                    name="Emission Intensity (g/USD)"
+                    dot={{ fill: COLORS.primary, strokeWidth: 2, r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="dataQuality"
+                    stroke={COLORS.purple}
+                    strokeWidth={2}
+                    strokeDasharray="8 4"
+                    name="Data Quality Score"
+                    dot={{ fill: COLORS.purple, strokeWidth: 2, r: 3 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Portfolio Composition Analysis */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Portfolio Composition</h2>
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            Advanced Filters
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Emissions by Fuel Type */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Zap className="h-5 w-5" />
+                Fuel Type Distribution
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">Emissions breakdown by fuel category</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {portfolioMetrics && Object.entries(portfolioMetrics.fuelTypeBreakdown).map(([fuel, emissions], index) => {
+                  const percentage = ((emissions / portfolioMetrics.totalEmissions) * 100).toFixed(1);
+                  return (
+                    <div key={fuel} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-muted" />
+                          <span className="text-sm font-medium capitalize">{fuel}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{percentage}%</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full bg-primary"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">{emissions.toFixed(1)} tCO2e</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Emissions by Instrument Type */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <PieChart className="h-5 w-5" />
+                Instrument Types
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">Portfolio breakdown by financial instrument</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {portfolioMetrics && Object.entries(portfolioMetrics.instrumentBreakdown).map(([type, emissions], index) => {
+                  const percentage = ((emissions / portfolioMetrics.totalEmissions) * 100).toFixed(1);
+                  const icons = [FileText, FileText, Shield];
+                  const IconComponent = icons[index % icons.length];
+
+                  return (
+                    <div key={type} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-1 rounded bg-muted">
+                            <IconComponent className="w-3 h-3" />
+                          </div>
+                          <span className="text-sm font-medium">
+                            {type === 'lc' ? 'Letter of Credit' : type === 'guarantee' ? 'Guarantee' : 'Loan'}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{percentage}%</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full bg-primary"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">{emissions.toFixed(1)} tCO2e</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Risk & Compliance Summary */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Shield className="h-5 w-5" />
+                Risk & Compliance
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">Portfolio risk assessment overview</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">PCAF Compliance Rate</span>
+                    <Badge variant="outline" className="text-xs">
+                      {Math.round(portfolioMetrics?.complianceRate || 0)}%
+                    </Badge>
+                  </div>
+                  <Progress value={portfolioMetrics?.complianceRate || 0} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    {Math.round((portfolioMetrics?.totalInstruments || 0) * ((portfolioMetrics?.complianceRate || 0) / 100))} of {portfolioMetrics?.totalInstruments || 0} instruments compliant
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">High Risk Exposures</span>
+                    <Badge variant="destructive" className="text-xs">
+                      {portfolioMetrics?.riskExposures || 0}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-muted p-2 rounded">
+                      <p className="font-medium">Data Quality {">"} 4.0</p>
+                      <p className="text-muted-foreground">{portfolioMetrics?.riskExposures || 0} instruments</p>
+                    </div>
+                    <div className="bg-muted p-2 rounded">
+                      <p className="font-medium">Missing Data</p>
+                      <p className="text-muted-foreground">3 instruments</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Button variant="outline" size="sm" className="w-full">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  View Risk Details
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Critical Alerts & Insights Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Alert>
+          <Info className="h-5 w-5" />
+          <AlertDescription>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-semibold">Unlock Economic Intensity Metrics</h4>
+                <p className="text-sm text-muted-foreground">Add revenue assumptions to calculate economic intensity and unlock advanced PCAF metrics</p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm">Add Assumptions</Button>
+                <Button variant="ghost" size="sm">Maybe Later</Button>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <div className="p-1 bg-muted rounded">
+                <Activity className="h-4 w-4" />
+              </div>
+              AI Portfolio Insights
+              <Badge variant="secondary" className="text-xs">Platform RAG</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-muted rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm font-medium">Portfolio Risk Assessment</p>
+                  <p className="text-xs text-muted-foreground">High concentration in commercial vehicles sector (23.9%)</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-muted rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm font-medium">Data Quality Opportunity</p>
+                  <p className="text-xs text-muted-foreground">Improve 15 instruments to achieve PCAF compliance</p>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" className="w-full mt-3">
+                View Full Analysis
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
