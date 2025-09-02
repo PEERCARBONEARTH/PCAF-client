@@ -230,6 +230,13 @@ function App() {
   // Initialize real-time service when user is authenticated
   useEffect(() => {
     if (user) {
+      // Skip real-time connection for AI insights page to prevent WebSocket errors
+      const currentPath = window.location.pathname;
+      if (currentPath.includes('/ai-insights')) {
+        console.log('Skipping real-time service for AI insights page');
+        return;
+      }
+
       // Delay real-time connection to avoid interfering with page load
       const connectionTimer = setTimeout(() => {
         try {
@@ -238,16 +245,24 @@ function App() {
           console.warn('Real-time service connection failed, continuing without real-time features:', error);
           realTimeService.enableGracefulDegradation();
         }
-      }, 2000); // 2 second delay
+      }, 3000); // Increased delay to 3 seconds
 
       return () => {
         clearTimeout(connectionTimer);
-        realTimeService.disconnect();
+        try {
+          realTimeService.disconnect();
+        } catch (error) {
+          console.warn('Error disconnecting real-time service:', error);
+        }
       };
     }
 
     return () => {
-      realTimeService.disconnect();
+      try {
+        realTimeService.disconnect();
+      } catch (error) {
+        console.warn('Error disconnecting real-time service:', error);
+      }
     };
   }, [user]);
 

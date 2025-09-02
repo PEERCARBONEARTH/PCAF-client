@@ -31,10 +31,18 @@ import { narrativePipelineIntegration, NarrativeInsightCard } from "@/services/n
 function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
   if (!portfolioData) return null;
 
-  const { loans, totalEmissions, avgDataQuality, evPercentage } = portfolioData;
+  // Safe destructuring with defaults
+  const { 
+    loans = [], 
+    totalEmissions = 0, 
+    avgDataQuality = 0, 
+    evPercentage = 0 
+  } = portfolioData || {};
+  
   const portfolioValue = 8200000; // $8.2M realistic demo value
-  const riskLevel = avgDataQuality <= 3 ? 'Low' : avgDataQuality <= 4 ? 'Medium' : 'High';
-  const riskColor = avgDataQuality <= 3 ? 'text-green-600' : avgDataQuality <= 4 ? 'text-yellow-600' : 'text-destructive';
+  const safeDataQuality = Number(avgDataQuality) || 0;
+  const riskLevel = safeDataQuality <= 3 ? 'Low' : safeDataQuality <= 4 ? 'Medium' : 'High';
+  const riskColor = safeDataQuality <= 3 ? 'text-green-600' : safeDataQuality <= 4 ? 'text-yellow-600' : 'text-destructive';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -46,7 +54,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">247</div>
+          <div className="text-2xl font-bold">{Array.isArray(loans) ? loans.length : 247}</div>
           <p className="text-sm text-muted-foreground">
             $8.2M total value
           </p>
@@ -61,7 +69,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{evPercentage.toFixed(1)}%</div>
+          <div className="text-2xl font-bold text-green-600">{evPercentage?.toFixed(1) || '0.0'}%</div>
           <p className="text-sm text-muted-foreground">Electric vehicles</p>
         </CardContent>
       </Card>
@@ -74,7 +82,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalEmissions.toFixed(1)}</div>
+          <div className="text-2xl font-bold">{totalEmissions?.toFixed(1) || '0.0'}</div>
           <p className="text-sm text-muted-foreground">tCO₂e total</p>
         </CardContent>
       </Card>
@@ -89,7 +97,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
         <CardContent>
           <div className={`text-2xl font-bold ${riskColor}`}>{riskLevel}</div>
           <p className="text-sm text-muted-foreground">
-            DQ Score: {avgDataQuality.toFixed(1)}/5
+            DQ Score: {safeDataQuality.toFixed(1)}/5
           </p>
         </CardContent>
       </Card>
@@ -154,8 +162,9 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
     );
   }
 
-  const { evPercentage, anomalies } = portfolioData;
+  const { evPercentage = 0, anomalies = [] } = portfolioData || {};
   const emissionsTrend = -2.5; // Mock trend data
+  const safeEvPercentage = Number(evPercentage) || 0;
 
   return (
     <div className="space-y-6">
@@ -189,23 +198,23 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <Activity className="h-5 w-5 text-primary" />
                 Portfolio Health
               </CardTitle>
-              <Badge variant="outline">{evPercentage > 30 ? 'Good' : evPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
+              <Badge variant="outline">{safeEvPercentage > 30 ? 'Good' : safeEvPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>EV Adoption Progress</span>
-                <span className="font-medium">{evPercentage.toFixed(1)}%</span>
+                <span className="font-medium">{safeEvPercentage.toFixed(1)}%</span>
               </div>
-              <Progress value={evPercentage} className="h-2" />
+              <Progress value={safeEvPercentage} className="h-2" />
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <div className="text-muted-foreground">Emissions Trend</div>
                 <div className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}>
                   {emissionsTrend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
-                  {Math.abs(emissionsTrend).toFixed(1)}%
+                  {Math.abs(emissionsTrend || 0).toFixed(1)}%
                 </div>
               </div>
               <div>
@@ -224,13 +233,13 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <Brain className="h-5 w-5 text-primary" />
                 Anomalies Detected
               </CardTitle>
-              <Badge variant={anomalies.length > 3 ? "destructive" : "secondary"}>
-                {anomalies.length} found
+              <Badge variant={Array.isArray(anomalies) && anomalies.length > 3 ? "destructive" : "secondary"}>
+                {Array.isArray(anomalies) ? anomalies.length : 0} found
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {anomalies.length > 0 ? (
+            {Array.isArray(anomalies) && anomalies.length > 0 ? (
               <>
                 {anomalies.slice(0, 3).map((anomaly, index) => (
                   <div 
@@ -1167,6 +1176,18 @@ function AIInsightsPage() {
   // Load AI-powered insights on component mount
   useEffect(() => {
     loadAIInsights();
+    
+    // Disable real-time service for this page to prevent WebSocket errors
+    return () => {
+      // Cleanup any real-time connections when leaving the page
+      if (typeof window !== 'undefined' && window.realTimeService) {
+        try {
+          window.realTimeService.disconnect();
+        } catch (error) {
+          console.warn('Error disconnecting real-time service:', error);
+        }
+      }
+    };
   }, []);
 
   const loadAIInsights = async () => {

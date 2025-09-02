@@ -80,7 +80,7 @@ class AIService {
   async getAIInsights(request: AIInsightRequest): Promise<AIInsightResponse> {
     try {
       // Call backend AI insights endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ai-insights/analyze`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/ai-insights/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
