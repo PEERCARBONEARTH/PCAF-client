@@ -2718,7 +2718,8 @@ function AnomalyDetection({
   aiInsights: AIInsightResponse | null;
   portfolioData: any;
 }) {
-  const anomalies = [
+  // Use actual anomalies from portfolio data if available, otherwise use fallback data
+  const anomalies = portfolioData?.anomalies || aiInsights?.anomalies || [
     {
       id: 'AUTO0156',
       severity: 'high',
@@ -2757,6 +2758,12 @@ function AnomalyDetection({
     },
   ];
 
+  // Calculate dynamic metrics based on actual data
+  const totalAnomalies = anomalies.length;
+  const highSeverityCount = anomalies.filter(a => a.severity === 'high').length;
+  const mediumSeverityCount = anomalies.filter(a => a.severity === 'medium').length;
+  const lowSeverityCount = anomalies.filter(a => a.severity === 'low').length;
+
   return (
     <div className="space-y-6">
       <Card>
@@ -2773,14 +2780,14 @@ function AnomalyDetection({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-foreground">2</p>
+                <p className="text-2xl font-bold text-foreground">{highSeverityCount}</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
-                  metricValue="2"
+                  metricValue={highSeverityCount.toString()}
                   additionalData={{
                     riskType: 'anomaly_detection',
                     severity: 'high',
-                    totalAnomalies: 4,
+                    totalAnomalies: totalAnomalies,
                     detectionMethod: 'ML algorithms',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -2790,10 +2797,10 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-foreground">1</p>
+                <p className="text-2xl font-bold text-foreground">{mediumSeverityCount}</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
-                  metricValue="1"
+                  metricValue={mediumSeverityCount.toString()}
                   additionalData={{
                     riskType: 'anomaly_detection',
                     severity: 'medium',
@@ -2807,10 +2814,10 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-foreground">1</p>
+                <p className="text-2xl font-bold text-foreground">{lowSeverityCount}</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
-                  metricValue="1"
+                  metricValue={lowSeverityCount.toString()}
                   additionalData={{
                     riskType: 'anomaly_detection',
                     severity: 'low',
@@ -2824,15 +2831,18 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-foreground">98.4%</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {portfolioData?.detectionAccuracy || '98.4%'}
+                </p>
                 <AIContextTooltip
                   metricType="portfolio_health"
-                  metricValue="98.4"
+                  metricValue={portfolioData?.detectionAccuracy || '98.4'}
                   additionalData={{
                     type: 'detection_accuracy',
                     algorithm: 'ensemble_ml',
                     falsePositiveRate: 1.6,
                     modelConfidence: 0.984,
+                    totalLoans: portfolioData?.loans?.length || 247,
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
