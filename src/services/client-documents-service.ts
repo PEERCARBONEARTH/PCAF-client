@@ -114,7 +114,8 @@ class ClientDocumentsService {
 
         } catch (error) {
             console.error('❌ Failed to extract client data:', error);
-            throw new Error(`Client data extraction failed: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+            throw new Error(`Client data extraction failed: ${errorMessage}`);
         }
     }
 

@@ -294,11 +294,12 @@ class DynamicInsightsEngine {
                 })
                 .slice(0, 8); // Limit to top 8 insights
         }
+    }
 
-  /**
-   * Generate compliance-focused insight
-   */
-  private generateComplianceInsight(): DynamicInsight | null {
+    /**
+     * Generate compliance-focused insight
+     */
+    private generateComplianceInsight(): DynamicInsight | null {
         if (!this.portfolioContext || !this.bankProfile) return null;
 
         const { avgDataQuality, complianceStatus, totalLoans } = this.portfolioContext;
