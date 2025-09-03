@@ -82,24 +82,75 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-primary" />
-            Enhanced PCAF Reports
-            <div className="flex items-center gap-1 ml-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-normal text-muted-foreground">AI-Powered</span>
+    <div className="relative space-y-6">
+      {/* Glass Morphism Coming Soon Overlay */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/20 backdrop-blur-md">
+        <div className="relative max-w-md mx-4">
+          {/* Glass morphism card */}
+          <div className="bg-background/80 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-2xl">
+            <div className="text-center space-y-4">
+              {/* Icon */}
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <FileText className="h-8 w-8 text-primary" />
+              </div>
+              
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-foreground">
+                PCAF Reports
+              </h2>
+              
+              {/* Message */}
+              <div className="space-y-2">
+                <p className="text-lg font-medium text-foreground">
+                  Coming Soon
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Awaiting accreditation
+                </p>
+              </div>
+              
+              {/* Additional info */}
+              <div className="pt-4 border-t border-border/30">
+                <p className="text-xs text-muted-foreground">
+                  Professional PCAF-compliant reporting will be available once our accreditation process is complete.
+                </p>
+              </div>
+              
+              {/* Back button */}
+              <Button 
+                onClick={() => navigate('/financed-emissions')}
+                variant="outline"
+                className="mt-6 bg-background/50 backdrop-blur-sm border-border/50 hover:bg-background/70"
+              >
+                Back to Dashboard
+              </Button>
             </div>
-          </CardTitle>
-          <CardDescription>
-            Generate comprehensive PCAF-compliant financed emissions reports with intelligent insights, 
-            progressive configuration, and collaborative workflows
-          </CardDescription>
-        </CardHeader>
-      </Card>
+          </div>
+          
+          {/* Subtle glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl blur-xl -z-10"></div>
+        </div>
+      </div>
+
+      {/* Original content (blurred in background) */}
+      <div className="blur-sm pointer-events-none">
+        {/* Header */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              Enhanced PCAF Reports
+              <div className="flex items-center gap-1 ml-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="text-sm font-normal text-muted-foreground">AI-Powered</span>
+              </div>
+            </CardTitle>
+            <CardDescription>
+              Generate comprehensive PCAF-compliant financed emissions reports with intelligent insights, 
+              progressive configuration, and collaborative workflows
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
       {/* Generation Progress Overlay */}
       {isGenerating && (
