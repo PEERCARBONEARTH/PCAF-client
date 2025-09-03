@@ -19,12 +19,12 @@
 }
 
 .confidence-high {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #6b7280, #4b5563);
   color: white;
 }
 
 .confidence-medium {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #6b7280, #4b5563);
   color: white;
 }
 
@@ -59,14 +59,14 @@
   padding: 20px;
   background: #f8fafc;
   border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #6b7280;
 }
 
 .step-number {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  background: #3b82f6;
+  background: #6b7280;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -93,7 +93,7 @@
   padding: 12px;
   border-radius: 6px;
   margin-top: 12px;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #6b7280;
 }
 
 .step-tips {
