@@ -35,7 +35,7 @@
 
 /* Response Content */
 .response-content {
-  background: #ffffff;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 20px;
@@ -170,7 +170,7 @@
 }
 
 .formula-container {
-  background: #ffffff;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border-radius: 8px;
   padding: 20px;
   border: 1px solid #e5e7eb;
@@ -258,7 +258,7 @@
 .example-calculation {
   margin: 12px 0;
   padding: 12px;
-  background: white;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border-radius: 6px;
   font-family: 'Monaco', 'Menlo', monospace;
   border: 1px solid #e5e7eb;
@@ -348,7 +348,7 @@
 }
 
 .requirement-card {
-  background: white;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
@@ -618,7 +618,7 @@
 }
 
 .recommendation-item {
-  background: white;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
@@ -747,7 +747,7 @@
 }
 
 .followup-button {
-  background: white;
+  background: hsl(0 0% 15%); /* Changed from white to dark grey */
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 12px 16px;

@@ -76,7 +76,7 @@
 @layer base {
   :root {
     /* Core Brand Foundation - Thoughtfully Muted */
-    --background: 0 0% 15%; /* Changed to dark grey */
+    --background: 202, 3%, 98%; /* Changed to dark grey */
     /* Softer than pure white */
     --foreground: 220 15% 25%;
     /* Warm dark gray, not black */
