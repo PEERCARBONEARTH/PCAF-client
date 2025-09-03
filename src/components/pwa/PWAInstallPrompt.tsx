@@ -104,45 +104,7 @@ export function PWAInstallPrompt() {
     };
   }, [toast]);
 
-  // Register service worker and check for updates
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      registerServiceWorker();
-    }
-  }, []);
 
-  const registerServiceWorker = async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      
-      console.log('Service Worker registered:', registration);
-
-      // Check for updates
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              setUpdateAvailable(true);
-            }
-          });
-        }
-      });
-
-      // Listen for messages from service worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'UPLOAD_SYNCED') {
-          toast({
-            title: "Data Synced",
-            description: "Your offline uploads have been processed",
-          });
-        }
-      });
-
-    } catch (error) {
-      console.error('Service Worker registration failed:', error);
-    }
-  };
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -187,14 +149,8 @@ export function PWAInstallPrompt() {
   };
 
   const handleUpdateApp = () => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then((registration) => {
-        if (registration && registration.waiting) {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          window.location.reload();
-        }
-      });
-    }
+    // Refresh the page to get latest version
+    window.location.reload();
   };
 
   const dismissInstallPrompt = () => {
