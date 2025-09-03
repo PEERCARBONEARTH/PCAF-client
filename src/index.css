@@ -102,8 +102,8 @@
     /* Warm undertone */
     --muted-foreground: 220 10% 50%;
     /* Readable but soft */
-    --muted-alt: 35 20% 96%;
-    /* Slight cream variation */
+    --muted-alt: 220 20% 96%;
+    /* Neutral gray variation */
 
     /* Intentional Status Colors - Subdued but Clear */
     --success: 142 65% 35%;
@@ -111,10 +111,10 @@
     --success-foreground: 0 0% 98%;
     --success-light: 142 45% 95%;
 
-    --warning: 35 80% 50%;
-    /* Warm amber */
+    --warning: 220 15% 50%;
+    /* Neutral muted */
     --warning-foreground: 0 0% 98%;
-    --warning-light: 35 55% 95%;
+    --warning-light: 220 15% 95%;
 
     --destructive: 220 15% 45%;
     /* Neutral muted tone */
@@ -157,25 +157,25 @@
   .dark {
     /* Dark mode with human warmth */
     --background: 220 25% 8%;
-    --foreground: 35 15% 92%;
-    /* Warm cream vs stark white */
+    --foreground: 220 15% 92%;
+    /* Neutral light gray */
     --card: 220 20% 12%;
-    --card-foreground: 35 15% 92%;
+    --card-foreground: 220 15% 92%;
     --popover: 220 20% 12%;
-    --popover-foreground: 35 15% 92%;
+    --popover-foreground: 220 15% 92%;
 
     --primary: 147 50% 35%;
     /* Brighter in dark */
-    --primary-foreground: 35 15% 92%;
+    --primary-foreground: 220 15% 92%;
     --primary-soft: 147 40% 15%;
     --primary-muted: 147 30% 20%;
 
     --muted: 220 20% 18%;
     --muted-foreground: 220 10% 65%;
-    --muted-alt: 35 15% 18%;
+    --muted-alt: 220 15% 18%;
 
     --success: 147 50% 45%;
-    --warning: 35 70% 55%;
+    --warning: 220 15% 55%;
     --destructive: 220 15% 55%;
 
     --border: 220 20% 25%;
@@ -184,7 +184,7 @@
     --input: 220 20% 20%;
     --ring: 147 50% 35%;
 
-    --accent: 35 50% 75%;
+    --accent: 220 15% 75%;
     --accent-foreground: 220 25% 8%;
 
     --finance: 147 50% 35%;
