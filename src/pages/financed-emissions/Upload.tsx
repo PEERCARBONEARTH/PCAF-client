@@ -357,9 +357,9 @@ export default function UploadPage() {
 
           {/* CSV Upload & Template */}
           <TabsContent value="csv" className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            <div className="space-y-8">
               {/* CSV Upload */}
-              <div className="xl:col-span-3 space-y-6">
+              <div className="space-y-6">
                 <Card>
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2">
@@ -377,6 +377,22 @@ export default function UploadPage() {
                       onUploadComplete={handleUploadComplete}
                       enhancedMode={true}
                     />
+                  </CardContent>
+                </Card>
+
+                {/* CSV Template Download */}
+                <Card>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      CSV Template
+                    </CardTitle>
+                    <p className="text-muted-foreground">
+                      Download the standardized template for data uploads
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <CSVTemplateDownload />
                   </CardContent>
                 </Card>
 
@@ -432,24 +448,6 @@ export default function UploadPage() {
                     </CardContent>
                   </Card>
                 )}
-              </div>
-
-              {/* CSV Template Download */}
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      CSV Template
-                    </CardTitle>
-                    <p className="text-muted-foreground">
-                      Download the standardized template for data uploads
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <CSVTemplateDownload />
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </TabsContent>
