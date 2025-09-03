@@ -27,7 +27,7 @@ export function NarrativeInsightCard({
 }: NarrativeInsightCardProps) {
   const variantStyles = {
     default: 'border-border',
-    warning: 'border-brown-200 bg-orange-50/50 dark:border-green-800 dark:bg-orange-950/20',
+    warning: 'border-brown-200 bg-orange-50/50 dark:border-green-800 dark:bg-green-950/20',
     success: 'border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20',
     info: 'border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/20'
   };

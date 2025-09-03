@@ -148,7 +148,7 @@ export function PCAFMethodologyIntro({ stepId }: PCAFMethodologyIntroProps) {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-orange-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl">🚛</span>
             </div>
             <p className="font-medium">Heavy Duty</p>

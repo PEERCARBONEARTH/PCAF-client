@@ -32,7 +32,7 @@ export function DynamicInsightCard({ insight, onActionClick, className = '' }: D
 
   const getPriorityColor = (priority: DynamicInsight['priority']) => {
     switch (priority) {
-      case 'critical': return 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950/20 dark:border-green-800';
+      case 'critical': return 'text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950/20 dark:border-green-800';
       case 'high': return 'text-orange-600 bg-orange-50 border-brown-200 dark:text-orange-400 dark:bg-green-950/20 dark:border-green-800';
       case 'medium': return 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/20 dark:border-blue-800';
       case 'low': return 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-950/20 dark:border-gray-800';
@@ -52,7 +52,7 @@ export function DynamicInsightCard({ insight, onActionClick, className = '' }: D
   const getTrendIcon = (trend?: 'improving' | 'declining' | 'stable') => {
     switch (trend) {
       case 'improving': return <TrendingUp className="h-3 w-3 text-green-500" />;
-      case 'declining': return <TrendingDown className="h-3 w-3 text-red-500" />;
+      case 'declining': return <TrendingDown className="h-3 w-3 text-green-500" />;
       case 'stable': return <Minus className="h-3 w-3 text-gray-500" />;
       default: return null;
     }
@@ -68,8 +68,8 @@ export function DynamicInsightCard({ insight, onActionClick, className = '' }: D
 
   const getEffortColor = (effort: 'high' | 'medium' | 'low') => {
     switch (effort) {
-      case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'medium': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      case 'high': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'medium': return 'bg-orange-100 text-orange-800 dark:bg-green-900 dark:text-orange-200';
       case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
     }
   };
