@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { dataIngestionWorkflowService, type WorkflowState } from "@/services/dataIngestionWorkflowService";
 import {
     Upload,
     FileText,
@@ -27,9 +29,13 @@ interface DataIngestionWizardProps {
 type IngestionStep = 'source' | 'methodology' | 'validation' | 'processing';
 
 export function DataIngestionWizard({ onComplete, className = "" }: DataIngestionWizardProps) {
-    const [currentStep, setCurrentStep] = useState<IngestionStep>('source');
-    const [completedSteps, setCompletedSteps] = useState<Set<IngestionStep>>(new Set());
-    const [stepData, setStepData] = useState<Record<string, any>>({});
+    const [workflowState, setWorkflowState] = useState<WorkflowState>(dataIngestionWorkflowService.getWorkflowState());
+    const { toast } = useToast();
+
+    useEffect(() => {
+        const unsubscribe = dataIngestionWorkflowService.subscribe(setWorkflowState);
+        return unsubscribe;
+    }, []);
 
     const steps = [
         {
@@ -63,32 +69,49 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
         }
     ];
 
-    const getCurrentStepIndex = () => steps.findIndex(step => step.id === currentStep);
+    const getCurrentStepIndex = () => steps.findIndex(step => step.id === workflowState.currentStep);
     const getStepProgress = () => ((getCurrentStepIndex() + 1) / steps.length) * 100;
 
-    const markStepComplete = (stepId: IngestionStep, data?: any) => {
-        setCompletedSteps(prev => new Set([...prev, stepId]));
-        if (data) {
-            setStepData(prev => ({ ...prev, [stepId]: data }));
+    const handleStepComplete = async (stepId: IngestionStep, data: any) => {
+        try {
+            await dataIngestionWorkflowService.completeStep(stepId, data);
+            
+            toast({
+                title: "Step Complete",
+                description: `${steps.find(s => s.id === stepId)?.title} completed successfully.`,
+            });
+
+            // Check if workflow is complete
+            if (workflowState.isComplete) {
+                onComplete?.(workflowState.results);
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to complete step. Please try again.",
+                variant: "destructive"
+            });
         }
     };
 
     const goToNextStep = () => {
         const currentIndex = getCurrentStepIndex();
         if (currentIndex < steps.length - 1) {
-            setCurrentStep(steps[currentIndex + 1].id);
+            const nextStepId = steps[currentIndex + 1].id;
+            dataIngestionWorkflowService.navigateToStep(nextStepId);
         }
     };
 
     const goToPreviousStep = () => {
         const currentIndex = getCurrentStepIndex();
         if (currentIndex > 0) {
-            setCurrentStep(steps[currentIndex - 1].id);
+            const prevStepId = steps[currentIndex - 1].id;
+            dataIngestionWorkflowService.navigateToStep(prevStepId);
         }
     };
 
-    const isStepComplete = (stepId: IngestionStep) => completedSteps.has(stepId);
-    const canProceed = () => isStepComplete(currentStep);
+    const isStepComplete = (stepId: IngestionStep) => workflowState.steps[stepId]?.status === 'completed';
+    const canProceed = () => isStepComplete(workflowState.currentStep as IngestionStep);
 
     return (
         <div className={`space-y-6 ${className}`}>
@@ -117,7 +140,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                         {/* Step Navigation */}
                         <div className="flex items-center justify-between">
                             {steps.map((step, index) => {
-                                const isActive = step.id === currentStep;
+                                const isActive = step.id === workflowState.currentStep;
                                 const isCompleted = isStepComplete(step.id);
                                 const isCritical = step.critical;
                                 const canNavigate = isCompleted || isActive;
@@ -136,7 +159,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                                                 }
                                                 ${isCritical ? 'ring-2 ring-orange-200' : ''}
                                             `}
-                                            onClick={() => canNavigate && setCurrentStep(step.id)}
+                                            onClick={() => canNavigate && dataIngestionWorkflowService.navigateToStep(step.id)}
                                             title={`${step.title} - ${isCompleted ? 'Completed' : isActive ? 'Current' : 'Pending'}`}
                                         >
                                             {isCompleted ? (
@@ -204,24 +227,24 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         {(() => {
-                            const currentStepData = steps.find(s => s.id === currentStep);
+                            const currentStepData = steps.find(s => s.id === workflowState.currentStep);
                             if (currentStepData?.icon) {
                                 const IconComponent = currentStepData.icon;
                                 return <IconComponent className="h-5 w-5" />;
                             }
                             return null;
                         })()}
-                        {steps.find(s => s.id === currentStep)?.title}
+                        {steps.find(s => s.id === workflowState.currentStep)?.title}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                        {steps.find(s => s.id === currentStep)?.description}
+                        {steps.find(s => s.id === workflowState.currentStep)?.description}
                     </p>
                 </CardHeader>
                 <CardContent>
-                    {currentStep === 'source' && <DataSourceStep onComplete={(data) => markStepComplete('source', data)} />}
-                    {currentStep === 'methodology' && <MethodologyStep onComplete={(data) => markStepComplete('methodology', data)} />}
-                    {currentStep === 'validation' && <ValidationStep onComplete={(data) => markStepComplete('validation', data)} />}
-                    {currentStep === 'processing' && <ProcessingStep onComplete={(data) => markStepComplete('processing', data)} />}
+                    {workflowState.currentStep === 'source' && <DataSourceStep onComplete={(data) => handleStepComplete('source', data)} />}
+                    {workflowState.currentStep === 'methodology' && <MethodologyStep onComplete={(data) => handleStepComplete('methodology', data)} />}
+                    {workflowState.currentStep === 'validation' && <ValidationStep onComplete={(data) => handleStepComplete('validation', data)} />}
+                    {workflowState.currentStep === 'processing' && <ProcessingStep onComplete={(data) => handleStepComplete('processing', data)} />}
                 </CardContent>
             </Card>
 
@@ -295,10 +318,32 @@ function DataSourceStep({ onComplete }: { onComplete: (data: any) => void }) {
         }
     ];
 
-    const handleSourceSelect = (sourceId: string) => {
+    const handleSourceSelect = async (sourceId: string) => {
         setSelectedSource(sourceId);
-        setSourceConfig({ source: sourceId });
-        onComplete({ source: sourceId });
+        const config = { source: sourceId };
+        setSourceConfig(config);
+        
+        // For CSV, wait for file upload before completing
+        if (sourceId !== 'csv') {
+            try {
+                const result = await dataIngestionWorkflowService.processDataSource(config);
+                onComplete({ ...config, ...result });
+            } catch (error) {
+                console.error('Data source processing failed:', error);
+            }
+        }
+    };
+
+    const handleFileUpload = async (file: File) => {
+        const config = { ...sourceConfig, file, fileName: file.name };
+        setSourceConfig(config);
+        
+        try {
+            const result = await dataIngestionWorkflowService.processDataSource(config);
+            onComplete({ ...config, ...result });
+        } catch (error) {
+            console.error('File upload failed:', error);
+        }
     };
 
     return (
@@ -383,6 +428,116 @@ function DataSourceStep({ onComplete }: { onComplete: (data: any) => void }) {
                                     Ready
                                 </Badge>
                             </div>
+
+                            {selectedSource === 'csv' && (
+                                <div className="space-y-3">
+                                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                                        <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                                        <p className="text-sm font-medium mb-1">Upload CSV File</p>
+                                        <p className="text-xs text-muted-foreground mb-3">
+                                            Drag and drop your CSV file here, or click to browse
+                                        </p>
+                                        <input
+                                            type="file"
+                                            accept=".csv"
+                                            className="hidden"
+                                            id="csv-upload"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    handleFileUpload(file);
+                                                }
+                                            }}
+                                        />
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => document.getElementById('csv-upload')?.click()}
+                                        >
+                                            Choose File
+                                        </Button>
+                                    </div>
+                                    
+                                    {sourceConfig.file && (
+                                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <div className="flex items-center gap-2">
+                                                <FileText className="h-4 w-4 text-green-600" />
+                                                <span className="text-sm font-medium text-green-800">
+                                                    {sourceConfig.fileName}
+                                                </span>
+                                                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                                                    Ready
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {selectedSource === 'lms' && (
+                                <div className="space-y-3">
+                                    <div className="p-4 border rounded-lg">
+                                        <h4 className="font-medium mb-2">LMS Connection Settings</h4>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-sm font-medium">API Endpoint</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://your-lms.com/api"
+                                                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                                                    onChange={(e) => setSourceConfig({ ...sourceConfig, endpoint: e.target.value })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium">API Key</label>
+                                                <input
+                                                    type="password"
+                                                    placeholder="Enter your API key"
+                                                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                                                    onChange={(e) => setSourceConfig({ ...sourceConfig, apiKey: e.target.value })}
+                                                />
+                                            </div>
+                                            <Button variant="outline" size="sm" className="w-full">
+                                                Test Connection
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedSource === 'api' && (
+                                <div className="space-y-3">
+                                    <div className="p-4 border rounded-lg">
+                                        <h4 className="font-medium mb-2">Custom API Configuration</h4>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-sm font-medium">API Endpoint</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://api.example.com/loans"
+                                                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                                                    onChange={(e) => setSourceConfig({ ...sourceConfig, endpoint: e.target.value })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium">Authentication Method</label>
+                                                <select 
+                                                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                                                    onChange={(e) => setSourceConfig({ ...sourceConfig, authMethod: e.target.value })}
+                                                >
+                                                    <option value="">Select method</option>
+                                                    <option value="api_key">API Key</option>
+                                                    <option value="bearer_token">Bearer Token</option>
+                                                    <option value="oauth">OAuth 2.0</option>
+                                                </select>
+                                            </div>
+                                            <Button variant="outline" size="sm" className="w-full">
+                                                Configure Mapping
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             
                             <Alert>
                                 <Info className="h-4 w-4" />
@@ -713,8 +868,25 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
 }
 
 function ValidationStep({ onComplete }: { onComplete: (data: any) => void }) {
+    const [validationResults, setValidationResults] = useState<any>(null);
+    const [isValidating, setIsValidating] = useState(false);
+    const [validationComplete, setValidationComplete] = useState(false);
+
+    const runValidation = async () => {
+        setIsValidating(true);
+        try {
+            const results = await dataIngestionWorkflowService.validateData({});
+            setValidationResults(results);
+            setValidationComplete(true);
+        } catch (error) {
+            console.error('Validation failed:', error);
+        } finally {
+            setIsValidating(false);
+        }
+    };
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription>
@@ -722,50 +894,144 @@ function ValidationStep({ onComplete }: { onComplete: (data: any) => void }) {
                 </AlertDescription>
             </Alert>
 
-            <div className="space-y-3">
-                <div className="p-4 border rounded-lg">
-                    <h4 className="font-medium mb-2">Validation Checks</h4>
-                    <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span>Data format validation passed</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span>Methodology configuration validated</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span>PCAF compliance check passed</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {!validationResults && !isValidating && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">Ready for Validation</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                            Click below to validate your data source and methodology configuration
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <Button onClick={runValidation} className="w-full">
+                            Start Data Validation
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
 
-            <Button
-                onClick={() => onComplete({ validated: true })}
-                className="w-full"
-            >
-                Proceed to Processing
-            </Button>
+            {isValidating && (
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                <span className="font-medium">Running validation checks...</span>
+                            </div>
+                            <Progress value={45} className="h-2" />
+                            <p className="text-sm text-muted-foreground">
+                                Validating data format, methodology, and PCAF compliance...
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {validationResults && (
+                <div className="space-y-4">
+                    <Card className="border-green-200 bg-green-50">
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2 text-green-800">
+                                <CheckCircle className="h-5 w-5" />
+                                Validation Complete
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3">
+                                {Object.entries(validationResults).map(([key, result]: [string, any]) => (
+                                    <div key={key} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                        <div className="flex items-center gap-3">
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                            <span className="text-sm font-medium">{result.message}</span>
+                                        </div>
+                                        {result.score && (
+                                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                                                Score: {result.score}
+                                            </Badge>
+                                        )}
+                                        {result.percentage && (
+                                            <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                                                {result.percentage}%
+                                            </Badge>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Alert className="border-green-200 bg-green-50">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-800">
+                            <strong>Validation Successful:</strong> Your data meets all PCAF requirements and is ready for processing.
+                        </AlertDescription>
+                    </Alert>
+
+                    <Button
+                        onClick={() => onComplete({ validated: true, results: validationResults })}
+                        className="w-full"
+                        disabled={!validationComplete}
+                    >
+                        Proceed to Processing
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
 
 function ProcessingStep({ onComplete }: { onComplete: (data: any) => void }) {
     const [processing, setProcessing] = useState(false);
+    const [currentStep, setCurrentStep] = useState('');
+    const [progress, setProgress] = useState(0);
+    const [processingResults, setProcessingResults] = useState<any>(null);
 
-    const startProcessing = () => {
+    const processingSteps = [
+        { id: 'data_loading', name: 'Loading Data', duration: 1000 },
+        { id: 'methodology_application', name: 'Applying PCAF Methodology', duration: 2000 },
+        { id: 'emissions_calculation', name: 'Calculating Financed Emissions', duration: 2500 },
+        { id: 'quality_scoring', name: 'Assigning Data Quality Scores', duration: 1500 },
+        { id: 'validation', name: 'Final Validation', duration: 1000 },
+        { id: 'completion', name: 'Processing Complete', duration: 500 }
+    ];
+
+    const startProcessing = async () => {
         setProcessing(true);
-        // Simulate processing
-        setTimeout(() => {
+        setProgress(0);
+
+        try {
+            // Show processing steps
+            for (let i = 0; i < processingSteps.length; i++) {
+                const step = processingSteps[i];
+                setCurrentStep(step.name);
+                
+                // Simulate processing time for UI feedback
+                await new Promise(resolve => setTimeout(resolve, step.duration));
+                
+                const newProgress = ((i + 1) / processingSteps.length) * 100;
+                setProgress(newProgress);
+            }
+
+            // Use workflow service for actual processing
+            const results = await dataIngestionWorkflowService.processEmissions({});
+            setProcessingResults(results);
+        } catch (error) {
+            console.error('Processing failed:', error);
+        } finally {
             setProcessing(false);
-            onComplete({ processed: true });
-        }, 3000);
+        }
+    };
+
+    const handleComplete = () => {
+        onComplete({ 
+            processed: true, 
+            results: processingResults,
+            timestamp: new Date().toISOString()
+        });
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <Alert>
                 <Target className="h-4 w-4" />
                 <AlertDescription>
@@ -773,17 +1039,116 @@ function ProcessingStep({ onComplete }: { onComplete: (data: any) => void }) {
                 </AlertDescription>
             </Alert>
 
-            {processing ? (
+            {!processing && !processingResults && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">Ready for Processing</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                            Your data will be processed using PCAF methodology with the configured assumptions
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="p-3 bg-muted/50 rounded-lg">
+                                    <div className="font-medium">Data Source</div>
+                                    <div className="text-muted-foreground">CSV Upload</div>
+                                </div>
+                                <div className="p-3 bg-muted/50 rounded-lg">
+                                    <div className="font-medium">Methodology</div>
+                                    <div className="text-muted-foreground">PCAF Standard</div>
+                                </div>
+                                <div className="p-3 bg-muted/50 rounded-lg">
+                                    <div className="font-medium">Activity Factors</div>
+                                    <div className="text-muted-foreground">EPA/DEFRA</div>
+                                </div>
+                                <div className="p-3 bg-muted/50 rounded-lg">
+                                    <div className="font-medium">Data Quality</div>
+                                    <div className="text-muted-foreground">Option 1-5 Scoring</div>
+                                </div>
+                            </div>
+                            
+                            <Button onClick={startProcessing} className="w-full">
+                                Start Processing
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {processing && (
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                <span className="font-medium">{currentStep}</span>
+                            </div>
+                            <Progress value={progress} className="h-3" />
+                            <div className="flex justify-between text-sm text-muted-foreground">
+                                <span>Processing with PCAF methodology...</span>
+                                <span>{Math.round(progress)}%</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {processingResults && (
                 <div className="space-y-4">
-                    <Progress value={66} className="h-2" />
-                    <p className="text-sm text-muted-foreground text-center">
-                        Processing data with PCAF methodology...
-                    </p>
+                    <Card className="border-green-200 bg-green-50">
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2 text-green-800">
+                                <CheckCircle className="h-5 w-5" />
+                                Processing Complete
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-green-600">
+                                        {processingResults.processedLoans.toLocaleString()}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Loans Processed</div>
+                                </div>
+                                <div className="p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-blue-600">
+                                        {processingResults.totalEmissions.toLocaleString()}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">tCO2e Calculated</div>
+                                </div>
+                                <div className="p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-purple-600">
+                                        {processingResults.averageDataQuality}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Avg Data Quality</div>
+                                </div>
+                                <div className="p-3 bg-white rounded-lg border">
+                                    <div className="text-2xl font-bold text-orange-600">
+                                        {processingResults.processingTime}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Processing Time</div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Alert className="border-green-200 bg-green-50">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-800">
+                            <strong>Success:</strong> Your portfolio data has been processed successfully and is now available in your dashboard.
+                        </AlertDescription>
+                    </Alert>
+
+                    <div className="flex gap-3">
+                        <Button onClick={handleComplete} className="flex-1">
+                            Complete & View Results
+                        </Button>
+                        <Button variant="outline" onClick={() => window.open('/financed-emissions/overview', '_blank')}>
+                            Open Dashboard
+                        </Button>
+                    </div>
                 </div>
-            ) : (
-                <Button onClick={startProcessing} className="w-full">
-                    Start Processing
-                </Button>
             )}
         </div>
     );

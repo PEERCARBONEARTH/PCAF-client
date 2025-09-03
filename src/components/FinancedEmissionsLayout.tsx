@@ -103,7 +103,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
 
   const handleSwitchPlatform = () => {
     clearPlatform();
-    navigate('/platform-selection');
+    navigate('/pcaf-asset-class-selection');
   };
 
   const isActiveRoute = (href: string) => {
@@ -254,7 +254,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
               className="flex items-center gap-2 hover:scale-105 transition-[var(--transition-smooth)] hover:shadow-[var(--shadow-card)] bg-card/80 backdrop-blur-sm"
             >
               <ArrowLeft className="h-4 w-4" />
-              Switch Platform
+              Switch Asset
             </Button>
             <div className="p-1 rounded-sm bg-muted/50 backdrop-blur-sm">
               <ModeToggle />

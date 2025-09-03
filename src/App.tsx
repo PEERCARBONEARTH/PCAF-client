@@ -16,7 +16,6 @@ import { PlatformProvider, usePlatform } from "@/contexts/PlatformContext";
 import { AssumptionsProvider } from "@/contexts/AssumptionsContext";
 
 import { PlatformLayout } from "@/components/shared/PlatformLayout";
-import PlatformSelection from "./pages/PlatformSelection";
 import PCAFAssetClassSelection from "./pages/PCAFAssetClassSelection";
 import Index from "./pages/Index";
 import Tranches from "./pages/Tranches";
@@ -209,9 +208,9 @@ const GreenFinanceRoutes = () => {
 const PlatformRoutes = () => {
   const { currentPlatform } = usePlatform();
 
-  // If no platform is selected, show platform selection
+  // If no platform is selected, show asset class selection
   if (!currentPlatform) {
-    return <PlatformSelection />;
+    return <PCAFAssetClassSelection />;
   }
 
   // Redirect to appropriate platform
@@ -398,16 +397,7 @@ function App() {
                   />
 
                   {/* Standalone Pages */}
-                  <Route
-                    path="/platform-selection"
-                    element={
-                      <ProtectedRoute>
-                        <PlatformProvider>
-                          <PlatformSelection />
-                        </PlatformProvider>
-                      </ProtectedRoute>
-                    }
-                  />
+
 
                   <Route
                     path="/pcaf-asset-class"

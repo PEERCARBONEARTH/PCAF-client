@@ -25,7 +25,7 @@ export function PlatformLayout({ children }: PlatformLayoutProps) {
 
   const handleSwitchPlatform = () => {
     clearPlatform();
-    navigate('/platform-selection');
+    navigate('/pcaf-asset-class-selection');
   };
 
   const platformTitle = currentPlatform === 'green-finance' 
@@ -49,7 +49,7 @@ export function PlatformLayout({ children }: PlatformLayoutProps) {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Switch Platform
+              Switch Asset
             </Button>
             <ModeToggle />
             <NotificationSystem

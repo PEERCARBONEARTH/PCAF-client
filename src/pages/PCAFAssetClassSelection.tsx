@@ -87,7 +87,7 @@ export default function PCAFAssetClassSelection() {
   };
 
   const handleBackToPlatforms = () => {
-    navigate('/platform-selection');
+    navigate('/pcaf-asset-class-selection');
   };
 
   return (
