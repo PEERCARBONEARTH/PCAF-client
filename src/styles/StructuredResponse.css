@@ -182,13 +182,13 @@
   padding: 20px;
   background: #f8fafc;
   border-radius: 8px;
-  border: 2px dashed #3b82f6;
+  border: 2px dashed #6b7280;
 }
 
 .formula-equation code {
   font-size: 18px;
   font-weight: bold;
-  color: #1e40af;
+  color: #4b5563;
   font-family: 'Monaco', 'Menlo', monospace;
 }
 
