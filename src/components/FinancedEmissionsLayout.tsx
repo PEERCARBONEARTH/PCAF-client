@@ -116,12 +116,12 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
       {/* Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-72 transform bg-card border-r border-border transition-[var(--transition-premium)] ease-in-out lg:translate-x-0 flex flex-col shadow-[var(--shadow-strong)] backdrop-blur-sm',
+          'fixed inset-y-0 left-0 z-50 w-56 transform bg-card border-r border-border transition-[var(--transition-premium)] ease-in-out lg:translate-x-0 flex flex-col shadow-[var(--shadow-strong)] backdrop-blur-sm',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Enhanced Sidebar header with glassmorphism */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-border bg-gradient-to-r from-muted/50 to-card backdrop-blur-md">
+        <div className="flex h-16 items-center justify-between px-4 border-b border-border bg-gradient-to-r from-muted/50 to-card backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-1.5 rounded-sm bg-muted/50 backdrop-blur-sm shadow-[var(--shadow-xs)]">
               <PeercarbonLogo size={28} className="text-foreground" />
@@ -144,7 +144,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         </div>
 
         {/* Enhanced Navigation with premium interactions */}
-        <nav className="flex-1 px-4 py-6">
+        <nav className="flex-1 px-3 py-4">
           <div className="space-y-2">
             {navigation
               .filter(item => !item.hidden)
@@ -155,7 +155,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
                     key={item.name}
                     onClick={() => navigate(item.href)}
                     className={cn(
-                      'w-full flex items-center gap-4 px-4 py-3 text-left rounded-sm transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm',
+                      'w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-sm transition-[var(--transition-premium)] group relative overflow-hidden backdrop-blur-sm',
                       isActive
                         ? 'bg-accent text-primary border border-accent/40 shadow-[var(--shadow-elevated)] scale-[1.02] translate-x-1'
                         : 'text-muted-foreground hover:bg-muted/20 hover:text-foreground hover:scale-[1.01] hover:translate-x-1 hover:shadow-[var(--shadow-card)]'
@@ -200,7 +200,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         </nav>
 
         {/* Enhanced Sidebar footer with premium styling */}
-        <div className="border-t border-border p-6 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm">
+        <div className="border-t border-border p-4 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm">
           <div className="flex items-center gap-4 p-3 rounded-sm  bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
             <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shadow-[var(--shadow-xs)] group-hover:shadow-[var(--shadow-glow)] group-hover:scale-110 transition-[var(--transition-bounce)]">
               <Shield className="h-5 w-5 text-accent group-hover:text-accent-light transition-colors duration-300" />
@@ -218,7 +218,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
       </div>
 
       {/* Enhanced Main content area */}
-      <div className="lg:ml-72">
+      <div className="lg:ml-56">
         {/* Premium Top header with glassmorphism */}
         <header className="bg-card/95 backdrop-blur-md border-b border-border/60 px-6 h-16 flex items-center justify-between shadow-[var(--shadow-sm)] relative overflow-hidden">
           {/* Background gradient overlay */}
