@@ -57,7 +57,7 @@ The initial cleanup missed two critical locations:
 📊 Overview          ✅ /financed-emissions/overview
 📤 Upload            ✅ /financed-emissions/upload  
 📋 Summary           ✅ /financed-emissions/summary
-🧠 AI Insights       ✅ /financed-emissions/ai-insights
+🧠 AI Insights       ✅ /financed-emissions/ai-insights (integrated)
 📊 Reports           ✅ /financed-emissions/reports
 ⚙️  Settings         ✅ /financed-emissions/settings
 ```

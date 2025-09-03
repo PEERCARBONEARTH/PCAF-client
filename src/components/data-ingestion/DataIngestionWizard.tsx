@@ -120,19 +120,25 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                                 const isActive = step.id === currentStep;
                                 const isCompleted = isStepComplete(step.id);
                                 const isCritical = step.critical;
+                                const canNavigate = isCompleted || isActive;
 
                                 return (
                                     <div key={step.id} className="flex items-center">
-                                        <div className={`
-                      flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all
-                      ${isActive
-                                                ? 'border-primary bg-primary text-primary-foreground'
-                                                : isCompleted
-                                                    ? 'border-green-500 bg-green-500 text-white'
-                                                    : 'border-muted bg-muted text-muted-foreground'
-                                            }
-                      ${isCritical ? 'ring-2 ring-orange-200' : ''}
-                    `}>
+                                        <div 
+                                            className={`
+                                                flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all
+                                                ${canNavigate ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'}
+                                                ${isActive
+                                                    ? 'border-primary bg-primary text-primary-foreground shadow-lg'
+                                                    : isCompleted
+                                                        ? 'border-green-500 bg-green-500 text-white hover:shadow-md'
+                                                        : 'border-muted bg-muted text-muted-foreground'
+                                                }
+                                                ${isCritical ? 'ring-2 ring-orange-200' : ''}
+                                            `}
+                                            onClick={() => canNavigate && setCurrentStep(step.id)}
+                                            title={`${step.title} - ${isCompleted ? 'Completed' : isActive ? 'Current' : 'Pending'}`}
+                                        >
                                             {isCompleted ? (
                                                 <CheckCircle className="h-5 w-5" />
                                             ) : (
@@ -142,9 +148,9 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
 
                                         {index < steps.length - 1 && (
                                             <div className={`
-                        w-12 h-0.5 mx-2 transition-colors
-                        ${isCompleted ? 'bg-green-500' : 'bg-muted'}
-                      `} />
+                                                w-12 h-0.5 mx-2 transition-colors
+                                                ${isCompleted ? 'bg-green-500' : 'bg-muted'}
+                                            `} />
                                         )}
                                     </div>
                                 );
@@ -153,18 +159,41 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
 
                         {/* Step Labels */}
                         <div className="flex items-center justify-between text-xs">
-                            {steps.map((step) => (
-                                <div key={step.id} className="text-center max-w-20">
-                                    <div className={`font-medium ${step.id === currentStep ? 'text-primary' : 'text-muted-foreground'}`}>
-                                        {step.title}
+                            {steps.map((step) => {
+                                const isActive = step.id === currentStep;
+                                const isCompleted = isStepComplete(step.id);
+                                const canNavigate = isCompleted || isActive;
+
+                                return (
+                                    <div 
+                                        key={step.id} 
+                                        className={`text-center max-w-20 transition-all ${
+                                            canNavigate ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'
+                                        }`}
+                                        onClick={() => canNavigate && setCurrentStep(step.id)}
+                                    >
+                                        <div className={`font-medium transition-colors ${
+                                            isActive ? 'text-primary' : 
+                                            isCompleted ? 'text-green-600' : 
+                                            'text-muted-foreground'
+                                        }`}>
+                                            {step.title}
+                                        </div>
+                                        <div className="flex items-center justify-center gap-1 mt-1">
+                                            {step.critical && (
+                                                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                                    Critical
+                                                </Badge>
+                                            )}
+                                            {isCompleted && (
+                                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                                    ✓ Done
+                                                </Badge>
+                                            )}
+                                        </div>
                                     </div>
-                                    {step.critical && (
-                                        <Badge variant="outline" className="text-xs mt-1 bg-orange-50 text-orange-700 border-orange-200">
-                                            Critical
-                                        </Badge>
-                                    )}
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </CardContent>
@@ -237,24 +266,47 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
 // Step Components
 function DataSourceStep({ onComplete }: { onComplete: (data: any) => void }) {
     const [selectedSource, setSelectedSource] = useState<string>('');
+    const [sourceConfig, setSourceConfig] = useState<any>({});
 
     const dataSources = [
-        { id: 'csv', name: 'CSV Upload', description: 'Upload loan data via CSV file', icon: FileText },
-        { id: 'lms', name: 'LMS Integration', description: 'Connect to Loan Management System', icon: Database },
-        { id: 'api', name: 'API Integration', description: 'Custom API data source', icon: Settings }
+        { 
+            id: 'csv', 
+            name: 'CSV Upload', 
+            description: 'Upload loan data via CSV file', 
+            icon: FileText,
+            features: ['Quick setup', 'Manual data validation', 'Batch processing'],
+            recommended: true
+        },
+        { 
+            id: 'lms', 
+            name: 'LMS Integration', 
+            description: 'Connect to Loan Management System', 
+            icon: Database,
+            features: ['Real-time sync', 'Automated updates', 'API connection'],
+            recommended: false
+        },
+        { 
+            id: 'api', 
+            name: 'API Integration', 
+            description: 'Custom API data source', 
+            icon: Settings,
+            features: ['Custom endpoints', 'Flexible mapping', 'Advanced configuration'],
+            recommended: false
+        }
     ];
 
     const handleSourceSelect = (sourceId: string) => {
         setSelectedSource(sourceId);
+        setSourceConfig({ source: sourceId });
         onComplete({ source: sourceId });
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                    Select your data source. Each source type has different methodology requirements.
+                    Select your data source. Each source type has different methodology requirements and capabilities.
                 </AlertDescription>
             </Alert>
 
@@ -262,18 +314,86 @@ function DataSourceStep({ onComplete }: { onComplete: (data: any) => void }) {
                 {dataSources.map((source) => (
                     <Card
                         key={source.id}
-                        className={`cursor-pointer transition-all hover:shadow-md ${selectedSource === source.id ? 'ring-2 ring-primary' : ''
-                            }`}
+                        className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                            selectedSource === source.id 
+                                ? 'ring-2 ring-primary bg-primary/5 shadow-lg' 
+                                : 'hover:shadow-md'
+                        }`}
                         onClick={() => handleSourceSelect(source.id)}
                     >
-                        <CardContent className="p-4 text-center">
-                            <source.icon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                            <h3 className="font-medium">{source.name}</h3>
-                            <p className="text-xs text-muted-foreground mt-1">{source.description}</p>
+                        <CardContent className="p-6">
+                            <div className="text-center mb-4">
+                                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-3 ${
+                                    selectedSource === source.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                                }`}>
+                                    <source.icon className="h-6 w-6" />
+                                </div>
+                                <h3 className="font-semibold text-lg">{source.name}</h3>
+                                <p className="text-sm text-muted-foreground mt-1">{source.description}</p>
+                                {source.recommended && (
+                                    <Badge variant="outline" className="mt-2 bg-green-50 text-green-700 border-green-200">
+                                        Recommended
+                                    </Badge>
+                                )}
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-medium text-muted-foreground">Features:</h4>
+                                <ul className="space-y-1">
+                                    {source.features.map((feature, index) => (
+                                        <li key={index} className="text-xs flex items-center gap-2">
+                                            <div className="w-1 h-1 rounded-full bg-primary" />
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {selectedSource === source.id && (
+                                <div className="mt-4 p-3 bg-primary/10 rounded-lg">
+                                    <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                                        <CheckCircle className="h-4 w-4" />
+                                        Selected
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 ))}
             </div>
+
+            {selectedSource && (
+                <Card className="border-primary/20 bg-primary/5">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            Data Source Configuration
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                <div>
+                                    <h4 className="font-medium">Selected Source</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        {dataSources.find(s => s.id === selectedSource)?.name}
+                                    </p>
+                                </div>
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                    Ready
+                                </Badge>
+                            </div>
+                            
+                            <Alert>
+                                <Info className="h-4 w-4" />
+                                <AlertDescription>
+                                    Your data source is configured. Click "Next" to proceed to methodology configuration.
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }
@@ -282,7 +402,15 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
     const [methodologyConfig, setMethodologyConfig] = useState({
         activityFactorSource: '',
         dataQualityApproach: '',
-        assumptionsValidated: false
+        assumptionsValidated: false,
+        vehicleAssumptions: {
+            passengerCar: { activityBasis: 'distance', fuelType: 'gasoline', annualDistance: 15000, region: 'us' },
+            suv: { activityBasis: 'distance', fuelType: 'gasoline', annualDistance: 15000, region: 'us' },
+            lightTruck: { activityBasis: 'distance', fuelType: 'gasoline', annualDistance: 15000, region: 'us' },
+            motorcycle: { activityBasis: 'distance', fuelType: 'gasoline', annualDistance: 8000, region: 'us' },
+            bus: { activityBasis: 'distance', fuelType: 'diesel', annualDistance: 25000, region: 'us' },
+            heavyTruck: { activityBasis: 'distance', fuelType: 'diesel', annualDistance: 50000, region: 'us' }
+        }
     });
 
     const handleConfigComplete = () => {
@@ -291,21 +419,186 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
         }
     };
 
+    const updateVehicleAssumption = (vehicleType: string, field: string, value: string | number) => {
+        setMethodologyConfig(prev => ({
+            ...prev,
+            vehicleAssumptions: {
+                ...prev.vehicleAssumptions,
+                [vehicleType]: {
+                    ...prev.vehicleAssumptions[vehicleType as keyof typeof prev.vehicleAssumptions],
+                    [field]: value
+                }
+            }
+        }));
+    };
+
+    const vehicleTypes = [
+        { key: 'passengerCar', label: 'Passenger Car', icon: '🚗' },
+        { key: 'suv', label: 'SUV', icon: '🚙' },
+        { key: 'lightTruck', label: 'Light Truck', icon: '🛻' },
+        { key: 'motorcycle', label: 'Motorcycle', icon: '🏍️' },
+        { key: 'bus', label: 'Bus', icon: '🚌' },
+        { key: 'heavyTruck', label: 'Heavy Truck', icon: '🚛' }
+    ];
+
+    const activityBasisOptions = [
+        { value: 'distance', label: 'Distance (km)', description: 'Use annual mileage data' },
+        { value: 'fuel', label: 'Fuel (L)', description: 'Use fuel consumption data' }
+    ];
+
+    const fuelTypeOptions = [
+        { value: 'gasoline', label: 'Gasoline', color: 'bg-blue-100 text-blue-800' },
+        { value: 'diesel', label: 'Diesel', color: 'bg-orange-100 text-orange-800' },
+        { value: 'electric', label: 'Electric', color: 'bg-green-100 text-green-800' },
+        { value: 'hybrid', label: 'Hybrid', color: 'bg-purple-100 text-purple-800' }
+    ];
+
+    const regionOptions = [
+        { value: 'us', label: 'United States' },
+        { value: 'eu', label: 'European Union' },
+        { value: 'ca', label: 'Canada' },
+        { value: 'global', label: 'Global Average' }
+    ];
+
     return (
         <div className="space-y-6">
             <Alert className="border-orange-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
-                    <strong>Critical Step:</strong> Methodology configuration directly impacts PCAF compliance and data quality scores.
+                    <strong>Critical Step:</strong> Configure per-vehicle-type activity basis and statistical sources used when Option 1 data isn't available.
                 </AlertDescription>
             </Alert>
 
-            <Tabs defaultValue="factors" className="w-full">
+            <Tabs defaultValue="assumptions" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="assumptions">Vehicle Assumptions</TabsTrigger>
                     <TabsTrigger value="factors">Activity Factors</TabsTrigger>
                     <TabsTrigger value="quality">Data Quality</TabsTrigger>
-                    <TabsTrigger value="assumptions">Assumptions</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="assumptions" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Vehicle Type Assumptions</CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                                Configure per-vehicle-type activity basis and statistical sources used when Option 1 data isn't available
+                            </p>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-6">
+                                {vehicleTypes.map((vehicle) => {
+                                    const config = methodologyConfig.vehicleAssumptions[vehicle.key as keyof typeof methodologyConfig.vehicleAssumptions];
+                                    return (
+                                        <Card key={vehicle.key} className="border-l-4 border-l-primary/20">
+                                            <CardHeader className="pb-3">
+                                                <CardTitle className="text-base flex items-center gap-2">
+                                                    <span className="text-lg">{vehicle.icon}</span>
+                                                    {vehicle.label}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-4">
+                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                                    {/* Activity Basis */}
+                                                    <div>
+                                                        <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                                                            Activity Basis
+                                                        </label>
+                                                        <div className="space-y-2">
+                                                            {activityBasisOptions.map((option) => (
+                                                                <div
+                                                                    key={option.value}
+                                                                    className={`p-2 border rounded-lg cursor-pointer transition-all hover:shadow-sm ${
+                                                                        config.activityBasis === option.value
+                                                                            ? 'border-primary bg-primary/5'
+                                                                            : 'border-muted hover:border-muted-foreground/20'
+                                                                    }`}
+                                                                    onClick={() => updateVehicleAssumption(vehicle.key, 'activityBasis', option.value)}
+                                                                >
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className={`w-2 h-2 rounded-full ${
+                                                                            config.activityBasis === option.value ? 'bg-primary' : 'bg-muted'
+                                                                        }`} />
+                                                                        <div>
+                                                                            <div className="text-sm font-medium">{option.label}</div>
+                                                                            <div className="text-xs text-muted-foreground">{option.description}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Fuel Type */}
+                                                    <div>
+                                                        <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                                                            Fuel Type
+                                                        </label>
+                                                        <div className="space-y-1">
+                                                            {fuelTypeOptions.map((fuel) => (
+                                                                <div
+                                                                    key={fuel.value}
+                                                                    className={`px-3 py-2 rounded-lg cursor-pointer transition-all text-sm font-medium ${
+                                                                        config.fuelType === fuel.value
+                                                                            ? fuel.color + ' ring-2 ring-offset-1 ring-current'
+                                                                            : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                                                                    }`}
+                                                                    onClick={() => updateVehicleAssumption(vehicle.key, 'fuelType', fuel.value)}
+                                                                >
+                                                                    {fuel.label}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Annual Distance */}
+                                                    <div>
+                                                        <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                                                            Annual Distance (km)
+                                                        </label>
+                                                        <div className="relative">
+                                                            <input
+                                                                type="number"
+                                                                value={config.annualDistance}
+                                                                onChange={(e) => updateVehicleAssumption(vehicle.key, 'annualDistance', parseInt(e.target.value) || 0)}
+                                                                className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                                                                placeholder="e.g., 15000"
+                                                            />
+                                                            <div className="absolute right-3 top-2 text-xs text-muted-foreground">
+                                                                km/year
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Region */}
+                                                    <div>
+                                                        <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                                                            Region
+                                                        </label>
+                                                        <div className="space-y-1">
+                                                            {regionOptions.map((region) => (
+                                                                <div
+                                                                    key={region.value}
+                                                                    className={`px-3 py-2 rounded-lg cursor-pointer transition-all text-sm ${
+                                                                        config.region === region.value
+                                                                            ? 'bg-primary text-primary-foreground'
+                                                                            : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                                                                    }`}
+                                                                    onClick={() => updateVehicleAssumption(vehicle.key, 'region', region.value)}
+                                                                >
+                                                                    {region.label}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
                 <TabsContent value="factors" className="space-y-4">
                     <Card>
@@ -317,23 +610,29 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Card className="cursor-pointer hover:shadow-md" onClick={() => setMethodologyConfig(prev => ({ ...prev, activityFactorSource: 'epa' }))}>
+                                <Card className={`cursor-pointer transition-all hover:shadow-md ${
+                                    methodologyConfig.activityFactorSource === 'epa' ? 'ring-2 ring-primary' : ''
+                                }`} onClick={() => setMethodologyConfig(prev => ({ ...prev, activityFactorSource: 'epa' }))}>
                                     <CardContent className="p-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className={`w-3 h-3 rounded-full ${methodologyConfig.activityFactorSource === 'epa' ? 'bg-primary' : 'bg-muted'}`} />
                                             <h4 className="font-medium">EPA Emission Factors</h4>
                                         </div>
                                         <p className="text-xs text-muted-foreground">Use EPA's standardized emission factors</p>
+                                        <Badge variant="outline" className="mt-2">Recommended</Badge>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="cursor-pointer hover:shadow-md" onClick={() => setMethodologyConfig(prev => ({ ...prev, activityFactorSource: 'custom' }))}>
+                                <Card className={`cursor-pointer transition-all hover:shadow-md ${
+                                    methodologyConfig.activityFactorSource === 'custom' ? 'ring-2 ring-primary' : ''
+                                }`} onClick={() => setMethodologyConfig(prev => ({ ...prev, activityFactorSource: 'custom' }))}>
                                     <CardContent className="p-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className={`w-3 h-3 rounded-full ${methodologyConfig.activityFactorSource === 'custom' ? 'bg-primary' : 'bg-muted'}`} />
                                             <h4 className="font-medium">Custom Factors</h4>
                                         </div>
                                         <p className="text-xs text-muted-foreground">Upload your own emission factors</p>
+                                        <Badge variant="secondary" className="mt-2">Advanced</Badge>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -351,7 +650,9 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
+                                <div className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all hover:shadow-sm ${
+                                    methodologyConfig.dataQualityApproach === 'pcaf_standard' ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                                }`}
                                     onClick={() => setMethodologyConfig(prev => ({ ...prev, dataQualityApproach: 'pcaf_standard' }))}>
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${methodologyConfig.dataQualityApproach === 'pcaf_standard' ? 'bg-primary' : 'bg-muted'}`} />
@@ -363,7 +664,9 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
                                     <Badge variant="outline">Recommended</Badge>
                                 </div>
 
-                                <div className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
+                                <div className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all hover:shadow-sm ${
+                                    methodologyConfig.dataQualityApproach === 'enhanced' ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                                }`}
                                     onClick={() => setMethodologyConfig(prev => ({ ...prev, dataQualityApproach: 'enhanced' }))}>
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${methodologyConfig.dataQualityApproach === 'enhanced' ? 'bg-primary' : 'bg-muted'}`} />
@@ -372,33 +675,12 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
                                             <p className="text-xs text-muted-foreground">Include additional quality metrics</p>
                                         </div>
                                     </div>
+                                    <Badge variant="secondary">Advanced</Badge>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
 
-                <TabsContent value="assumptions" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Assumptions Validation</CardTitle>
-                            <p className="text-sm text-muted-foreground">
-                                Review and validate key assumptions for your calculations
-                            </p>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-3">
-                                <div className="p-4 border rounded-lg bg-muted/20">
-                                    <h4 className="font-medium mb-2">Key Assumptions to Review:</h4>
-                                    <ul className="text-sm text-muted-foreground space-y-1">
-                                        <li>• Vehicle fuel efficiency assumptions</li>
-                                        <li>• Annual mileage estimates</li>
-                                        <li>• Loan attribution methodology</li>
-                                        <li>• Emission factor sources and vintages</li>
-                                    </ul>
-                                </div>
-
-                                <div className="flex items-center gap-3 p-3 border rounded-lg">
+                            <div className="mt-6 p-4 border rounded-lg bg-muted/20">
+                                <div className="flex items-center gap-3 mb-3">
                                     <input
                                         type="checkbox"
                                         id="assumptions-validated"
@@ -407,9 +689,12 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
                                         className="rounded"
                                     />
                                     <label htmlFor="assumptions-validated" className="text-sm font-medium">
-                                        I have reviewed and validated all key assumptions for this data ingestion
+                                        I have reviewed and validated all vehicle assumptions and methodology configuration
                                     </label>
                                 </div>
+                                <p className="text-xs text-muted-foreground ml-6">
+                                    This confirms that all vehicle-specific assumptions, activity factors, and data quality approaches have been reviewed for accuracy and compliance.
+                                </p>
                             </div>
                         </CardContent>
                     </Card>

@@ -68,6 +68,12 @@ const navigation = [
     description: 'AI analytics, climate risk assessment, and scenario modeling'
   },
   {
+    name: 'AI Co-Pilot',
+    href: '/financed-emissions/ai-copilot',
+    icon: MessageCircle,
+    description: 'Official PCAF copilot for portfolio guidance and methodology support'
+  },
+  {
     name: 'RAG Management',
     href: '/financed-emissions/rag-management',
     icon: Database,
