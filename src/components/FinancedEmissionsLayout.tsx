@@ -200,7 +200,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         </nav>
 
         {/* Enhanced Sidebar footer with premium styling */}
-        <div className="border-t border-border p-4 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm">
+        <div className="border-t border-border p-4 bg-gradient-to-t from-muted/20 to-transparent backdrop-blur-sm -mt-4">
           <div className="flex items-center gap-4 p-3 rounded-sm  bg-muted/10 border border-border backdrop-blur-sm hover:bg-muted/15 transition-[var(--transition-smooth)] hover:scale-[1.02] hover:shadow-[var(--shadow-card)] group">
             <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shadow-[var(--shadow-xs)] group-hover:shadow-[var(--shadow-glow)] group-hover:scale-110 transition-[var(--transition-bounce)]">
               <Shield className="h-5 w-5 text-accent group-hover:text-accent-light transition-colors duration-300" />
