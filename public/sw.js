@@ -3,14 +3,9 @@ const CACHE_NAME = 'pcaf-engine-v1.0.0';
 const STATIC_CACHE_NAME = 'pcaf-static-v1.0.0';
 const DYNAMIC_CACHE_NAME = 'pcaf-dynamic-v1.0.0';
 
-// Assets to cache immediately
+// Assets to cache immediately - minimal set for Vite builds
 const STATIC_ASSETS = [
   '/',
-  '/financed-emissions',
-  '/financed-emissions/overview',
-  '/financed-emissions/upload',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
   '/favicon.ico',
   '/peercarbon-logo-transparent.png'
@@ -183,7 +178,7 @@ async function navigationStrategy(request) {
 function isStaticAsset(pathname) {
   const staticExtensions = ['.js', '.css', '.png', '.jpg', '.jpeg', '.svg', '.ico', '.woff', '.woff2'];
   return staticExtensions.some(ext => pathname.endsWith(ext)) ||
-         pathname.includes('/static/') ||
+         pathname.includes('/assets/') ||
          pathname === '/manifest.json';
 }
 
