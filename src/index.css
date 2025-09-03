@@ -32,15 +32,41 @@
   }
 
   /* Inter Font Weight Variations */
-  .inter-thin { font-weight: 100; }
-  .inter-extralight { font-weight: 200; }
-  .inter-light { font-weight: 300; }
-  .inter-regular { font-weight: 400; }
-  .inter-medium { font-weight: 500; }
-  .inter-semibold { font-weight: 600; }
-  .inter-bold { font-weight: 700; }
-  .inter-extrabold { font-weight: 800; }
-  .inter-black { font-weight: 900; }
+  .inter-thin {
+    font-weight: 100;
+  }
+
+  .inter-extralight {
+    font-weight: 200;
+  }
+
+  .inter-light {
+    font-weight: 300;
+  }
+
+  .inter-regular {
+    font-weight: 400;
+  }
+
+  .inter-medium {
+    font-weight: 500;
+  }
+
+  .inter-semibold {
+    font-weight: 600;
+  }
+
+  .inter-bold {
+    font-weight: 700;
+  }
+
+  .inter-extrabold {
+    font-weight: 800;
+  }
+
+  .inter-black {
+    font-weight: 900;
+  }
 }
 
 /* Human-Centered Design System for AI Products
@@ -90,8 +116,8 @@
     --warning-foreground: 0 0% 98%;
     --warning-light: 35 55% 95%;
 
-    --destructive: 0 75% 55%;
-    /* Not too aggressive */
+    --destructive: 220 15% 45%;
+    /* Neutral muted tone */
     --destructive-foreground: 0 0% 98%;
 
     /* Subtle Borders - Imperfect but Intentional */
@@ -150,7 +176,7 @@
 
     --success: 147 50% 45%;
     --warning: 35 70% 55%;
-    --destructive: 0 70% 60%;
+    --destructive: 220 15% 55%;
 
     --border: 220 20% 25%;
     --border-light: 220 15% 22%;
@@ -190,15 +216,41 @@
   }
 
   /* Inter Font Weight Variations */
-  .inter-thin { font-weight: 100; }
-  .inter-extralight { font-weight: 200; }
-  .inter-light { font-weight: 300; }
-  .inter-regular { font-weight: 400; }
-  .inter-medium { font-weight: 500; }
-  .inter-semibold { font-weight: 600; }
-  .inter-bold { font-weight: 700; }
-  .inter-extrabold { font-weight: 800; }
-  .inter-black { font-weight: 900; }
+  .inter-thin {
+    font-weight: 100;
+  }
+
+  .inter-extralight {
+    font-weight: 200;
+  }
+
+  .inter-light {
+    font-weight: 300;
+  }
+
+  .inter-regular {
+    font-weight: 400;
+  }
+
+  .inter-medium {
+    font-weight: 500;
+  }
+
+  .inter-semibold {
+    font-weight: 600;
+  }
+
+  .inter-bold {
+    font-weight: 700;
+  }
+
+  .inter-extrabold {
+    font-weight: 800;
+  }
+
+  .inter-black {
+    font-weight: 900;
+  }
 }
 
 /* Human-Centered Design Components */
@@ -486,7 +538,7 @@
   }
 
   .btn-destructive-modern {
-    @apply btn-modern bg-gradient-to-r from-destructive via-destructive to-destructive/90 hover:from-destructive/90 hover:via-destructive hover:to-destructive hover:shadow-destructive/25 hover:ring-2 hover:ring-destructive/20;
+    @apply btn-modern bg-gradient-to-r from-muted via-muted to-muted/90 hover:from-muted/90 hover:via-muted hover:to-muted hover:shadow-muted/25 hover:ring-2 hover:ring-muted/20;
   }
 
   /* Floating Action Button */
