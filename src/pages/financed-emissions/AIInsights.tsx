@@ -338,7 +338,7 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
             >
               <div className="text-left">
                 <div className="font-medium text-primary">Advanced Analytics</div>
-                <div className="text-xs text-primary/70">6 analysis modules</div>
+                <div className="text-xs text-primary/70">5 analysis modules</div>
               </div>
             </Button>
           </div>
@@ -367,7 +367,6 @@ function AdvancedAnalyticsDashboard({
   const tabs = [
     { id: 'strategic', label: 'Strategic Insights', icon: Target },
     { id: 'emissions', label: 'Emissions Forecasts', icon: TrendingUp },
-    { id: 'factors', label: 'Emission Factors', icon: BarChart3 },
     { id: 'risk', label: 'Risk Analytics', icon: AlertTriangle },
     { id: 'climate', label: 'Climate Scenarios', icon: Activity },
     { id: 'anomaly', label: 'Anomaly Detection', icon: Brain }
@@ -376,27 +375,27 @@ function AdvancedAnalyticsDashboard({
   return (
     <div className="space-y-6">
       {/* Advanced Analytics Header */}
-      <Card className="bg-gradient-to-r from-slate-900 to-slate-800 text-white border-slate-700">
+      <Card className="bg-gradient-to-r from-primary/20 to-primary/10 border-primary/20 dark:from-primary/10 dark:to-primary/5 dark:border-primary/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
                 <BarChart3 className="h-6 w-6" />
                 Advanced Analytics
               </CardTitle>
-              <p className="text-slate-300 mt-1">
+              <p className="text-muted-foreground mt-1">
                 Comprehensive analytics dashboard with granular insights for each domain.
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="bg-green-600 text-white">
-                4 insights generated
+              <Badge variant="secondary" className="bg-green-600 text-white dark:bg-green-500">
+                5 insights generated
               </Badge>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setActiveView('overview')}
-                className="border-white/20 text-white hover:bg-white/10"
+                className="border-border hover:bg-muted"
               >
                 <Eye className="h-4 w-4 mr-1" />
                 Back to Overview
@@ -407,14 +406,18 @@ function AdvancedAnalyticsDashboard({
       </Card>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 p-1 bg-muted rounded-lg">
+      <div className="flex flex-wrap gap-2 p-1 bg-muted/50 rounded-lg border border-border">
         {tabs.map((tab) => (
           <Button
             key={tab.id}
             variant={activeTab === tab.id ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab(tab.id as any)}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              activeTab === tab.id 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
@@ -425,7 +428,6 @@ function AdvancedAnalyticsDashboard({
       {/* Tab Content */}
       {activeTab === 'strategic' && <StrategicInsights aiInsights={aiInsights} narrativeInsights={narrativeInsights} portfolioData={portfolioData} />}
       {activeTab === 'emissions' && <EmissionsForecasts aiInsights={aiInsights} portfolioData={portfolioData} />}
-      {activeTab === 'factors' && <EmissionFactorsAnalysis aiInsights={aiInsights} portfolioData={portfolioData} />}
       {activeTab === 'risk' && <RiskAnalytics aiInsights={aiInsights} portfolioData={portfolioData} />}
       {activeTab === 'climate' && <ClimateScenarios aiInsights={aiInsights} portfolioData={portfolioData} />}
       {activeTab === 'anomaly' && <AnomalyDetection aiInsights={aiInsights} portfolioData={portfolioData} />}
@@ -530,41 +532,41 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
     <div className="space-y-6">
       {/* Strategic Overview Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 dark:from-green-400/10 dark:to-green-500/10 dark:border-green-400/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-800">EV Adoption Rate</p>
-                <p className="text-2xl font-bold text-green-900">7.7%</p>
-                <p className="text-xs text-green-600">Above industry avg</p>
+                <p className="text-sm font-medium text-green-700 dark:text-green-300">EV Adoption Rate</p>
+                <p className="text-2xl font-bold text-green-800 dark:text-green-200">7.7%</p>
+                <p className="text-xs text-green-600 dark:text-green-400">Above industry avg</p>
               </div>
-              <Zap className="h-8 w-8 text-green-600" />
+              <Zap className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 dark:from-blue-400/10 dark:to-blue-500/10 dark:border-blue-400/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-800">Total Emissions (tCO2e)</p>
-                <p className="text-2xl font-bold text-blue-900">268</p>
-                <p className="text-xs text-blue-600">Portfolio baseline</p>
+                <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Emissions (tCO2e)</p>
+                <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">268</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">Portfolio baseline</p>
               </div>
-              <Activity className="h-8 w-8 text-blue-600" />
+              <Activity className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-500/20 dark:from-orange-400/10 dark:to-orange-500/10 dark:border-orange-400/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-800">Avg Data Quality</p>
-                <p className="text-2xl font-bold text-orange-900">5.0</p>
-                <p className="text-xs text-orange-600">Enhancement needed</p>
+                <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Avg Data Quality</p>
+                <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">5.0</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400">Enhancement needed</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-orange-600" />
+              <AlertTriangle className="h-8 w-8 text-orange-600 dark:text-orange-400" />
             </div>
           </CardContent>
         </Card>
@@ -633,173 +635,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
   );
 }
 
-function EmissionFactorsAnalysis({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
-  const emissionFactors = [
-    {
-      category: 'Gasoline Vehicles',
-      factor: '4.63',
-      unit: 'kg CO2e/gallon',
-      source: 'EPA 2024',
-      confidence: '95%',
-      lastUpdated: '2024-01-15',
-      portfolioUsage: '58%',
-      variance: '+2.1%'
-    },
-    {
-      category: 'Diesel Vehicles',
-      factor: '5.15',
-      unit: 'kg CO2e/gallon',
-      source: 'EPA 2024',
-      confidence: '94%',
-      lastUpdated: '2024-01-15',
-      portfolioUsage: '24%',
-      variance: '-1.3%'
-    },
-    {
-      category: 'Hybrid Vehicles',
-      factor: '2.31',
-      unit: 'kg CO2e/gallon',
-      source: 'EPA 2024',
-      confidence: '92%',
-      lastUpdated: '2024-01-15',
-      portfolioUsage: '11%',
-      variance: '-8.7%'
-    },
-    {
-      category: 'Electric Vehicles',
-      factor: '0.85',
-      unit: 'kg CO2e/kWh',
-      source: 'Grid Mix 2024',
-      confidence: '88%',
-      lastUpdated: '2024-02-01',
-      portfolioUsage: '7%',
-      variance: '-15.2%'
-    }
-  ];
 
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Emission Factors Analysis
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Detailed analysis of emission factors used in portfolio calculations
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 border rounded-lg bg-blue-50">
-              <p className="text-2xl font-bold text-blue-900">4</p>
-              <p className="text-xs text-blue-600">Factor Categories</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg bg-green-50">
-              <p className="text-2xl font-bold text-green-900">93%</p>
-              <p className="text-xs text-green-600">Avg Confidence</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg bg-orange-50">
-              <p className="text-2xl font-bold text-orange-900">EPA</p>
-              <p className="text-xs text-orange-600">Primary Source</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg bg-purple-50">
-              <p className="text-2xl font-bold text-purple-900">2024</p>
-              <p className="text-xs text-purple-600">Latest Vintage</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
-        {emissionFactors.map((factor, index) => (
-          <Card key={index} className="hover:shadow-md transition-all duration-200">
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${factor.category.includes('Electric') ? 'bg-green-100 text-green-700' :
-                    factor.category.includes('Hybrid') ? 'bg-blue-100 text-blue-700' :
-                      'bg-orange-100 text-orange-700'
-                    }`}>
-                    <Zap className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{factor.category}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {factor.source}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {factor.confidence} confidence
-                      </Badge>
-                      <Badge
-                        variant={factor.variance.startsWith('-') ? 'default' : 'secondary'}
-                        className={`text-xs ${factor.variance.startsWith('-')
-                          ? 'bg-green-600 text-white'
-                          : 'bg-orange-100 text-orange-700'
-                          }`}
-                      >
-                        {factor.variance} vs industry
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm">
-                  Update Factor
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">Emission Factor: </span>
-                  <span className="text-muted-foreground">{factor.factor} {factor.unit}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Portfolio Usage: </span>
-                  <span className="text-muted-foreground">{factor.portfolioUsage}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Last Updated: </span>
-                  <span className="text-muted-foreground">{factor.lastUpdated}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Data Quality: </span>
-                  <span className="text-muted-foreground">PCAF Level 2</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Factor Validation & Updates</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="p-4 border rounded-lg bg-blue-50">
-              <h5 className="font-medium text-blue-800 mb-2">Recommended Updates</h5>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Electric vehicle factors: Update to regional grid mix (quarterly)</li>
-                <li>• Hybrid efficiency: Incorporate latest EPA fuel economy data</li>
-                <li>• Diesel factors: Consider biodiesel blend ratios in calculations</li>
-              </ul>
-            </div>
-
-            <div className="p-4 border rounded-lg bg-green-50">
-              <h5 className="font-medium text-green-800 mb-2">Quality Assurance</h5>
-              <p className="text-sm text-green-700">
-                All emission factors are validated against EPA standards and updated quarterly.
-                Custom factors undergo peer review and documentation requirements.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
 
 function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
   return (
@@ -861,20 +697,20 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg bg-green-50">
-              <h5 className="font-medium text-green-800 mb-2">Optimistic Scenario</h5>
-              <p className="text-2xl font-bold text-green-900">-25%</p>
-              <p className="text-xs text-green-600">Emissions reduction by 2025</p>
+            <div className="p-4 border border-border rounded-lg bg-green-500/10 dark:bg-green-400/10">
+              <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">Optimistic Scenario</h5>
+              <p className="text-2xl font-bold text-green-800 dark:text-green-200">-25%</p>
+              <p className="text-xs text-green-600 dark:text-green-400">Emissions reduction by 2025</p>
             </div>
-            <div className="p-4 border rounded-lg bg-blue-50">
-              <h5 className="font-medium text-blue-800 mb-2">Base Case</h5>
-              <p className="text-2xl font-bold text-blue-900">-15%</p>
-              <p className="text-xs text-blue-600">Expected reduction</p>
+            <div className="p-4 border border-border rounded-lg bg-blue-500/10 dark:bg-blue-400/10">
+              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Base Case</h5>
+              <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">-15%</p>
+              <p className="text-xs text-blue-600 dark:text-blue-400">Expected reduction</p>
             </div>
-            <div className="p-4 border rounded-lg bg-orange-50">
-              <h5 className="font-medium text-orange-800 mb-2">Conservative</h5>
-              <p className="text-2xl font-bold text-orange-900">-8%</p>
-              <p className="text-xs text-orange-600">Minimum expected</p>
+            <div className="p-4 border border-border rounded-lg bg-orange-500/10 dark:bg-orange-400/10">
+              <h5 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Conservative</h5>
+              <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
+              <p className="text-xs text-orange-600 dark:text-orange-400">Minimum expected</p>
             </div>
           </div>
         </CardContent>
@@ -985,33 +821,33 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-green-50 border-green-200">
+            <Card className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20">
               <CardContent className="pt-4">
-                <h4 className="font-medium text-green-800 mb-2">Orderly Transition</h4>
-                <p className="text-2xl font-bold text-green-900">+12%</p>
-                <p className="text-xs text-green-600 mb-3">Portfolio value impact</p>
+                <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Orderly Transition</h4>
+                <p className="text-2xl font-bold text-green-800 dark:text-green-200">+12%</p>
+                <p className="text-xs text-green-600 dark:text-green-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Early policy action enables smooth transition to net-zero
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-orange-50 border-orange-200">
+            <Card className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20">
               <CardContent className="pt-4">
-                <h4 className="font-medium text-orange-800 mb-2">Disorderly Transition</h4>
-                <p className="text-2xl font-bold text-orange-900">-8%</p>
-                <p className="text-xs text-orange-600 mb-3">Portfolio value impact</p>
+                <h4 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Disorderly Transition</h4>
+                <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Late policy action leads to higher transition costs
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-red-50 border-red-200">
+            <Card className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20">
               <CardContent className="pt-4">
-                <h4 className="font-medium text-red-800 mb-2">Hot House World</h4>
-                <p className="text-2xl font-bold text-red-900">-15%</p>
-                <p className="text-xs text-red-600 mb-3">Portfolio value impact</p>
+                <h4 className="font-medium text-red-700 dark:text-red-300 mb-2">Hot House World</h4>
+                <p className="text-2xl font-bold text-red-800 dark:text-red-200">-15%</p>
+                <p className="text-xs text-red-600 dark:text-red-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Limited climate action leads to severe physical risks
                 </p>
@@ -1027,8 +863,8 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="p-4 border rounded-lg">
-              <h5 className="font-medium mb-2">Key Findings</h5>
+            <div className="p-4 border border-border rounded-lg bg-card">
+              <h5 className="font-medium mb-2 text-foreground">Key Findings</h5>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• Portfolio shows resilience in orderly transition scenarios</li>
                 <li>• EV exposure provides upside in all transition scenarios</li>
@@ -1037,9 +873,9 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
               </ul>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="font-medium text-blue-800 mb-2">Strategic Recommendation</h5>
-              <p className="text-sm text-blue-700">
+            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg dark:bg-blue-400/10 dark:border-blue-400/20">
+              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Strategic Recommendation</h5>
+              <p className="text-sm text-blue-600 dark:text-blue-400">
                 Accelerate EV financing initiatives to maximize benefits from transition scenarios
                 while maintaining diversification to manage disorderly transition risks.
               </p>

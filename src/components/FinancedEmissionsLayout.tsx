@@ -73,20 +73,7 @@ const navigation = [
     icon: MessageCircle,
     description: 'Official PCAF copilot for portfolio guidance and methodology support'
   },
-  {
-    name: 'RAG Management',
-    href: '/financed-emissions/rag-management',
-    icon: Database,
-    description: 'Upload and manage knowledge base documents',
-    hidden: true
-  },
-  {
-    name: 'AI Chat',
-    href: '/financed-emissions/rag-chat',
-    icon: MessageCircle,
-    description: 'Chat with AI assistant about PCAF methodology',
-    hidden: true
-  },
+
   {
     name: 'Settings',
     href: '/financed-emissions/settings',

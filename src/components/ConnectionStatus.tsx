@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wifi, WifiOff, RefreshCw } from "lucide-react";
+import { WifiOff, RefreshCw } from "lucide-react";
 import { realTimeService, ConnectionStatus as ConnectionStatusType } from "@/services/realTimeService";
 
 export function ConnectionStatus() {
@@ -40,6 +40,11 @@ export function ConnectionStatus() {
 
     // Don't show anything if gracefully degraded or connected
     if (isGracefulDegradation || status.connected) {
+        return null;
+    }
+
+    // Don't show if we haven't attempted connection yet (initial state)
+    if (status.reconnectAttempts === 0 && !status.lastHeartbeat) {
         return null;
     }
 

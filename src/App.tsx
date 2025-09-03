@@ -57,7 +57,6 @@ import AIInsightsPage from "./pages/financed-emissions/AIInsights";
 import AICoPilotPage from "./pages/financed-emissions/AICoPilot";
 import ClimateRiskPage from "./pages/financed-emissions/ClimateRisk";
 import ScenarioModelingPage from "./pages/financed-emissions/ScenarioModeling";
-import RAGManagementPage from "./pages/financed-emissions/RAGManagement";
 import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
 import PortfolioDeepAnalysisPresentation from "./pages/financed-emissions/PortfolioDeepAnalysisPresentation";
 import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
@@ -66,7 +65,7 @@ import { FinancedEmissionsLayout } from "./components/FinancedEmissionsLayout";
 import React, { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "@/components/LoadingState";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
-import { FloatingChatbot } from "@/components/chat/FloatingChatbot";
+
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 
 import { DealPipelineProvider } from "./contexts/DealPipelineContext";
@@ -141,7 +140,7 @@ const FinancedEmissionsRoutes = () => {
         {/* Legacy routes redirect to unified AI insights */}
         <Route path="climate-risk" element={<Navigate to="/financed-emissions/ai-insights?tab=risk" replace />} />
         <Route path="scenario-modeling" element={<Navigate to="/financed-emissions/ai-insights?tab=scenarios" replace />} />
-        <Route path="rag-management" element={<RAGManagementPage />} />
+
         <Route path="reports" element={<ReportsPage />} />
         <Route path="reports/templates" element={<ReportTemplates />} />
         <Route path="reports/presentation/portfolio-deep-analysis" element={<PortfolioDeepAnalysisPresentation />} />
@@ -228,6 +227,15 @@ function App() {
   // Initialize real-time service when user is authenticated
   useEffect(() => {
     if (user) {
+      // Check if we're in development mode without a backend
+      const isDevelopmentMode = import.meta.env.DEV && !import.meta.env.VITE_WS_URL && !import.meta.env.VITE_API_BASE_URL;
+      
+      if (isDevelopmentMode) {
+        console.log('Development mode detected without backend configuration, enabling graceful degradation');
+        realTimeService.enableGracefulDegradation();
+        return;
+      }
+
       // Skip real-time connection for AI insights page to prevent WebSocket errors
       const currentPath = window.location.pathname;
       if (currentPath.includes('/ai-insights')) {
@@ -348,8 +356,7 @@ function App() {
               <Toaster />
               <Sonner />
               <PWAInstallPrompt />
-              {/* Global Floating Chatbot - only show for authenticated users */}
-              {user && <FloatingChatbot />}
+
               {/* Connection Status Indicator */}
               {user && <ConnectionStatus />}
               <BrowserRouter>

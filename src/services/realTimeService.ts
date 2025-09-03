@@ -47,9 +47,23 @@ class RealTimeService {
       return;
     }
 
+    // Check if graceful degradation is already enabled
+    if (this.gracefulDegradation) {
+      console.log('Real-time service in graceful degradation mode, skipping connection');
+      return;
+    }
+
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
       console.warn('Real-time service not available in server environment');
+      return;
+    }
+
+    // Check if we're in development mode without backend configuration
+    const isDevelopmentMode = import.meta.env.DEV && !import.meta.env.VITE_WS_URL && !import.meta.env.VITE_API_BASE_URL;
+    if (isDevelopmentMode) {
+      console.log('Development mode without backend configuration detected, enabling graceful degradation');
+      this.gracefulDegradation = true;
       return;
     }
 
