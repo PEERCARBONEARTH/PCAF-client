@@ -33,7 +33,7 @@ export function DynamicInsightCard({ insight, onActionClick, className = '' }: D
   const getPriorityColor = (priority: DynamicInsight['priority']) => {
     switch (priority) {
       case 'critical': return 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950/20 dark:border-green-800';
-      case 'high': return 'text-orange-600 bg-orange-50 border-brown-200 dark:text-orange-400 dark:bg-brown-950/20 dark:border-green-800';
+      case 'high': return 'text-orange-600 bg-orange-50 border-brown-200 dark:text-orange-400 dark:bg-green-950/20 dark:border-green-800';
       case 'medium': return 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/20 dark:border-blue-800';
       case 'low': return 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-950/20 dark:border-gray-800';
     }
