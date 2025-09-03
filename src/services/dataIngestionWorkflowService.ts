@@ -260,11 +260,17 @@ class DataIngestionWorkflowService {
       },
     };
 
-    // Notify real-time service of completion
-    realTimeService.emit('workflow_complete', {
-      workflowId: 'data_ingestion',
-      results: this.workflowState.results,
-    });
+    // Notify real-time service of completion using send method
+    try {
+      realTimeService.send({
+        type: 'workflow_complete',
+        workflowId: 'data_ingestion',
+        results: this.workflowState.results,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.warn('Failed to notify real-time service:', error);
+    }
   }
 
   resetWorkflow(): void {
