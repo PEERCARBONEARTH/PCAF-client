@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Brain,
   BarChart3,
@@ -26,9 +27,17 @@ import { useToast } from "@/hooks/use-toast";
 import { aiService, AIInsightRequest, AIInsightResponse, AIRecommendation } from "@/services/aiService";
 import { aiAnalyticsNarrativeBuilder, NarrativeContext, InsightNarrative } from "@/services/ai-narrative-builder";
 import { narrativePipelineIntegration, NarrativeInsightCard } from "@/services/narrative-pipeline-integration";
+import { contextualNarrativeService } from "@/services/contextual-narrative-service";
+import NarrativeInsightCard from "@/components/insights/NarrativeInsightCard";
+import { dynamicInsightsEngine, DynamicInsight } from "@/services/dynamic-insights-engine";
+import { bankProfileService } from "@/services/bank-profile-service";
+import DynamicInsightCard from "@/components/insights/DynamicInsightCard";
+import AIContextTooltip from "@/components/insights/AIContextTooltip";
 
 // Executive Summary Component
 function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+
   if (!portfolioData) return null;
 
   // Safe destructuring with defaults
@@ -44,54 +53,93 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
   const riskLevel = safeDataQuality <= 3 ? 'Low' : safeDataQuality <= 4 ? 'Medium' : 'High';
   const riskColor = safeDataQuality <= 3 ? 'text-green-600' : safeDataQuality <= 4 ? 'text-yellow-600' : 'text-destructive';
 
+  const handleMetricClick = (metricType: string) => {
+    setSelectedMetric(selectedMetric === metricType ? null : metricType);
+  };
+
+  const getMetricNarrative = (metricType: string) => {
+    switch (metricType) {
+      case 'portfolio':
+        return contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
+          totalLoans: Array.isArray(loans) ? loans.length : 247,
+          portfolioValue: portfolioValue
+        });
+      case 'ev':
+        return contextualNarrativeService.generateStrategicInsightNarrative('ev_transition', {
+          evPercentage: evPercentage || 0,
+          totalLoans: Array.isArray(loans) ? loans.length : 247
+        });
+      case 'emissions':
+        return contextualNarrativeService.generateEmissionsForecastNarrative('base_case', totalEmissions || 0);
+      case 'risk':
+        return contextualNarrativeService.generateRiskAnalyticsNarrative('data_quality', riskLevel.toLowerCase());
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-primary">
-        <CardHeader className="pb-2">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <NarrativeInsightCard
+          title="Portfolio Overview"
+          variant="default"
+          narrative={getMetricNarrative('portfolio')}
+          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-primary cursor-pointer"
+        >
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Portfolio Overview</CardTitle>
-            <Target className="h-4 w-4 text-primary" />
+            <div>
+              <div className="text-2xl font-bold">{Array.isArray(loans) ? loans.length : 247}</div>
+              <p className="text-sm text-muted-foreground">$8.2M total value</p>
+            </div>
+            <Target className="h-8 w-8 text-primary" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{Array.isArray(loans) ? loans.length : 247}</div>
-          <p className="text-sm text-muted-foreground">
-            $8.2M total value
-          </p>
-        </CardContent>
-      </Card>
+        </NarrativeInsightCard>
 
-      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500">
-        <CardHeader className="pb-2">
+        <NarrativeInsightCard
+          title="EV Transition"
+          variant="success"
+          narrative={getMetricNarrative('ev')}
+          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500 cursor-pointer"
+        >
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">EV Transition</CardTitle>
-            <Zap className="h-4 w-4 text-green-500" />
+            <div>
+              <div className="text-2xl font-bold text-green-600">{evPercentage?.toFixed(1) || '0.0'}%</div>
+              <p className="text-sm text-muted-foreground">Electric vehicles</p>
+            </div>
+            <Zap className="h-8 w-8 text-green-500" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-600">{evPercentage?.toFixed(1) || '0.0'}%</div>
-          <p className="text-sm text-muted-foreground">Electric vehicles</p>
-        </CardContent>
-      </Card>
+        </NarrativeInsightCard>
 
-      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500">
-        <CardHeader className="pb-2">
+        <NarrativeInsightCard
+          title="Emissions"
+          variant="warning"
+          narrative={getMetricNarrative('emissions')}
+          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500 cursor-pointer"
+        >
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Emissions</CardTitle>
-            <Activity className="h-4 w-4 text-orange-500" />
+            <div>
+              <div className="text-2xl font-bold">{totalEmissions?.toFixed(1) || '0.0'}</div>
+              <p className="text-sm text-muted-foreground">tCO₂e total</p>
+            </div>
+            <Activity className="h-8 w-8 text-orange-500" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalEmissions?.toFixed(1) || '0.0'}</div>
-          <p className="text-sm text-muted-foreground">tCO₂e total</p>
-        </CardContent>
-      </Card>
+        </NarrativeInsightCard>
 
-      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-red-500">
-        <CardHeader className="pb-2">
+        <NarrativeInsightCard
+          title="Risk Level"
+          variant={riskLevel === 'Low' ? 'success' : riskLevel === 'Medium' ? 'warning' : 'warning'}
+          narrative={getMetricNarrative('risk')}
+          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-red-500 cursor-pointer"
+        >
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Risk Level</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-500" />
+            <div>
+              <div className={`text-2xl font-bold ${riskColor}`}>{riskLevel}</div>
+              <p className="text-sm text-muted-foreground">DQ Score: {safeDataQuality.toFixed(1)}/5</p>
+            </div>
+            <AlertTriangle className="h-8 w-8 text-red-500" />
+          </div>
+        </NarrativeInsightCard>
           </div>
         </CardHeader>
         <CardContent>
@@ -191,17 +239,21 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
       {/* Quick Insights Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Portfolio Health */}
-        <Card>
-          <CardHeader>
+        <NarrativeInsightCard
+          title="Portfolio Health"
+          variant={safeEvPercentage > 30 ? 'success' : safeEvPercentage > 15 ? 'info' : 'warning'}
+          narrative={contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
+            evPercentage: safeEvPercentage,
+            emissionsTrend: emissionsTrend,
+            portfolioData: portfolioData
+          })}
+          className="cursor-pointer"
+        >
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                Portfolio Health
-              </CardTitle>
+              <Activity className="h-5 w-5 text-primary" />
               <Badge variant="outline">{safeEvPercentage > 30 ? 'Good' : safeEvPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>EV Adoption Progress</span>
@@ -222,29 +274,37 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <div className="font-semibold">Medium</div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </NarrativeInsightCard>
 
         {/* Anomalies & Alerts */}
-        <Card>
-          <CardHeader>
+        <NarrativeInsightCard
+          title="Anomalies Detected"
+          variant={Array.isArray(anomalies) && anomalies.length > 3 ? 'warning' : 'info'}
+          narrative={contextualNarrativeService.generateAnomalyNarrative({
+            severity: Array.isArray(anomalies) && anomalies.length > 3 ? 'high' : 'medium',
+            count: Array.isArray(anomalies) ? anomalies.length : 0,
+            type: 'data_quality'
+          })}
+          className="cursor-pointer"
+        >
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-primary" />
-                Anomalies Detected
-              </CardTitle>
+              <Brain className="h-5 w-5 text-primary" />
               <Badge variant={Array.isArray(anomalies) && anomalies.length > 3 ? "destructive" : "secondary"}>
                 {Array.isArray(anomalies) ? anomalies.length : 0} found
               </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
             {Array.isArray(anomalies) && anomalies.length > 0 ? (
               <>
                 {anomalies.slice(0, 3).map((anomaly, index) => (
                   <div
                     key={index}
-                    className="p-3 border rounded-lg bg-muted/20"
+                    className="p-3 border border-border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // Could open detailed anomaly view
+                      console.log('Anomaly clicked:', anomaly);
+                    }}
                   >
                     <div className="flex items-start justify-between mb-1">
                       <span className="text-sm font-medium">{anomaly.loanId}</span>
@@ -267,8 +327,8 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 <p className="text-sm text-muted-foreground">No anomalies detected</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </NarrativeInsightCard>
       </div>
 
       {/* Quick Actions */}
@@ -406,21 +466,21 @@ function AdvancedAnalyticsDashboard({
       </Card>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 p-1 bg-muted/50 rounded-lg border border-border">
+      <div className="flex justify-between items-center gap-1 p-1 bg-muted/50 rounded-lg border border-border">
         {tabs.map((tab) => (
           <Button
             key={tab.id}
             variant={activeTab === tab.id ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 ${
-              activeTab === tab.id 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
+            className={`flex items-center gap-2 flex-1 justify-center ${activeTab === tab.id
+                ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             <tab.icon className="h-4 w-4" />
-            {tab.label}
+            <span className="hidden sm:inline">{tab.label}</span>
+            <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
           </Button>
         ))}
       </div>
@@ -440,196 +500,156 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
   narrativeInsights: NarrativeInsightCard[];
   portfolioData: any;
 }) {
-  // Generate insights from data pipeline and ChromaDB analysis
-  const insights = React.useMemo(() => {
-    const generatedInsights = [];
+  const [dynamicInsights, setDynamicInsights] = useState<DynamicInsight[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(true);
 
-    // Prioritize data pipeline insights (ChromaDB-enhanced)
-    narrativeInsights.forEach((narrative, index) => {
-      if (narrative.narrative) {
-        generatedInsights.push({
-          title: narrative.narrative.title,
-          category: narrative.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          priority: narrative.priority === 'high' ? 1 : narrative.priority === 'medium' ? 2 : 3,
-          impact: narrative.priority,
-          confidence: `${Math.round(narrative.confidence * 100)}%`,
-          description: narrative.narrative.executiveSummary,
-          recommendation: narrative.narrative.actionableRecommendations[0]?.action || "See detailed analysis",
-          timeline: narrative.narrative.actionableRecommendations[0]?.timeframe || "TBD",
-          metrics: {
-            confidence: `${Math.round(narrative.confidence * 100)}%`,
-            type: narrative.type,
-            source: "ChromaDB Pipeline",
-            lastUpdated: narrative.lastUpdated.toLocaleDateString()
-          }
-        });
-      }
-    });
-
-    // Supplement with AI insights if available
-    if (aiInsights?.recommendations) {
-      aiInsights.recommendations.forEach((rec, index) => {
-        generatedInsights.push({
-          title: rec.title,
-          category: rec.title.includes('EV') ? 'EV Leadership' :
-            rec.title.includes('Data') ? 'Data Quality' :
-              rec.title.includes('Risk') ? 'Portfolio Risk' : 'Strategic',
-          priority: index + narrativeInsights.length + 1,
-          impact: rec.priority === 'high' ? 'high' : rec.priority === 'medium' ? 'medium' : 'low',
-          confidence: `${Math.round(aiInsights.confidence * 100)}%`,
-          description: rec.description,
-          recommendation: `AI Enhancement: ${rec.description}`,
-          timeline: "AI Generated",
-          metrics: {
-            confidence: `${Math.round(aiInsights.confidence * 100)}%`,
-            source: "AI + ChromaDB",
-            processingTime: `${aiInsights.metadata?.processingTime || 0}ms`
-          }
-        });
-      });
-    }
-
-    // If no pipeline data, provide fallback insights
-    if (generatedInsights.length === 0) {
-      return [
-        {
-          title: "Portfolio Data Quality Enhancement",
-          category: "Data Quality",
-          priority: 1,
-          impact: "high",
-          confidence: "85%",
-          description: "Current portfolio shows opportunities for improved data collection and PCAF compliance scoring.",
-          recommendation: "Implement systematic data collection processes for better emissions tracking accuracy.",
-          timeline: "1-3 months",
-          metrics: {
-            confidence: "85%",
-            source: "Fallback Analysis",
-            lastUpdated: new Date().toLocaleDateString()
-          }
-        },
-        {
-          title: "EV Transition Strategy",
-          category: "EV Leadership",
-          priority: 2,
-          impact: "high",
-          confidence: "78%",
-          description: "Electric vehicle adoption presents significant decarbonization opportunities for the portfolio.",
-          recommendation: "Develop targeted EV financing products with competitive rates and terms.",
-          timeline: "3-6 months",
-          metrics: {
-            confidence: "78%",
-            source: "Fallback Analysis",
-            lastUpdated: new Date().toLocaleDateString()
-          }
+  // Load dynamic insights based on bank profile and portfolio data
+  React.useEffect(() => {
+    const loadDynamicInsights = async () => {
+      setIsLoadingInsights(true);
+      try {
+        // Initialize or load bank profile
+        let profile = bankProfileService.getCurrentProfile();
+        if (!profile) {
+          profile = bankProfileService.initializeDemoProfile();
         }
-      ];
-    }
 
-    return generatedInsights.slice(0, 4); // Limit to top 4 insights
-  }, [aiInsights, narrativeInsights]);
+        // Set up dynamic insights engine
+        dynamicInsightsEngine.setBankProfile(profile);
+        await dynamicInsightsEngine.updatePortfolioContext();
+
+        // Generate dynamic insights
+        const insights = await dynamicInsightsEngine.generateDynamicInsights();
+        setDynamicInsights(insights);
+      } catch (error) {
+        console.error('Failed to load dynamic insights:', error);
+        // Fallback to static insights if dynamic loading fails
+        setDynamicInsights([]);
+      } finally {
+        setIsLoadingInsights(false);
+      }
+    };
+
+    loadDynamicInsights();
+  }, [portfolioData]);
+
+  const handleActionClick = (action: string) => {
+    console.log('Action clicked:', action);
+    // Here you could navigate to specific pages or trigger specific actions
+    // For example:
+    // if (action.includes('EV')) navigate('/financed-emissions/settings');
+  };
 
   return (
     <div className="space-y-6">
       {/* Strategic Overview Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 dark:from-green-400/10 dark:to-green-500/10 dark:border-green-400/20">
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 dark:from-green-400/10 dark:to-green-500/10 dark:border-green-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-700 dark:text-green-300">EV Adoption Rate</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-300">EV Adoption Rate</p>
+                  <AIContextTooltip 
+                    metricType="ev_percentage" 
+                    metricValue="7.7"
+                    additionalData={{ 
+                      industryAvg: 12.5,
+                      trend: 'improving',
+                      totalLoans: portfolioData?.totalLoans || 247
+                    }}
+                  />
+                </div>
                 <p className="text-2xl font-bold text-green-800 dark:text-green-200">7.7%</p>
                 <p className="text-xs text-green-600 dark:text-green-400">Above industry avg</p>
               </div>
-              <Zap className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <Zap className="h-8 w-8 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 dark:from-blue-400/10 dark:to-blue-500/10 dark:border-blue-400/20">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 dark:from-blue-400/10 dark:to-blue-500/10 dark:border-blue-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Emissions (tCO2e)</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Emissions (tCO2e)</p>
+                  <AIContextTooltip 
+                    metricType="emissions" 
+                    metricValue="268"
+                    additionalData={{ 
+                      trend: 'declining',
+                      emissionIntensity: 2.1,
+                      portfolioSize: portfolioData?.totalLoans || 247
+                    }}
+                  />
+                </div>
                 <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">268</p>
                 <p className="text-xs text-blue-600 dark:text-blue-400">Portfolio baseline</p>
               </div>
-              <Activity className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <Activity className="h-8 w-8 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-500/20 dark:from-orange-400/10 dark:to-orange-500/10 dark:border-orange-400/20">
+        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-500/20 dark:from-orange-400/10 dark:to-orange-500/10 dark:border-orange-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Avg Data Quality</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Avg Data Quality</p>
+                  <AIContextTooltip 
+                    metricType="data_quality" 
+                    metricValue="5.0"
+                    additionalData={{ 
+                      target: 3.0,
+                      complianceStatus: 'needs_improvement',
+                      improvableLoans: Math.round((portfolioData?.totalLoans || 247) * 0.6)
+                    }}
+                  />
+                </div>
                 <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">5.0</p>
                 <p className="text-xs text-orange-600 dark:text-orange-400">Enhancement needed</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+              <AlertTriangle className="h-8 w-8 text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Strategic Insights Cards */}
+      {/* Dynamic Strategic Insights */}
       <div className="space-y-4">
-        {insights.map((insight, index) => (
-          <Card key={index} className="hover:shadow-lg transition-all duration-200">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${insight.impact === 'high' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                    }`}>
-                    <Target className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{insight.title}</CardTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {insight.category} • Priority {insight.priority}
-                      </Badge>
-                      <Badge
-                        variant={insight.impact === 'high' ? 'default' : 'secondary'}
-                        className={`text-xs ${insight.impact === 'high'
-                          ? 'bg-green-600 text-white'
-                          : 'bg-blue-100 text-blue-700'
-                          }`}
-                      >
-                        {insight.impact} impact
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {insight.confidence} confidence
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm">
-                  Deep Dive Analysis
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-muted-foreground">{insight.description}</p>
-
-                <div className="bg-muted/50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="font-medium text-sm">Recommended Action:</span>
-                  </div>
-                  <p className="text-sm text-green-700">{insight.recommendation}</p>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground">Timeline: <span className="font-medium">{insight.timeline}</span></span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+        {isLoadingInsights ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <span className="text-muted-foreground">Generating personalized insights...</span>
+            </div>
+          </div>
+        ) : dynamicInsights.length > 0 ? (
+          dynamicInsights.map((insight) => (
+            <DynamicInsightCard
+              key={insight.id}
+              insight={insight}
+              onActionClick={handleActionClick}
+              className="hover:shadow-lg transition-all duration-200"
+            />
+          ))
+        ) : (
+          <Card className="p-6 text-center">
+            <Brain className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">No Insights Available</h3>
+            <p className="text-muted-foreground mb-4">
+              Complete your bank profile to get personalized AI insights.
+            </p>
+            <Button onClick={() => {
+              // This would open a profile setup modal or navigate to settings
+              console.log('Setup profile clicked');
+            }}>
+              Setup Bank Profile
+            </Button>
           </Card>
-        ))}
+        )}
       </div>
     </div>
   );
@@ -653,37 +673,37 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h4 className="font-medium">12-Month Projection</h4>
+              <h4 className="font-medium text-foreground">12-Month Projection</h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">Current Baseline</span>
-                  <span className="font-medium">268 tCO2e</span>
+                  <span className="text-sm text-muted-foreground">Current Baseline</span>
+                  <span className="font-medium text-foreground">268 tCO2e</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">Projected (Q4 2024)</span>
-                  <span className="font-medium text-green-600">245 tCO2e (-8.6%)</span>
+                  <span className="text-sm text-muted-foreground">Projected (Q4 2024)</span>
+                  <span className="font-medium text-green-600 dark:text-green-400">245 tCO2e (-8.6%)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">Best Case Scenario</span>
-                  <span className="font-medium text-green-700">220 tCO2e (-17.9%)</span>
+                  <span className="text-sm text-muted-foreground">Best Case Scenario</span>
+                  <span className="font-medium text-green-700 dark:text-green-300">220 tCO2e (-17.9%)</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-medium">Key Drivers</h4>
+              <h4 className="font-medium text-foreground">Key Drivers</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>EV adoption acceleration (+15% projected)</span>
+                  <span className="text-muted-foreground">EV adoption acceleration (+15% projected)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Fleet modernization initiatives</span>
+                  <span className="text-muted-foreground">Fleet modernization initiatives</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span>Regulatory compliance requirements</span>
+                  <span className="text-muted-foreground">Regulatory compliance requirements</span>
                 </div>
               </div>
             </div>
@@ -697,21 +717,41 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border border-border rounded-lg bg-green-500/10 dark:bg-green-400/10">
-              <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">Optimistic Scenario</h5>
-              <p className="text-2xl font-bold text-green-800 dark:text-green-200">-25%</p>
-              <p className="text-xs text-green-600 dark:text-green-400">Emissions reduction by 2025</p>
-            </div>
-            <div className="p-4 border border-border rounded-lg bg-blue-500/10 dark:bg-blue-400/10">
-              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Base Case</h5>
-              <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">-15%</p>
-              <p className="text-xs text-blue-600 dark:text-blue-400">Expected reduction</p>
-            </div>
-            <div className="p-4 border border-border rounded-lg bg-orange-500/10 dark:bg-orange-400/10">
-              <h5 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Conservative</h5>
-              <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
-              <p className="text-xs text-orange-600 dark:text-orange-400">Minimum expected</p>
-            </div>
+            <NarrativeInsightCard
+              title="Optimistic Scenario"
+              variant="success"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('optimistic', -25)}
+              className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20"
+            >
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-800 dark:text-green-200">-25%</p>
+                <p className="text-xs text-green-600 dark:text-green-400">Emissions reduction by 2025</p>
+              </div>
+            </NarrativeInsightCard>
+
+            <NarrativeInsightCard
+              title="Base Case"
+              variant="info"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('base_case', -15)}
+              className="bg-blue-500/10 border-blue-500/20 dark:bg-blue-400/10 dark:border-blue-400/20"
+            >
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">-15%</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">Expected reduction</p>
+              </div>
+            </NarrativeInsightCard>
+
+            <NarrativeInsightCard
+              title="Conservative"
+              variant="warning"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('conservative', -8)}
+              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20"
+            >
+              <div className="text-center">
+                <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400">Minimum expected</p>
+              </div>
+            </NarrativeInsightCard>
           </div>
         </CardContent>
       </Card>
@@ -731,52 +771,58 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h4 className="font-medium">Transition Risk Analysis</h4>
+            <NarrativeInsightCard
+              title="Transition Risk Analysis"
+              variant="warning"
+              narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('transition_risk', 'high')}
+            >
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium">Policy Risk</p>
+                    <p className="font-medium text-foreground">Policy Risk</p>
                     <p className="text-xs text-muted-foreground">Regulatory changes impact</p>
                   </div>
                   <Badge variant="destructive">High</Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium">Technology Risk</p>
+                    <p className="font-medium text-foreground">Technology Risk</p>
                     <p className="text-xs text-muted-foreground">EV adoption disruption</p>
                   </div>
                   <Badge variant="secondary">Medium</Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium">Market Risk</p>
+                    <p className="font-medium text-foreground">Market Risk</p>
                     <p className="text-xs text-muted-foreground">Consumer preference shifts</p>
                   </div>
                   <Badge variant="secondary">Medium</Badge>
                 </div>
               </div>
-            </div>
+            </NarrativeInsightCard>
 
-            <div className="space-y-4">
-              <h4 className="font-medium">Physical Risk Exposure</h4>
+            <NarrativeInsightCard
+              title="Physical Risk Exposure"
+              variant="info"
+              narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk', 'low')}
+            >
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium">Acute Risks</p>
+                    <p className="font-medium text-foreground">Acute Risks</p>
                     <p className="text-xs text-muted-foreground">Extreme weather events</p>
                   </div>
                   <Badge variant="outline">Low</Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium">Chronic Risks</p>
+                    <p className="font-medium text-foreground">Chronic Risks</p>
                     <p className="text-xs text-muted-foreground">Long-term climate changes</p>
                   </div>
                   <Badge variant="outline">Low</Badge>
                 </div>
               </div>
-            </div>
+            </NarrativeInsightCard>
           </div>
         </CardContent>
       </Card>
@@ -787,15 +833,15 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="p-4 border-l-4 border-l-orange-500 bg-orange-50">
-              <h5 className="font-medium text-orange-800">Priority Action</h5>
-              <p className="text-sm text-orange-700 mt-1">
+            <div className="p-4 border-l-4 border-l-orange-500 bg-orange-500/10 dark:bg-orange-400/10">
+              <h5 className="font-medium text-orange-700 dark:text-orange-300">Priority Action</h5>
+              <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
                 Diversify portfolio towards low-emission vehicles to reduce transition risk exposure
               </p>
             </div>
-            <div className="p-4 border-l-4 border-l-blue-500 bg-blue-50">
-              <h5 className="font-medium text-blue-800">Medium-term Strategy</h5>
-              <p className="text-sm text-blue-700 mt-1">
+            <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
+              <h5 className="font-medium text-blue-700 dark:text-blue-300">Medium-term Strategy</h5>
+              <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
                 Develop green financing products to capture EV market opportunities
               </p>
             </div>
@@ -821,38 +867,50 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20">
-              <CardContent className="pt-4">
-                <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Orderly Transition</h4>
+            <NarrativeInsightCard
+              title="Orderly Transition"
+              variant="success"
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative('orderly', 12)}
+              className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20"
+            >
+              <div className="text-center">
                 <p className="text-2xl font-bold text-green-800 dark:text-green-200">+12%</p>
                 <p className="text-xs text-green-600 dark:text-green-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Early policy action enables smooth transition to net-zero
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </NarrativeInsightCard>
 
-            <Card className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20">
-              <CardContent className="pt-4">
-                <h4 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Disorderly Transition</h4>
+            <NarrativeInsightCard
+              title="Disorderly Transition"
+              variant="warning"
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative('disorderly', -8)}
+              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20"
+            >
+              <div className="text-center">
                 <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
                 <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Late policy action leads to higher transition costs
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </NarrativeInsightCard>
 
-            <Card className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20">
-              <CardContent className="pt-4">
-                <h4 className="font-medium text-red-700 dark:text-red-300 mb-2">Hot House World</h4>
+            <NarrativeInsightCard
+              title="Hot House World"
+              variant="warning"
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative('hothouse', -15)}
+              className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20"
+            >
+              <div className="text-center">
                 <p className="text-2xl font-bold text-red-800 dark:text-red-200">-15%</p>
                 <p className="text-xs text-red-600 dark:text-red-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Limited climate action leads to severe physical risks
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </NarrativeInsightCard>
           </div>
         </CardContent>
       </Card>
@@ -963,64 +1021,57 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
 
       <div className="space-y-4">
         {anomalies.map((anomaly, index) => (
-          <Card key={index} className="hover:shadow-md transition-all duration-200">
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${anomaly.severity === 'high' ? 'bg-red-100 text-red-700' :
-                    anomaly.severity === 'medium' ? 'bg-orange-100 text-orange-700' :
-                      'bg-blue-100 text-blue-700'
-                    }`}>
-                    <AlertTriangle className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{anomaly.id}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge
-                        variant={anomaly.severity === 'high' ? 'destructive' :
-                          anomaly.severity === 'medium' ? 'secondary' : 'outline'}
-                        className="text-xs"
-                      >
-                        {anomaly.severity} severity
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {anomaly.type}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {anomaly.confidence} confidence
-                      </Badge>
-                    </div>
-                  </div>
+          <NarrativeInsightCard
+            key={index}
+            title={`${anomaly.id} - ${anomaly.type}`}
+            variant={anomaly.severity === 'high' ? 'warning' : anomaly.severity === 'medium' ? 'info' : 'default'}
+            narrative={contextualNarrativeService.generateAnomalyNarrative(anomaly)}
+            className="hover:shadow-md transition-all duration-200"
+          >
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant={anomaly.severity === 'high' ? 'destructive' :
+                      anomaly.severity === 'medium' ? 'secondary' : 'outline'}
+                    className="text-xs"
+                  >
+                    {anomaly.severity} severity
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {anomaly.type}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {anomaly.confidence} confidence
+                  </Badge>
                 </div>
                 <Button variant="outline" size="sm">
                   Investigate
                 </Button>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">{anomaly.description}</p>
+              <p className="text-sm text-muted-foreground">{anomaly.description}</p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium">Impact: </span>
-                    <span className="text-muted-foreground">{anomaly.impact}</span>
-                  </div>
-                  <div>
-                    <span className="font-medium">Confidence: </span>
-                    <span className="text-muted-foreground">{anomaly.confidence}</span>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-foreground">Impact: </span>
+                  <span className="text-muted-foreground">{anomaly.impact}</span>
                 </div>
-
-                <div className="bg-muted/50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="font-medium text-sm">Recommended Action:</span>
-                  </div>
-                  <p className="text-sm text-green-700">{anomaly.recommendation}</p>
+                <div>
+                  <span className="font-medium text-foreground">Confidence: </span>
+                  <span className="text-muted-foreground">{anomaly.confidence}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="bg-muted/50 p-3 rounded-lg border border-border/50">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <span className="font-medium text-sm text-foreground">Recommended Action:</span>
+                </div>
+                <p className="text-sm text-green-700 dark:text-green-300">{anomaly.recommendation}</p>
+              </div>
+            </div>
+          </NarrativeInsightCard>
         ))}
       </div>
     </div>
