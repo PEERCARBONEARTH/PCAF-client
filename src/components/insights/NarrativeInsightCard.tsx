@@ -1,19 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
-  ChevronDown, 
-  ChevronUp, 
   BookOpen, 
   Lightbulb, 
   AlertTriangle, 
-  TrendingUp,
-  FileText,
-  ExternalLink
+  TrendingUp
 } from 'lucide-react';
 import { ContextualNarrative } from '@/services/contextual-narrative-service';
+import AINavigationPopup from '@/components/ui/ai-narrative-popup';
 
 interface NarrativeInsightCardProps {
   title: string;
@@ -30,8 +25,6 @@ export function NarrativeInsightCard({
   variant = 'default',
   className = '' 
 }: NarrativeInsightCardProps) {
-  const [isNarrativeOpen, setIsNarrativeOpen] = useState(false);
-
   const variantStyles = {
     default: 'border-border',
     warning: 'border-orange-200 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20',
@@ -57,23 +50,9 @@ export function NarrativeInsightCard({
             {title}
           </CardTitle>
           {narrative && (
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">
-                {Math.round(narrative.confidence * 100)}% confidence
-              </Badge>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsNarrativeOpen(!isNarrativeOpen)}
-                className="h-8 w-8 p-0"
-              >
-                {isNarrativeOpen ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+            <Badge variant="outline" className="text-xs">
+              {Math.round(narrative.confidence * 100)}% confidence
+            </Badge>
           )}
         </div>
       </CardHeader>
@@ -82,110 +61,16 @@ export function NarrativeInsightCard({
         {/* Main content */}
         {children}
 
-        {/* Narrative explanation */}
+        {/* AI Narrative Popup */}
         {narrative && (
-          <Collapsible open={isNarrativeOpen} onOpenChange={setIsNarrativeOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full justify-between">
-                <span className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  What does this mean?
-                </span>
-                {isNarrativeOpen ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-            
-            <CollapsibleContent className="mt-4 space-y-4">
-              <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-                {/* Summary */}
-                <div className="mb-3">
-                  <h5 className="font-medium text-sm text-foreground mb-2 flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4 text-primary" />
-                    Summary
-                  </h5>
-                  <p className="text-sm text-muted-foreground">{narrative.summary}</p>
-                </div>
-
-                {/* Detailed explanation */}
-                <div className="mb-3">
-                  <h5 className="font-medium text-sm text-foreground mb-2">Explanation</h5>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {narrative.explanation}
-                  </p>
-                </div>
-
-                {/* Implications */}
-                {narrative.implications.length > 0 && (
-                  <div className="mb-3">
-                    <h5 className="font-medium text-sm text-foreground mb-2 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-orange-500" />
-                      Key Implications
-                    </h5>
-                    <ul className="space-y-1">
-                      {narrative.implications.map((implication, index) => (
-                        <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0" />
-                          {implication}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Actionable insights */}
-                {narrative.actionableInsights.length > 0 && (
-                  <div className="mb-3">
-                    <h5 className="font-medium text-sm text-foreground mb-2 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                      Recommended Actions
-                    </h5>
-                    <ul className="space-y-1">
-                      {narrative.actionableInsights.map((insight, index) => (
-                        <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0" />
-                          {insight}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Methodology */}
-                {narrative.methodology && (
-                  <div className="mb-3">
-                    <h5 className="font-medium text-sm text-foreground mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-500" />
-                      Methodology
-                    </h5>
-                    <p className="text-xs text-muted-foreground italic">
-                      {narrative.methodology}
-                    </p>
-                  </div>
-                )}
-
-                {/* Sources */}
-                {narrative.sources.length > 0 && (
-                  <div>
-                    <h5 className="font-medium text-sm text-foreground mb-2 flex items-center gap-2">
-                      <ExternalLink className="h-4 w-4 text-purple-500" />
-                      Sources
-                    </h5>
-                    <div className="flex flex-wrap gap-1">
-                      {narrative.sources.map((source, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {source}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+          <AINavigationPopup
+            narrative={narrative}
+            buttonText="What does this mean?"
+            buttonVariant="outline"
+            buttonSize="sm"
+            popupWidth="w-96"
+            className="w-full"
+          />
         )}
       </CardContent>
     </Card>

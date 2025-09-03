@@ -137,12 +137,10 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold">
-                {evPercentage?.toFixed(1) || '0.0'}%
-              </div>
+              <div className="text-2xl font-bold">{evPercentage?.toFixed(1) || '0.0'}%</div>
               <p className="text-sm text-muted-foreground">Electric vehicles</p>
             </div>
-            <Zap className="h-8 w-8 text-green-500" />
+            <Zap className="h-8 w-8 text-muted-foreground" />
           </div>
         </NarrativeInsightCard>
 
@@ -157,7 +155,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
               <div className="text-2xl font-bold">{totalEmissions?.toFixed(1) || '0.0'}</div>
               <p className="text-sm text-muted-foreground">tCO₂e total</p>
             </div>
-            <Activity className="h-8 w-8 text-orange-500" />
+            <Activity className="h-8 w-8 text-muted-foreground" />
           </div>
         </NarrativeInsightCard>
 
@@ -174,7 +172,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
                 DQ Score: {safeDataQuality.toFixed(1)}/5
               </p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-red-500" />
+            <AlertTriangle className="h-8 w-8 text-muted-foreground" />
           </div>
         </NarrativeInsightCard>
       </div>
@@ -385,9 +383,7 @@ function DashboardContent({
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <div
-                  className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}
-                >
+                <div className={`font-semibold flex items-center gap-1 text-muted-foreground`}>
                   {emissionsTrend < 0 ? (
                     <TrendingDown className="h-3 w-3" />
                   ) : (
@@ -488,7 +484,7 @@ function DashboardContent({
               </>
             ) : (
               <div className="text-center py-4">
-                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">No anomalies detected</p>
               </div>
             )}
@@ -615,9 +611,7 @@ function AdvancedAnalyticsDashboard({
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary">
-                5 insights generated
-              </Badge>
+              <Badge variant="secondary">5 insights generated</Badge>
               <Button
                 variant="outline"
                 size="sm"
@@ -1192,9 +1186,7 @@ function StrategicInsights({
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{risk.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {risk.recommendation}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{risk.recommendation}</p>
                     </div>
                     <Badge variant={risk.severity === 'high' ? 'destructive' : 'secondary'}>
                       {risk.severity}
@@ -1252,13 +1244,9 @@ function StrategicInsights({
                       <p className="text-sm text-muted-foreground mb-1">
                         {opportunity.description}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {opportunity.recommendation}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{opportunity.recommendation}</p>
                     </div>
-                    <Badge variant="outline">
-                      Opportunity
-                    </Badge>
+                    <Badge variant="outline">Opportunity</Badge>
                   </div>
                   {opportunity.potentialMarket && (
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -1312,13 +1300,9 @@ function StrategicInsights({
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{segment.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {segment.recommendation}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{segment.recommendation}</p>
                     </div>
-                    <Badge variant="outline">
-                      Segment
-                    </Badge>
+                    <Badge variant="outline">Segment</Badge>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span>Size: {segment.segmentSize} customers</span>
@@ -1366,13 +1350,9 @@ function StrategicInsights({
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{esg.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {esg.recommendation}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{esg.recommendation}</p>
                     </div>
-                    <Badge variant="outline">
-                      ESG
-                    </Badge>
+                    <Badge variant="outline">ESG</Badge>
                   </div>
                   {esg.currentEmissions && (
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -1429,13 +1409,9 @@ function StrategicInsights({
                       <p className="text-xs text-muted-foreground mb-2">
                         {partnership.opportunity}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {partnership.recommendation}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{partnership.recommendation}</p>
                     </div>
-                    <Badge variant="outline">
-                      Partnership
-                    </Badge>
+                    <Badge variant="outline">Partnership</Badge>
                   </div>
                   {(partnership.marketSize || partnership.dataPoints) && (
                     <div className="text-xs text-muted-foreground">
@@ -1553,9 +1529,7 @@ function EmissionsForecasts({
                       }}
                     />
                   </div>
-                  <span className="font-medium">
-                    245 tCO2e (-8.6%)
-                  </span>
+                  <span className="font-medium">245 tCO2e (-8.6%)</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
@@ -1571,9 +1545,7 @@ function EmissionsForecasts({
                       }}
                     />
                   </div>
-                  <span className="font-medium">
-                    220 tCO2e (-17.9%)
-                  </span>
+                  <span className="font-medium">220 tCO2e (-17.9%)</span>
                 </div>
               </div>
             </div>
@@ -1652,9 +1624,7 @@ function EmissionsForecasts({
             >
               <div className="text-center">
                 <p className="text-2xl font-bold">-25%</p>
-                <p className="text-xs text-muted-foreground">
-                  Emissions reduction by 2025
-                </p>
+                <p className="text-xs text-muted-foreground">Emissions reduction by 2025</p>
               </div>
             </NarrativeInsightCard>
 
@@ -1911,13 +1881,9 @@ function RiskAnalytics({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div
-              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
-            >
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p
-                  className="text-2xl font-bold"
-                >
+                <p className="text-2xl font-bold">
                   {riskAssessment.financialStabilityRisk.charAt(0).toUpperCase() +
                     riskAssessment.financialStabilityRisk.slice(1)}
                 </p>
@@ -1936,13 +1902,9 @@ function RiskAnalytics({
               <p className="text-xs text-muted-foreground">Financial Stability Risk</p>
             </div>
 
-            <div
-              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
-            >
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p
-                  className="text-2xl font-bold"
-                >
+                <p className="text-2xl font-bold">
                   {riskAssessment.liquidityRisk.charAt(0).toUpperCase() +
                     riskAssessment.liquidityRisk.slice(1)}
                 </p>
@@ -1961,13 +1923,9 @@ function RiskAnalytics({
               <p className="text-xs text-muted-foreground">Liquidity Risk</p>
             </div>
 
-            <div
-              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
-            >
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p
-                  className="text-2xl font-bold"
-                >
+                <p className="text-2xl font-bold">
                   {riskAssessment.creditRisk.charAt(0).toUpperCase() +
                     riskAssessment.creditRisk.slice(1)}
                 </p>
@@ -2093,10 +2051,8 @@ function RiskAnalytics({
             )}
           >
             <div className="text-center py-6">
-              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
-              <p className="font-medium text-green-700 dark:text-green-300 mb-2">
-                Low Physical Risk Exposure
-              </p>
+              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+              <p className="font-medium text-muted-foreground mb-2">Low Physical Risk Exposure</p>
               <p className="text-sm text-muted-foreground">
                 Your portfolio shows good geographic diversification with limited exposure to acute
                 climate risks.
@@ -2117,15 +2073,13 @@ function RiskAnalytics({
         <CardContent>
           <div className="space-y-4">
             {/* Risk Assessment and Disclosure */}
-            <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
-              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">
-                Assessment and Disclosure
-              </h5>
-              <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+            <div className="p-4 border-l-4 border-l-border bg-muted/20">
+              <h5 className="font-medium text-foreground mb-2">Assessment and Disclosure</h5>
+              <p className="text-sm text-muted-foreground mb-2">
                 Integrate climate-related risks into existing risk management frameworks as required
                 by financial authorities.
               </p>
-              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+              <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• Conduct comprehensive climate risk assessments quarterly</li>
                 <li>• Implement transparent stakeholder disclosure processes</li>
                 <li>• Align with Bank of England and ECB Banking Supervision guidelines</li>
@@ -2135,9 +2089,7 @@ function RiskAnalytics({
             {/* Priority Actions based on identified risks */}
             {riskAssessment.transitionRisks.some(r => r.severity === 'high') && (
               <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
-                <h5 className="font-medium mb-2">
-                  Critical Priority
-                </h5>
+                <h5 className="font-medium mb-2">Critical Priority</h5>
                 <p className="text-sm text-muted-foreground mb-2">
                   High transition risk exposure requires immediate portfolio diversification.
                 </p>
@@ -2151,9 +2103,7 @@ function RiskAnalytics({
 
             {riskAssessment.transitionRisks.some(r => r.type === 'Technology Risk') && (
               <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
-                <h5 className="font-medium mb-2">
-                  Technology Transition
-                </h5>
+                <h5 className="font-medium mb-2">Technology Transition</h5>
                 <p className="text-sm text-muted-foreground mb-2">
                   Prepare for EV technology disruption affecting high-emission vehicle values.
                 </p>
@@ -2166,14 +2116,12 @@ function RiskAnalytics({
             )}
 
             {riskAssessment.physicalRisks.length > 0 && (
-              <div className="p-4 border-l-4 border-l-purple-500 bg-purple-500/10 dark:bg-purple-400/10">
-                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">
-                  Physical Risk Management
-                </h5>
-                <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/30">
+                <h5 className="font-medium text-foreground mb-2">Physical Risk Management</h5>
+                <p className="text-sm text-muted-foreground mb-2">
                   Address geographic concentration and climate-related physical risks.
                 </p>
-                <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Diversify lending across different geographic regions</li>
                   <li>• Assess borrower exposure to extreme weather events</li>
                   <li>• Consider climate factors in underwriting processes</li>
@@ -2183,9 +2131,7 @@ function RiskAnalytics({
 
             {/* Scenario Analysis */}
             <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
-              <h5 className="font-medium mb-2">
-                Scenario Analysis
-              </h5>
+              <h5 className="font-medium mb-2">Scenario Analysis</h5>
               <p className="text-sm text-muted-foreground mb-2">
                 Use scenario analysis to measure potential financial impacts and test portfolio
                 resilience.
@@ -2199,15 +2145,13 @@ function RiskAnalytics({
 
             {/* Sustainable Finance Opportunities */}
             {riskAssessment.portfolioMetrics?.evPercentage < 15 && (
-              <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
-                <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">
-                  Sustainable Finance
-                </h5>
-                <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/20">
+                <h5 className="font-medium text-foreground mb-2">Sustainable Finance</h5>
+                <p className="text-sm text-muted-foreground mb-2">
                   Mobilize capital to support the transition to a green economy and capture new
                   opportunities.
                 </p>
-                <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Develop green loan products with preferential rates</li>
                   <li>• Finance sustainable transportation projects</li>
                   <li>• Create carbon offset and credit programs</li>
@@ -2558,13 +2502,7 @@ function ClimateScenarios({
             >
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <p
-                    className={`text-2xl font-bold ${
-                      scenarioAnalysis.orderly.impact > 0
-                        ? 'text-green-800 dark:text-green-200'
-                        : 'text-orange-800 dark:text-orange-200'
-                    }`}
-                  >
+                  <p className="text-2xl font-bold text-foreground">
                     {scenarioAnalysis.orderly.impact > 0 ? '+' : ''}
                     {scenarioAnalysis.orderly.impact}%
                   </p>
@@ -2581,15 +2519,7 @@ function ClimateScenarios({
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p
-                  className={`text-xs mb-3 ${
-                    scenarioAnalysis.orderly.impact > 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-orange-600 dark:text-orange-400'
-                  }`}
-                >
-                  Portfolio value impact
-                </p>
+                <p className="text-xs mb-3 text-muted-foreground">Portfolio value impact</p>
                 <div className="space-y-1">
                   {scenarioAnalysis.orderly.keyDrivers.map((driver, index) => (
                     <p key={index} className="text-xs text-muted-foreground">
@@ -2611,7 +2541,7 @@ function ClimateScenarios({
             >
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">
+                  <p className="text-2xl font-bold text-foreground">
                     {scenarioAnalysis.disorderly.impact}%
                   </p>
                   <AIContextTooltip
@@ -2627,9 +2557,7 @@ function ClimateScenarios({
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">
-                  Portfolio value impact
-                </p>
+                <p className="text-xs text-muted-foreground mb-3">Portfolio value impact</p>
                 <div className="space-y-1">
                   {scenarioAnalysis.disorderly.keyDrivers.map((driver, index) => (
                     <p key={index} className="text-xs text-muted-foreground">
@@ -2647,11 +2575,11 @@ function ClimateScenarios({
                 'hothouse',
                 scenarioAnalysis.hothouse.impact
               )}
-              className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              className="bg-muted/30 border-border hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <p className="text-2xl font-bold text-red-800 dark:text-red-200">
+                  <p className="text-2xl font-bold text-foreground">
                     {scenarioAnalysis.hothouse.impact}%
                   </p>
                   <AIContextTooltip
@@ -2667,9 +2595,7 @@ function ClimateScenarios({
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p className="text-xs text-red-600 dark:text-red-400 mb-3">
-                  Portfolio value impact
-                </p>
+                <p className="text-xs text-muted-foreground mb-3">Portfolio value impact</p>
                 <div className="space-y-1">
                   {scenarioAnalysis.hothouse.keyDrivers.map((driver, index) => (
                     <p key={index} className="text-xs text-muted-foreground">
@@ -2695,14 +2621,14 @@ function ClimateScenarios({
           <div className="space-y-4">
             {/* Orderly Transition Strategy */}
             {scenarioAnalysis.orderly.impact > 5 && (
-              <div className="p-4 border-l-4 border-l-green-500 bg-green-500/10 dark:bg-green-400/10">
-                <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/20">
+                <h5 className="font-medium text-foreground mb-2">
                   Capitalize on Transition Upside
                 </h5>
-                <p className="text-sm text-green-600 dark:text-green-400 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Your portfolio is well-positioned to benefit from orderly transition scenarios.
                 </p>
-                <ul className="text-xs text-green-600 dark:text-green-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Accelerate green financing programs to maximize transition benefits</li>
                   <li>
                     • Market your sustainable finance capabilities to attract ESG-focused customers
@@ -2714,14 +2640,14 @@ function ClimateScenarios({
 
             {/* Disorderly Transition Protection */}
             {scenarioAnalysis.disorderly.impact < -10 && (
-              <div className="p-4 border-l-4 border-l-red-500 bg-red-500/10 dark:bg-red-400/10">
-                <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/30">
+                <h5 className="font-medium text-foreground mb-2">
                   Critical: Disorderly Transition Risk
                 </h5>
-                <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Your portfolio faces significant downside risk in disorderly transition scenarios.
                 </p>
-                <ul className="text-xs text-red-600 dark:text-red-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Implement stress testing for sudden policy changes</li>
                   <li>• Develop transition financing programs for existing ICE borrowers</li>
                   <li>• Consider portfolio rebalancing toward lower-emission vehicles</li>
@@ -2731,14 +2657,12 @@ function ClimateScenarios({
 
             {/* Physical Risk Management */}
             {scenarioAnalysis.hothouse.impact < -20 && (
-              <div className="p-4 border-l-4 border-l-purple-500 bg-purple-500/10 dark:bg-purple-400/10">
-                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">
-                  Physical Risk Mitigation
-                </h5>
-                <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/30">
+                <h5 className="font-medium text-foreground mb-2">Physical Risk Mitigation</h5>
+                <p className="text-sm text-muted-foreground mb-2">
                   High exposure to physical climate risks requires proactive management.
                 </p>
-                <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Diversify lending across different geographic regions</li>
                   <li>• Assess borrower exposure to extreme weather events</li>
                   <li>• Consider climate factors in underwriting and pricing</li>
@@ -2748,15 +2672,15 @@ function ClimateScenarios({
 
             {/* Data Quality Enhancement */}
             {scenarioAnalysis.portfolioMetrics?.avgDataQuality > 4.0 && (
-              <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
-                <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">
+              <div className="p-4 border-l-4 border-l-border bg-muted/20">
+                <h5 className="font-medium text-foreground mb-2">
                   Improve Scenario Modeling Accuracy
                 </h5>
-                <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Better data quality will improve scenario analysis confidence and regulatory
                   compliance.
                 </p>
-                <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Implement systematic data collection processes</li>
                   <li>• Invest in staff training and data management systems</li>
                   <li>• Create incentives for customers to provide better data</li>
@@ -2768,14 +2692,12 @@ function ClimateScenarios({
             {scenarioAnalysis.orderly.impact > 0 &&
               scenarioAnalysis.disorderly.impact > -10 &&
               scenarioAnalysis.hothouse.impact > -20 && (
-                <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
-                  <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">
-                    Well-Balanced Portfolio
-                  </h5>
-                  <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
+                <div className="p-4 border-l-4 border-l-border bg-muted/20">
+                  <h5 className="font-medium text-foreground mb-2">Well-Balanced Portfolio</h5>
+                  <p className="text-sm text-muted-foreground mb-2">
                     Your portfolio demonstrates good resilience across multiple climate scenarios.
                   </p>
-                  <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
+                  <ul className="text-xs text-muted-foreground space-y-1">
                     <li>• Maintain current diversification strategy</li>
                     <li>• Continue gradual transition toward cleaner vehicles</li>
                     <li>• Monitor scenario developments and adjust strategy accordingly</li>
@@ -2851,7 +2773,7 @@ function AnomalyDetection({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-red-600">2</p>
+                <p className="text-2xl font-bold text-foreground">2</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
                   metricValue="2"
@@ -2868,7 +2790,7 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-orange-600">1</p>
+                <p className="text-2xl font-bold text-foreground">1</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
                   metricValue="1"
@@ -2885,7 +2807,7 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-blue-600">1</p>
+                <p className="text-2xl font-bold text-foreground">1</p>
                 <AIContextTooltip
                   metricType="risk_analytics"
                   metricValue="1"
@@ -2902,7 +2824,7 @@ function AnomalyDetection({
             </div>
             <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-2xl font-bold text-green-600">98.4%</p>
+                <p className="text-2xl font-bold text-foreground">98.4%</p>
                 <AIContextTooltip
                   metricType="portfolio_health"
                   metricValue="98.4"
@@ -2978,12 +2900,10 @@ function AnomalyDetection({
 
               <div className="bg-muted/50 p-3 rounded-lg border border-border/50">
                 <div className="flex items-center gap-2 mb-1">
-                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-sm text-foreground">Recommended Action:</span>
                 </div>
-                <p className="text-sm text-green-700 dark:text-green-300">
-                  {anomaly.recommendation}
-                </p>
+                <p className="text-sm text-muted-foreground">{anomaly.recommendation}</p>
               </div>
             </div>
           </NarrativeInsightCard>
