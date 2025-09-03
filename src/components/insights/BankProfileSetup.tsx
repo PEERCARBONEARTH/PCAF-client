@@ -93,8 +93,9 @@ export function BankProfileSetup({ onComplete, onCancel }: BankProfileSetupProps
             setProfile(prev => ({
                 ...prev,
                 businessGoals: [...(prev.businessGoals || []), {
-                    ...newGoal,
-                    priority: newGoal.priority as 'high' | 'medium' | 'low'
+                    type: newGoal.type as 'sustainability' | 'growth' | 'compliance' | 'efficiency' | 'risk_management',
+                    priority: newGoal.priority as 'high' | 'medium' | 'low',
+                    target: newGoal.target
                 }]
             }));
             setNewGoal({ type: 'sustainability', priority: 'medium', target: '' });
@@ -232,7 +233,7 @@ export function BankProfileSetup({ onComplete, onCancel }: BankProfileSetupProps
                             value={newMarket}
                             onChange={(e) => setNewMarket(e.target.value)}
                             placeholder="e.g., Regional Metro Area"
-                            onKeyPress={(e) => e.key === 'Enter' && addMarket()}
+                            onKeyDown={(e) => e.key === 'Enter' && addMarket()}
                         />
                         <Button onClick={addMarket} size="sm">
                             <Plus className="h-4 w-4" />
@@ -287,7 +288,7 @@ export function BankProfileSetup({ onComplete, onCancel }: BankProfileSetupProps
                                 value={newGoal.target}
                                 onChange={(e) => setNewGoal(prev => ({ ...prev, target: e.target.value }))}
                                 placeholder="Target description"
-                                onKeyPress={(e) => e.key === 'Enter' && addGoal()}
+                                onKeyDown={(e) => e.key === 'Enter' && addGoal()}
                             />
                             <Button onClick={addGoal} size="sm">
                                 <Plus className="h-4 w-4" />
@@ -350,7 +351,7 @@ export function BankProfileSetup({ onComplete, onCancel }: BankProfileSetupProps
                                 value={newChallenge.description}
                                 onChange={(e) => setNewChallenge(prev => ({ ...prev, description: e.target.value }))}
                                 placeholder="Challenge description"
-                                onKeyPress={(e) => e.key === 'Enter' && addChallenge()}
+                                onKeyDown={(e) => e.key === 'Enter' && addChallenge()}
                             />
                             <Button onClick={addChallenge} size="sm">
                                 <Plus className="h-4 w-4" />

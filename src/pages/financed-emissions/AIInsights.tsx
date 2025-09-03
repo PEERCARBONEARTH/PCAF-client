@@ -29,10 +29,11 @@ import { aiAnalyticsNarrativeBuilder, NarrativeContext, InsightNarrative } from 
 import { narrativePipelineIntegration, NarrativeInsightCard } from "@/services/narrative-pipeline-integration";
 import { contextualNarrativeService } from "@/services/contextual-narrative-service";
 import NarrativeInsightCard from "@/components/insights/NarrativeInsightCard";
-import { dynamicInsightsEngine, DynamicInsight } from "@/services/dynamic-insights-engine";
+import { dynamicInsightsEngine, DynamicInsight, BankProfile } from "@/services/dynamic-insights-engine";
 import { bankProfileService } from "@/services/bank-profile-service";
 import DynamicInsightCard from "@/components/insights/DynamicInsightCard";
 import AIContextTooltip from "@/components/insights/AIContextTooltip";
+import BankProfileSetup from "@/components/insights/BankProfileSetup";
 
 // Executive Summary Component
 function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
@@ -140,15 +141,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
             <AlertTriangle className="h-8 w-8 text-red-500" />
           </div>
         </NarrativeInsightCard>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className={`text-2xl font-bold ${riskColor}`}>{riskLevel}</div>
-          <p className="text-sm text-muted-foreground">
-            DQ Score: {safeDataQuality.toFixed(1)}/5
-          </p>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -247,7 +240,7 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
             emissionsTrend: emissionsTrend,
             portfolioData: portfolioData
           })}
-          className="cursor-pointer"
+          className="cursor-pointer hover:shadow-lg transition-all duration-200"
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -255,22 +248,59 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
               <Badge variant="outline">{safeEvPercentage > 30 ? 'Good' : safeEvPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
             </div>
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm items-center group">
                 <span>EV Adoption Progress</span>
-                <span className="font-medium">{safeEvPercentage.toFixed(1)}%</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{safeEvPercentage.toFixed(1)}%</span>
+                  <AIContextTooltip
+                    metricType="ev_percentage"
+                    metricValue={safeEvPercentage.toFixed(1)}
+                    additionalData={{
+                      portfolioSize: Array.isArray(portfolioData?.loans) ? portfolioData.loans.length : 247,
+                      industryBenchmark: 12.5,
+                      trend: 'improving'
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
               </div>
               <Progress value={safeEvPercentage} className="h-2" />
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-muted-foreground">Emissions Trend</div>
+              <div className="group">
+                <div className="flex items-center gap-2">
+                  <div className="text-muted-foreground">Emissions Trend</div>
+                  <AIContextTooltip
+                    metricType="emissions"
+                    metricValue={emissionsTrend}
+                    additionalData={{
+                      type: 'trend_analysis',
+                      direction: emissionsTrend < 0 ? 'declining' : 'increasing',
+                      timeframe: '12 months',
+                      confidence: 0.85
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
                 <div className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}>
                   {emissionsTrend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
                   {Math.abs(emissionsTrend || 0).toFixed(1)}%
                 </div>
               </div>
-              <div>
-                <div className="text-muted-foreground">Risk Level</div>
+              <div className="group">
+                <div className="flex items-center gap-2">
+                  <div className="text-muted-foreground">Risk Level</div>
+                  <AIContextTooltip
+                    metricType="risk_analytics"
+                    metricValue="medium"
+                    additionalData={{
+                      riskType: 'overall_portfolio_risk',
+                      severity: 'medium',
+                      keyFactors: ['Transition risk', 'Data quality', 'Market volatility']
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
                 <div className="font-semibold">Medium</div>
               </div>
             </div>
@@ -300,14 +330,28 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                 {anomalies.slice(0, 3).map((anomaly, index) => (
                   <div
                     key={index}
-                    className="p-3 border border-border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer"
+                    className="p-3 border border-border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer group"
                     onClick={() => {
                       // Could open detailed anomaly view
                       console.log('Anomaly clicked:', anomaly);
                     }}
                   >
                     <div className="flex items-start justify-between mb-1">
-                      <span className="text-sm font-medium">{anomaly.loanId}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{anomaly.loanId}</span>
+                        <AIContextTooltip
+                          metricType="risk_analytics"
+                          metricValue={anomaly.severity}
+                          additionalData={{
+                            riskType: 'anomaly',
+                            anomalyType: anomaly.type || 'data_quality',
+                            loanId: anomaly.loanId,
+                            description: anomaly.description,
+                            severity: anomaly.severity
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
+                      </div>
                       <Badge variant={anomaly.severity === 'high' ? 'destructive' : 'secondary'} className="text-xs">
                         {anomaly.severity}
                       </Badge>
@@ -474,8 +518,8 @@ function AdvancedAnalyticsDashboard({
             size="sm"
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex items-center gap-2 flex-1 justify-center ${activeTab === tab.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
           >
             <tab.icon className="h-4 w-4" />
@@ -502,16 +546,23 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
 }) {
   const [dynamicInsights, setDynamicInsights] = useState<DynamicInsight[]>([]);
   const [isLoadingInsights, setIsLoadingInsights] = useState(true);
+  const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
 
   // Load dynamic insights based on bank profile and portfolio data
   React.useEffect(() => {
     const loadDynamicInsights = async () => {
       setIsLoadingInsights(true);
       try {
-        // Initialize or load bank profile
+        // Check for existing bank profile
         let profile = bankProfileService.getCurrentProfile();
+        setHasProfile(!!profile);
+
         if (!profile) {
-          profile = bankProfileService.initializeDemoProfile();
+          // Don't initialize demo profile automatically - let user set up their own
+          setDynamicInsights([]);
+          setIsLoadingInsights(false);
+          return;
         }
 
         // Set up dynamic insights engine
@@ -540,6 +591,24 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
     // if (action.includes('EV')) navigate('/financed-emissions/settings');
   };
 
+  const handleProfileComplete = async (profile: BankProfile) => {
+    setShowProfileSetup(false);
+    setHasProfile(true);
+
+    // Reload insights with new profile
+    setIsLoadingInsights(true);
+    try {
+      dynamicInsightsEngine.setBankProfile(profile);
+      await dynamicInsightsEngine.updatePortfolioContext();
+      const insights = await dynamicInsightsEngine.generateDynamicInsights();
+      setDynamicInsights(insights);
+    } catch (error) {
+      console.error('Failed to reload insights after profile setup:', error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Strategic Overview Metrics */}
@@ -550,10 +619,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-medium text-green-700 dark:text-green-300">EV Adoption Rate</p>
-                  <AIContextTooltip 
-                    metricType="ev_percentage" 
+                  <AIContextTooltip
+                    metricType="ev_percentage"
                     metricValue="7.7"
-                    additionalData={{ 
+                    additionalData={{
                       industryAvg: 12.5,
                       trend: 'improving',
                       totalLoans: portfolioData?.totalLoans || 247
@@ -574,10 +643,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Emissions (tCO2e)</p>
-                  <AIContextTooltip 
-                    metricType="emissions" 
+                  <AIContextTooltip
+                    metricType="emissions"
                     metricValue="268"
-                    additionalData={{ 
+                    additionalData={{
                       trend: 'declining',
                       emissionIntensity: 2.1,
                       portfolioSize: portfolioData?.totalLoans || 247
@@ -598,10 +667,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Avg Data Quality</p>
-                  <AIContextTooltip 
-                    metricType="data_quality" 
+                  <AIContextTooltip
+                    metricType="data_quality"
                     metricValue="5.0"
-                    additionalData={{ 
+                    additionalData={{
                       target: 3.0,
                       complianceStatus: 'needs_improvement',
                       improvableLoans: Math.round((portfolioData?.totalLoans || 247) * 0.6)
@@ -635,18 +704,33 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               className="hover:shadow-lg transition-all duration-200"
             />
           ))
+        ) : !hasProfile ? (
+          showProfileSetup ? (
+            <BankProfileSetup
+              onComplete={handleProfileComplete}
+              onCancel={() => setShowProfileSetup(false)}
+            />
+          ) : (
+            <Card className="p-6 text-center">
+              <Brain className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">Personalized Insights Await</h3>
+              <p className="text-muted-foreground mb-4">
+                Set up your bank profile to unlock AI-powered insights tailored to your institution's goals and portfolio.
+              </p>
+              <Button onClick={() => setShowProfileSetup(true)}>
+                Setup Bank Profile
+              </Button>
+            </Card>
+          )
         ) : (
           <Card className="p-6 text-center">
             <Brain className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">No Insights Available</h3>
+            <h3 className="text-lg font-semibold mb-2">No Insights Generated</h3>
             <p className="text-muted-foreground mb-4">
-              Complete your bank profile to get personalized AI insights.
+              Unable to generate insights at this time. Please try refreshing or check your portfolio data.
             </p>
-            <Button onClick={() => {
-              // This would open a profile setup modal or navigate to settings
-              console.log('Setup profile clicked');
-            }}>
-              Setup Bank Profile
+            <Button onClick={() => window.location.reload()}>
+              Refresh Insights
             </Button>
           </Card>
         )}
@@ -675,16 +759,51 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
             <div className="space-y-4">
               <h4 className="font-medium text-foreground">12-Month Projection</h4>
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Current Baseline</span>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Current Baseline</span>
+                    <AIContextTooltip
+                      metricType="emissions"
+                      metricValue="268"
+                      additionalData={{
+                        type: 'baseline',
+                        portfolioSize: portfolioData?.totalLoans || 247,
+                        emissionIntensity: 1.08
+                      }}
+                    />
+                  </div>
                   <span className="font-medium text-foreground">268 tCO2e</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Projected (Q4 2024)</span>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Projected (Q4 2024)</span>
+                    <AIContextTooltip
+                      metricType="emissions"
+                      metricValue="245"
+                      additionalData={{
+                        type: 'forecast',
+                        reductionPercent: -8.6,
+                        confidence: 0.85,
+                        scenario: 'base_case'
+                      }}
+                    />
+                  </div>
                   <span className="font-medium text-green-600 dark:text-green-400">245 tCO2e (-8.6%)</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Best Case Scenario</span>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Best Case Scenario</span>
+                    <AIContextTooltip
+                      metricType="emissions"
+                      metricValue="220"
+                      additionalData={{
+                        type: 'optimistic_forecast',
+                        reductionPercent: -17.9,
+                        scenario: 'optimistic',
+                        keyDrivers: ['EV adoption', 'Fleet modernization']
+                      }}
+                    />
+                  </div>
                   <span className="font-medium text-green-700 dark:text-green-300">220 tCO2e (-17.9%)</span>
                 </div>
               </div>
@@ -693,17 +812,48 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
             <div className="space-y-4">
               <h4 className="font-medium text-foreground">Key Drivers</h4>
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-muted-foreground">EV adoption acceleration (+15% projected)</span>
+                  <span className="text-muted-foreground flex-1">EV adoption acceleration (+15% projected)</span>
+                  <AIContextTooltip
+                    metricType="ev_percentage"
+                    metricValue="15"
+                    additionalData={{
+                      type: 'growth_projection',
+                      currentRate: 7.7,
+                      targetRate: 22.7,
+                      timeframe: '12 months'
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-muted-foreground">Fleet modernization initiatives</span>
+                  <span className="text-muted-foreground flex-1">Fleet modernization initiatives</span>
+                  <AIContextTooltip
+                    metricType="portfolio_health"
+                    metricValue="modernization"
+                    additionalData={{
+                      type: 'fleet_upgrade',
+                      affectedLoans: Math.round((portfolioData?.totalLoans || 247) * 0.35),
+                      emissionReduction: 12
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-muted-foreground">Regulatory compliance requirements</span>
+                  <span className="text-muted-foreground flex-1">Regulatory compliance requirements</span>
+                  <AIContextTooltip
+                    metricType="risk_analytics"
+                    metricValue="compliance"
+                    additionalData={{
+                      type: 'regulatory_impact',
+                      complianceDeadline: '2025',
+                      riskLevel: 'medium'
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
             </div>
@@ -760,91 +910,477 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
 }
 
 function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
+  // Calculate dynamic risk metrics based on actual portfolio data
+  const calculatePortfolioRisks = () => {
+    if (!portfolioData?.loans || !Array.isArray(portfolioData.loans)) {
+      return {
+        transitionRisks: [],
+        physicalRisks: [],
+        financialStabilityRisk: 'medium',
+        liquidityRisk: 'low',
+        creditRisk: 'medium'
+      };
+    }
+
+    const loans = portfolioData.loans;
+    const totalLoans = loans.length;
+    const totalValue = loans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0), 0);
+
+    // Calculate ICE vehicle exposure (transition risk)
+    const iceLoans = loans.filter((loan: any) => {
+      const fuelType = loan.vehicle_details?.fuel_type?.toLowerCase();
+      return !fuelType || (!fuelType.includes('electric') && !fuelType.includes('hybrid'));
+    });
+    const iceExposure = totalLoans > 0 ? (iceLoans.length / totalLoans) * 100 : 0;
+
+    // Calculate high-emission vehicle concentration
+    const highEmissionTypes = ['truck', 'suv', 'pickup', 'van', 'commercial'];
+    const highEmissionLoans = loans.filter((loan: any) => {
+      const vehicleType = loan.vehicle_details?.type?.toLowerCase() || '';
+      return highEmissionTypes.some(type => vehicleType.includes(type));
+    });
+    const highEmissionExposure = totalLoans > 0 ? (highEmissionLoans.length / totalLoans) * 100 : 0;
+
+    // Calculate geographic concentration (physical risk proxy)
+    const stateConcentration = loans.reduce((acc: any, loan: any) => {
+      const state = loan.borrower_details?.state || loan.collateral_location?.state || 'Unknown';
+      acc[state] = (acc[state] || 0) + 1;
+      return acc;
+    }, {});
+    const maxStateConcentration = Math.max(...Object.values(stateConcentration)) as number;
+    const geographicConcentration = totalLoans > 0 ? (maxStateConcentration / totalLoans) * 100 : 0;
+
+    // Calculate data quality risk
+    const poorDataQualityLoans = loans.filter((loan: any) => {
+      const score = loan.emissions_data?.data_quality_score || loan.data_quality_assessment?.overall_score || 5;
+      return score >= 4;
+    });
+    const dataQualityRisk = totalLoans > 0 ? (poorDataQualityLoans.length / totalLoans) * 100 : 0;
+
+    // Determine transition risks based on portfolio composition
+    const transitionRisks = [];
+    
+    if (iceExposure > 70) {
+      transitionRisks.push({
+        type: 'Policy Risk',
+        severity: 'high' as const,
+        description: 'High ICE vehicle exposure to regulatory changes',
+        affectedLoans: iceLoans.length,
+        affectedValue: iceLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        timeframe: '2-5 years',
+        impact: 'Potential asset value decline and increased regulatory compliance costs'
+      });
+    } else if (iceExposure > 40) {
+      transitionRisks.push({
+        type: 'Policy Risk',
+        severity: 'medium' as const,
+        description: 'Moderate ICE vehicle exposure to regulatory changes',
+        affectedLoans: iceLoans.length,
+        affectedValue: iceLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        timeframe: '3-7 years',
+        impact: 'Gradual transition costs and potential market shifts'
+      });
+    }
+
+    if (highEmissionExposure > 50) {
+      transitionRisks.push({
+        type: 'Technology Risk',
+        severity: 'high' as const,
+        description: 'High concentration in high-emission vehicle types',
+        affectedLoans: highEmissionLoans.length,
+        affectedValue: highEmissionLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        timeframe: '1-3 years',
+        impact: 'EV technology disruption affecting resale values'
+      });
+    } else if (highEmissionExposure > 30) {
+      transitionRisks.push({
+        type: 'Technology Risk',
+        severity: 'medium' as const,
+        description: 'Moderate concentration in high-emission vehicles',
+        affectedLoans: highEmissionLoans.length,
+        affectedValue: highEmissionLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        timeframe: '2-5 years',
+        impact: 'Gradual market preference shifts toward cleaner alternatives'
+      });
+    }
+
+    // Market risk based on EV adoption rate
+    const evLoans = loans.filter((loan: any) => {
+      const fuelType = loan.vehicle_details?.fuel_type?.toLowerCase();
+      return fuelType && fuelType.includes('electric');
+    });
+    const evPercentage = totalLoans > 0 ? (evLoans.length / totalLoans) * 100 : 0;
+
+    if (evPercentage < 5) {
+      transitionRisks.push({
+        type: 'Market Risk',
+        severity: 'medium' as const,
+        description: 'Low EV adoption relative to market trends',
+        affectedLoans: totalLoans - evLoans.length,
+        affectedValue: totalValue - evLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        timeframe: '1-2 years',
+        impact: 'Consumer preference shifts toward sustainable vehicles'
+      });
+    }
+
+    // Determine physical risks based on geographic concentration
+    const physicalRisks = [];
+    
+    if (geographicConcentration > 40) {
+      physicalRisks.push({
+        type: 'Geographic Concentration',
+        severity: 'high' as const,
+        description: 'High concentration in single geographic area',
+        affectedLoans: maxStateConcentration,
+        timeframe: 'Ongoing',
+        impact: 'Exposure to regional climate events and natural disasters'
+      });
+    } else if (geographicConcentration > 25) {
+      physicalRisks.push({
+        type: 'Geographic Concentration',
+        severity: 'medium' as const,
+        description: 'Moderate geographic concentration',
+        affectedLoans: maxStateConcentration,
+        timeframe: 'Ongoing',
+        impact: 'Some exposure to regional climate risks'
+      });
+    }
+
+    // Assess overall financial stability risk
+    let financialStabilityRisk = 'low';
+    if (transitionRisks.some(r => r.severity === 'high') || physicalRisks.some(r => r.severity === 'high')) {
+      financialStabilityRisk = 'high';
+    } else if (transitionRisks.length > 1 || physicalRisks.length > 0) {
+      financialStabilityRisk = 'medium';
+    }
+
+    // Assess liquidity risk based on portfolio composition
+    let liquidityRisk = 'low';
+    if (dataQualityRisk > 40 || geographicConcentration > 50) {
+      liquidityRisk = 'medium';
+    }
+
+    // Assess credit risk based on transition exposure
+    let creditRisk = 'low';
+    if (iceExposure > 80 || highEmissionExposure > 60) {
+      creditRisk = 'high';
+    } else if (iceExposure > 50 || highEmissionExposure > 40) {
+      creditRisk = 'medium';
+    }
+
+    return {
+      transitionRisks,
+      physicalRisks,
+      financialStabilityRisk,
+      liquidityRisk,
+      creditRisk,
+      portfolioMetrics: {
+        iceExposure,
+        highEmissionExposure,
+        geographicConcentration,
+        dataQualityRisk,
+        evPercentage
+      }
+    };
+  };
+
+  const riskAssessment = calculatePortfolioRisks();
+
   return (
     <div className="space-y-6">
+      {/* Risk Overview Dashboard */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Portfolio Risk Assessment
+            Climate Risk Assessment
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Dynamic risk analysis based on your portfolio composition and geographic exposure
+          </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <NarrativeInsightCard
-              title="Transition Risk Analysis"
-              variant="warning"
-              narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('transition_risk', 'high')}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">Policy Risk</p>
-                    <p className="text-xs text-muted-foreground">Regulatory changes impact</p>
-                  </div>
-                  <Badge variant="destructive">High</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">Technology Risk</p>
-                    <p className="text-xs text-muted-foreground">EV adoption disruption</p>
-                  </div>
-                  <Badge variant="secondary">Medium</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">Market Risk</p>
-                    <p className="text-xs text-muted-foreground">Consumer preference shifts</p>
-                  </div>
-                  <Badge variant="secondary">Medium</Badge>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className={`text-center p-4 border rounded-lg ${
+              riskAssessment.financialStabilityRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
+              riskAssessment.financialStabilityRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
+              'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
+            } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className={`text-2xl font-bold ${
+                  riskAssessment.financialStabilityRisk === 'high' ? 'text-red-600' :
+                  riskAssessment.financialStabilityRisk === 'medium' ? 'text-orange-600' :
+                  'text-green-600'
+                }`}>
+                  {riskAssessment.financialStabilityRisk.charAt(0).toUpperCase() + riskAssessment.financialStabilityRisk.slice(1)}
+                </p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue={riskAssessment.financialStabilityRisk}
+                  additionalData={{
+                    riskType: 'financial_stability',
+                    transitionRisks: riskAssessment.transitionRisks.length,
+                    physicalRisks: riskAssessment.physicalRisks.length,
+                    portfolioMetrics: riskAssessment.portfolioMetrics
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
               </div>
-            </NarrativeInsightCard>
+              <p className="text-xs text-muted-foreground">Financial Stability Risk</p>
+            </div>
 
-            <NarrativeInsightCard
-              title="Physical Risk Exposure"
-              variant="info"
-              narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk', 'low')}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">Acute Risks</p>
-                    <p className="text-xs text-muted-foreground">Extreme weather events</p>
-                  </div>
-                  <Badge variant="outline">Low</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">Chronic Risks</p>
-                    <p className="text-xs text-muted-foreground">Long-term climate changes</p>
-                  </div>
-                  <Badge variant="outline">Low</Badge>
-                </div>
+            <div className={`text-center p-4 border rounded-lg ${
+              riskAssessment.liquidityRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
+              riskAssessment.liquidityRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
+              'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
+            } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className={`text-2xl font-bold ${
+                  riskAssessment.liquidityRisk === 'high' ? 'text-red-600' :
+                  riskAssessment.liquidityRisk === 'medium' ? 'text-orange-600' :
+                  'text-green-600'
+                }`}>
+                  {riskAssessment.liquidityRisk.charAt(0).toUpperCase() + riskAssessment.liquidityRisk.slice(1)}
+                </p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue={riskAssessment.liquidityRisk}
+                  additionalData={{
+                    riskType: 'liquidity_risk',
+                    geographicConcentration: riskAssessment.portfolioMetrics?.geographicConcentration,
+                    dataQualityRisk: riskAssessment.portfolioMetrics?.dataQualityRisk
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
               </div>
-            </NarrativeInsightCard>
+              <p className="text-xs text-muted-foreground">Liquidity Risk</p>
+            </div>
+
+            <div className={`text-center p-4 border rounded-lg ${
+              riskAssessment.creditRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
+              riskAssessment.creditRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
+              'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
+            } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className={`text-2xl font-bold ${
+                  riskAssessment.creditRisk === 'high' ? 'text-red-600' :
+                  riskAssessment.creditRisk === 'medium' ? 'text-orange-600' :
+                  'text-green-600'
+                }`}>
+                  {riskAssessment.creditRisk.charAt(0).toUpperCase() + riskAssessment.creditRisk.slice(1)}
+                </p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue={riskAssessment.creditRisk}
+                  additionalData={{
+                    riskType: 'credit_risk',
+                    iceExposure: riskAssessment.portfolioMetrics?.iceExposure,
+                    highEmissionExposure: riskAssessment.portfolioMetrics?.highEmissionExposure
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Credit Risk</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Dynamic Risk Analysis */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Transition Risks - Only show if risks exist */}
+        {riskAssessment.transitionRisks.length > 0 && (
+          <NarrativeInsightCard
+            title="Transition Risk Analysis"
+            variant="warning"
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('transition_risk', 
+              riskAssessment.transitionRisks.some(r => r.severity === 'high') ? 'high' : 'medium')}
+          >
+            <div className="space-y-3">
+              {riskAssessment.transitionRisks.map((risk, index) => (
+                <div key={index} className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-foreground">{risk.type}</p>
+                      <AIContextTooltip
+                        metricType="risk_analytics"
+                        metricValue={risk.severity}
+                        additionalData={{
+                          riskType: risk.type.toLowerCase().replace(' ', '_'),
+                          severity: risk.severity,
+                          impact: risk.impact,
+                          timeframe: risk.timeframe,
+                          affectedLoans: risk.affectedLoans,
+                          affectedValue: risk.affectedValue
+                        }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">{risk.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>Affected: {risk.affectedLoans} loans</span>
+                      <span>Timeline: {risk.timeframe}</span>
+                    </div>
+                  </div>
+                  <Badge variant={risk.severity === 'high' ? 'destructive' : 'secondary'}>
+                    {risk.severity.charAt(0).toUpperCase() + risk.severity.slice(1)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </NarrativeInsightCard>
+        )}
+
+        {/* Physical Risks - Only show if risks exist */}
+        {riskAssessment.physicalRisks.length > 0 ? (
+          <NarrativeInsightCard
+            title="Physical Risk Exposure"
+            variant="info"
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk', 
+              riskAssessment.physicalRisks.some(r => r.severity === 'high') ? 'high' : 'medium')}
+          >
+            <div className="space-y-3">
+              {riskAssessment.physicalRisks.map((risk, index) => (
+                <div key={index} className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-foreground">{risk.type}</p>
+                      <AIContextTooltip
+                        metricType="risk_analytics"
+                        metricValue={risk.severity}
+                        additionalData={{
+                          riskType: risk.type.toLowerCase().replace(' ', '_'),
+                          severity: risk.severity,
+                          impact: risk.impact,
+                          timeframe: risk.timeframe,
+                          affectedLoans: risk.affectedLoans
+                        }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">{risk.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>Affected: {risk.affectedLoans} loans</span>
+                      <span>Timeline: {risk.timeframe}</span>
+                    </div>
+                  </div>
+                  <Badge variant={risk.severity === 'high' ? 'destructive' : 'secondary'}>
+                    {risk.severity.charAt(0).toUpperCase() + risk.severity.slice(1)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </NarrativeInsightCard>
+        ) : (
+          <NarrativeInsightCard
+            title="Physical Risk Exposure"
+            variant="success"
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk', 'low')}
+          >
+            <div className="text-center py-6">
+              <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
+              <p className="font-medium text-green-700 dark:text-green-300 mb-2">Low Physical Risk Exposure</p>
+              <p className="text-sm text-muted-foreground">
+                Your portfolio shows good geographic diversification with limited exposure to acute climate risks.
+              </p>
+            </div>
+          </NarrativeInsightCard>
+        )}
+      </div>
+
+      {/* Dynamic Risk Mitigation Recommendations */}
       <Card>
         <CardHeader>
-          <CardTitle>Risk Mitigation Recommendations</CardTitle>
+          <CardTitle>Risk Management Framework</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Tailored recommendations based on your portfolio's specific risk profile
+          </p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            <div className="p-4 border-l-4 border-l-orange-500 bg-orange-500/10 dark:bg-orange-400/10">
-              <h5 className="font-medium text-orange-700 dark:text-orange-300">Priority Action</h5>
-              <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                Diversify portfolio towards low-emission vehicles to reduce transition risk exposure
-              </p>
-            </div>
+          <div className="space-y-4">
+            {/* Risk Assessment and Disclosure */}
             <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
-              <h5 className="font-medium text-blue-700 dark:text-blue-300">Medium-term Strategy</h5>
-              <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                Develop green financing products to capture EV market opportunities
+              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Assessment and Disclosure</h5>
+              <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                Integrate climate-related risks into existing risk management frameworks as required by financial authorities.
               </p>
+              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                <li>• Conduct comprehensive climate risk assessments quarterly</li>
+                <li>• Implement transparent stakeholder disclosure processes</li>
+                <li>• Align with Bank of England and ECB Banking Supervision guidelines</li>
+              </ul>
             </div>
+
+            {/* Priority Actions based on identified risks */}
+            {riskAssessment.transitionRisks.some(r => r.severity === 'high') && (
+              <div className="p-4 border-l-4 border-l-red-500 bg-red-500/10 dark:bg-red-400/10">
+                <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">Critical Priority</h5>
+                <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                  High transition risk exposure requires immediate portfolio diversification.
+                </p>
+                <ul className="text-xs text-red-600 dark:text-red-400 space-y-1">
+                  <li>• Accelerate EV financing programs to reduce ICE exposure</li>
+                  <li>• Implement stress testing for regulatory policy changes</li>
+                  <li>• Develop transition financing for existing borrowers</li>
+                </ul>
+              </div>
+            )}
+
+            {riskAssessment.transitionRisks.some(r => r.type === 'Technology Risk') && (
+              <div className="p-4 border-l-4 border-l-orange-500 bg-orange-500/10 dark:bg-orange-400/10">
+                <h5 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Technology Transition</h5>
+                <p className="text-sm text-orange-600 dark:text-orange-400 mb-2">
+                  Prepare for EV technology disruption affecting high-emission vehicle values.
+                </p>
+                <ul className="text-xs text-orange-600 dark:text-orange-400 space-y-1">
+                  <li>• Partner with EV manufacturers and charging networks</li>
+                  <li>• Develop expertise in EV technology and market dynamics</li>
+                  <li>• Create customer education programs about EV benefits</li>
+                </ul>
+              </div>
+            )}
+
+            {riskAssessment.physicalRisks.length > 0 && (
+              <div className="p-4 border-l-4 border-l-purple-500 bg-purple-500/10 dark:bg-purple-400/10">
+                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">Physical Risk Management</h5>
+                <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
+                  Address geographic concentration and climate-related physical risks.
+                </p>
+                <ul className="text-xs text-purple-600 dark:text-purple-400 space-y-1">
+                  <li>• Diversify lending across different geographic regions</li>
+                  <li>• Assess borrower exposure to extreme weather events</li>
+                  <li>• Consider climate factors in underwriting processes</li>
+                </ul>
+              </div>
+            )}
+
+            {/* Scenario Analysis */}
+            <div className="p-4 border-l-4 border-l-green-500 bg-green-500/10 dark:bg-green-400/10">
+              <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">Scenario Analysis</h5>
+              <p className="text-sm text-green-600 dark:text-green-400 mb-2">
+                Use scenario analysis to measure potential financial impacts and test portfolio resilience.
+              </p>
+              <ul className="text-xs text-green-600 dark:text-green-400 space-y-1">
+                <li>• Model different climate pathways and policy scenarios</li>
+                <li>• Test portfolio resilience under various transition speeds</li>
+                <li>• Quantify potential credit losses from climate risks</li>
+              </ul>
+            </div>
+
+            {/* Sustainable Finance Opportunities */}
+            {riskAssessment.portfolioMetrics?.evPercentage < 15 && (
+              <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
+                <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">Sustainable Finance</h5>
+                <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
+                  Mobilize capital to support the transition to a green economy and capture new opportunities.
+                </p>
+                <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
+                  <li>• Develop green loan products with preferential rates</li>
+                  <li>• Finance sustainable transportation projects</li>
+                  <li>• Create carbon offset and credit programs</li>
+                </ul>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -871,10 +1407,23 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
               title="Orderly Transition"
               variant="success"
               narrative={contextualNarrativeService.generateClimateScenarioNarrative('orderly', 12)}
-              className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20"
+              className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-800 dark:text-green-200">+12%</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <p className="text-2xl font-bold text-green-800 dark:text-green-200">+12%</p>
+                  <AIContextTooltip
+                    metricType="climate_scenario"
+                    metricValue="12"
+                    additionalData={{
+                      scenario: 'orderly',
+                      impactType: 'positive',
+                      confidence: 0.78,
+                      keyFactors: ['Early policy action', 'Smooth EV transition', 'Green finance opportunities']
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
                 <p className="text-xs text-green-600 dark:text-green-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Early policy action enables smooth transition to net-zero
@@ -886,10 +1435,23 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
               title="Disorderly Transition"
               variant="warning"
               narrative={contextualNarrativeService.generateClimateScenarioNarrative('disorderly', -8)}
-              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20"
+              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
+                  <AIContextTooltip
+                    metricType="climate_scenario"
+                    metricValue="-8"
+                    additionalData={{
+                      scenario: 'disorderly',
+                      impactType: 'negative',
+                      confidence: 0.82,
+                      keyFactors: ['Late policy action', 'Sudden regulatory changes', 'Market disruption']
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
                 <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Late policy action leads to higher transition costs
@@ -901,10 +1463,23 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
               title="Hot House World"
               variant="warning"
               narrative={contextualNarrativeService.generateClimateScenarioNarrative('hothouse', -15)}
-              className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20"
+              className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-red-800 dark:text-red-200">-15%</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <p className="text-2xl font-bold text-red-800 dark:text-red-200">-15%</p>
+                  <AIContextTooltip
+                    metricType="climate_scenario"
+                    metricValue="-15"
+                    additionalData={{
+                      scenario: 'hothouse',
+                      impactType: 'severe_negative',
+                      confidence: 0.75,
+                      keyFactors: ['Limited climate action', 'Severe physical risks', 'Asset stranding']
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
                 <p className="text-xs text-red-600 dark:text-red-400 mb-3">Portfolio value impact</p>
                 <p className="text-xs text-muted-foreground">
                   Limited climate action leads to severe physical risks
@@ -999,20 +1574,72 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 border rounded-lg">
-              <p className="text-2xl font-bold text-red-600">2</p>
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className="text-2xl font-bold text-red-600">2</p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue="2"
+                  additionalData={{
+                    riskType: 'anomaly_detection',
+                    severity: 'high',
+                    totalAnomalies: 4,
+                    detectionMethod: 'ML algorithms'
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
               <p className="text-xs text-muted-foreground">High Severity</p>
             </div>
-            <div className="text-center p-4 border rounded-lg">
-              <p className="text-2xl font-bold text-orange-600">1</p>
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className="text-2xl font-bold text-orange-600">1</p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue="1"
+                  additionalData={{
+                    riskType: 'anomaly_detection',
+                    severity: 'medium',
+                    impact: 'data_quality',
+                    actionRequired: 'validation'
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
               <p className="text-xs text-muted-foreground">Medium Severity</p>
             </div>
-            <div className="text-center p-4 border rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">1</p>
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className="text-2xl font-bold text-blue-600">1</p>
+                <AIContextTooltip
+                  metricType="risk_analytics"
+                  metricValue="1"
+                  additionalData={{
+                    riskType: 'anomaly_detection',
+                    severity: 'low',
+                    impact: 'minor_variance',
+                    actionRequired: 'monitoring'
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
               <p className="text-xs text-muted-foreground">Low Severity</p>
             </div>
-            <div className="text-center p-4 border rounded-lg">
-              <p className="text-2xl font-bold text-green-600">98.4%</p>
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <p className="text-2xl font-bold text-green-600">98.4%</p>
+                <AIContextTooltip
+                  metricType="portfolio_health"
+                  metricValue="98.4"
+                  additionalData={{
+                    type: 'detection_accuracy',
+                    algorithm: 'ensemble_ml',
+                    falsePositiveRate: 1.6,
+                    modelConfidence: 0.984
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
               <p className="text-xs text-muted-foreground">Detection Accuracy</p>
             </div>
           </div>

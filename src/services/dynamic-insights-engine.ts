@@ -244,7 +244,7 @@ class DynamicInsightsEngine {
   }
 
   /**
-   * Generate dynamic insights based on bank profile and portfolio data
+   * Generate dynamic insights based on bank profile and portfolio data using AI
    */
   async generateDynamicInsights(): Promise<DynamicInsight[]> {
     if (!this.bankProfile || !this.portfolioContext) {
@@ -254,25 +254,33 @@ class DynamicInsightsEngine {
 
     const insights: DynamicInsight[] = [];
 
-    // 1. Generate compliance-focused insights
-    const complianceInsight = this.generateComplianceInsight();
-    if (complianceInsight) insights.push(complianceInsight);
+    try {
+      // Use AI to generate personalized insights
+      const aiInsights = await this.generateAIPersonalizedInsights();
+      insights.push(...aiInsights);
+    } catch (error) {
+      console.warn('AI insights generation failed, falling back to rule-based insights:', error);
+      
+      // Fallback to rule-based insights
+      // 1. Generate compliance-focused insights
+      const complianceInsight = this.generateComplianceInsight();
+      if (complianceInsight) insights.push(complianceInsight);
 
-    // 2. Generate goal-specific insights
-    for (const goal of this.bankProfile.businessGoals) {
-      const goalInsight = this.generateGoalBasedInsight(goal);
-      if (goalInsight) insights.push(goalInsight);
-    }
+      // 2. Generate goal-specific insights
+      for (const goal of this.bankProfile.businessGoals) {
+        const goalInsight = this.generateGoalBasedInsight(goal);
+        if (goalInsight) insights.push(goalInsight);
+      }
 
-    // 3. Generate challenge-specific insights
-    for (const challenge of this.bankProfile.currentChallenges) {
-      const challengeInsight = this.generateChallengeBasedInsight(challenge);
-      if (challengeInsight) insights.push(challengeInsight);
-    }
+      // 3. Generate challenge-specific insights
+      for (const challenge of this.bankProfile.currentChallenges) {
+        const challengeInsight = this.generateChallengeBasedInsight(challenge);
+        if (challengeInsight) insights.push(challengeInsight);
+      }
 
-    // 4. Generate opportunity insights based on performance vs benchmarks
-    const opportunityInsights = this.generateOpportunityInsights();
-    insights.push(...opportunityInsights);
+      // 4. Generate opportunity insights based on performance vs benchmarks
+      const opportunityInsights = this.generateOpportunityInsights();
+      insights.push(...opportunityInsights);
 
     // 5. Generate risk-specific insights
     const riskInsights = this.generateRiskInsights();
@@ -953,6 +961,131 @@ class DynamicInsightsEngine {
         return b.affectedLoans - a.affectedLoans;
       })
       .slice(0, 5); // Return top 5 risks
+  }
+
+  /**
+   * Generate AI-powered personalized insights using OpenAI + ChromaDB
+   */
+  private async generateAIPersonalizedInsights(): Promise<DynamicInsight[]> {
+    const aiQuery = `Generate personalized strategic insights for a ${this.bankProfile!.type} bank with ${this.bankProfile!.assets}M in assets. 
+    
+    Bank Profile:
+    - Experience Level: ${this.bankProfile!.experienceLevel}
+    - Primary Goals: ${this.bankProfile!.businessGoals.map(g => g.type).join(', ')}
+    - Current Challenges: ${this.bankProfile!.currentChallenges.map(c => c.type).join(', ')}
+    
+    Portfolio Context:
+    - Total Loans: ${this.portfolioContext!.totalLoans}
+    - Total Emissions: ${this.portfolioContext!.totalEmissions} tCO2e
+    - EV Percentage: ${this.portfolioContext!.evPercentage}%
+    - Data Quality Score: ${this.portfolioContext!.avgDataQuality}
+    - Compliance Status: ${this.portfolioContext!.complianceStatus}
+    
+    Please provide 3-5 specific, actionable insights with recommendations tailored to this bank's profile and current portfolio performance.`;
+
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chroma/rag-query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+      },
+      body: JSON.stringify({
+        query: aiQuery,
+        collection_name: 'pcaf_calculation_optimized',
+        max_results: 5,
+        include_metadata: true,
+        context_type: 'strategic_insights',
+        bank_profile: {
+          type: this.bankProfile!.type,
+          assets: this.bankProfile!.assets,
+          experience: this.bankProfile!.experienceLevel
+        },
+        portfolio_context: this.portfolioContext
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('AI insights service unavailable');
+    }
+
+    const aiData = await response.json();
+    
+    // Transform AI response into DynamicInsight format
+    const aiInsights: DynamicInsight[] = [];
+    
+    if (aiData.insights && Array.isArray(aiData.insights)) {
+      aiData.insights.forEach((insight: any, index: number) => {
+        aiInsights.push({
+          id: `ai_insight_${Date.now()}_${index}`,
+          type: insight.type || 'strategic',
+          priority: insight.priority || 'high',
+          title: insight.title,
+          summary: insight.summary,
+          personalizedMessage: insight.personalized_message || `Tailored for ${this.bankProfile!.name}`,
+          dataPoints: insight.data_points || [],
+          recommendations: insight.recommendations || [],
+          narrative: {
+            summary: insight.summary,
+            explanation: insight.detailed_explanation,
+            methodology: 'Generated using OpenAI GPT-4 with ChromaDB PCAF knowledge base'
+          },
+          confidence: insight.confidence || 0.85,
+          lastUpdated: new Date(),
+          triggerConditions: insight.trigger_conditions || ['portfolio_change', 'target_update']
+        });
+      });
+    } else {
+      // Parse single response into insights
+      const singleInsight: DynamicInsight = {
+        id: `ai_insight_${Date.now()}`,
+        type: 'strategic',
+        priority: 'high',
+        title: 'AI-Generated Strategic Recommendation',
+        summary: aiData.response || 'AI-powered analysis of your portfolio',
+        personalizedMessage: `Based on your ${this.bankProfile!.type} bank profile and current portfolio performance`,
+        dataPoints: [
+          {
+            metric: 'Current EV Percentage',
+            current: `${this.portfolioContext!.evPercentage}%`,
+            benchmark: '12.5%',
+            trend: this.portfolioContext!.recentTrends.evGrowth > 0 ? 'improving' : 'stable'
+          },
+          {
+            metric: 'Data Quality Score',
+            current: this.portfolioContext!.avgDataQuality.toFixed(1),
+            target: '3.0',
+            trend: this.portfolioContext!.recentTrends.dataQualityImprovement > 0 ? 'improving' : 'stable'
+          }
+        ],
+        recommendations: aiData.recommendations?.map((rec: any) => ({
+          action: rec.action || rec,
+          impact: 'high',
+          effort: 'medium',
+          timeline: '3-6 months',
+          specificToBank: `Tailored for ${this.bankProfile!.type} banks with ${this.bankProfile!.experienceLevel} PCAF experience`
+        })) || [
+          {
+            action: 'Implement AI-recommended portfolio optimization strategy',
+            impact: 'high' as const,
+            effort: 'medium' as const,
+            timeline: '3-6 months',
+            specificToBank: `Designed for ${this.bankProfile!.type} banks`
+          }
+        ],
+        narrative: {
+          summary: aiData.response,
+          explanation: aiData.detailed_explanation || aiData.response,
+          methodology: 'Generated using OpenAI GPT-4 with ChromaDB PCAF knowledge base'
+        },
+        confidence: aiData.confidence || 0.85,
+        lastUpdated: new Date(),
+        triggerConditions: ['portfolio_change', 'target_update', 'compliance_status_change']
+      };
+      
+      aiInsights.push(singleInsight);
+    }
+
+    return aiInsights;
   }
 
   /**
