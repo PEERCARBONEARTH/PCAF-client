@@ -1,21 +1,34 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { CSVUploadInterface } from "@/components/CSVUploadInterface";
-import { SampleDataManager } from "@/components/SampleDataManager";
-import { CSVTemplateDownload } from "@/components/CSVTemplateDownload";
-import { APIKeyManagement } from "@/components/APIKeyManagement";
-import { DataIngestionWizard } from "@/components/data-ingestion/DataIngestionWizard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, FileText, Database, Settings, CheckCircle, AlertCircle, Clock, X } from "lucide-react";
-import { enhancedUploadService, type UploadProgress, type UploadResult } from "@/services/enhancedUploadService";
-import { realTimeService, type RealTimeUpdate } from "@/services/realTimeService";
-import { integrationService } from "@/services/integrationService";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CSVUploadInterface } from '@/components/CSVUploadInterface';
+import { SampleDataManager } from '@/components/SampleDataManager';
+import { CSVTemplateDownload } from '@/components/CSVTemplateDownload';
+import { APIKeyManagement } from '@/components/APIKeyManagement';
+import { DataIngestionWizard } from '@/components/data-ingestion/DataIngestionWizard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Upload,
+  FileText,
+  Database,
+  Settings,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  X,
+} from 'lucide-react';
+import {
+  enhancedUploadService,
+  type UploadProgress,
+  type UploadResult,
+} from '@/services/enhancedUploadService';
+import { realTimeService, type RealTimeUpdate } from '@/services/realTimeService';
+import { integrationService } from '@/services/integrationService';
+import { useToast } from '@/hooks/use-toast';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -30,11 +43,11 @@ export default function UploadPage() {
   useEffect(() => {
     // Simplified initialization - remove complex service calls that might be causing issues
     console.log('Upload page useEffect running');
-    
+
     // Connect to real-time service for upload progress updates
     try {
       realTimeService.connect();
-      
+
       const unsubscribe = realTimeService.subscribe('upload_progress', (update: RealTimeUpdate) => {
         if (update.data.jobId) {
           setActiveUploads(prev => {
@@ -47,7 +60,7 @@ export default function UploadPage() {
 
       // Load upload history
       loadUploadHistory();
-      
+
       // Load integration status
       loadIntegrationStatus();
 
@@ -81,7 +94,7 @@ export default function UploadPage() {
         lms: { connected: false },
         epa_api: { connected: false },
         vehicle_db: { connected: false },
-        emission_factors_api: { connected: false }
+        emission_factors_api: { connected: false },
       });
     }
   };
@@ -100,12 +113,12 @@ export default function UploadPage() {
       newMap.delete(result.jobId);
       return newMap;
     });
-    
+
     loadUploadHistory(); // Refresh history
-    
+
     if (result.success) {
       toast({
-        title: "Upload Successful",
+        title: 'Upload Successful',
         description: `Processed ${result.summary.successful} of ${result.summary.totalProcessed} loans successfully.`,
       });
     }
@@ -121,9 +134,9 @@ export default function UploadPage() {
       });
     } catch (error) {
       toast({
-        title: "Cancel Failed",
-        description: "Failed to cancel upload.",
-        variant: "destructive"
+        title: 'Cancel Failed',
+        description: 'Failed to cancel upload.',
+        variant: 'destructive',
       });
     }
   };
@@ -152,13 +165,13 @@ export default function UploadPage() {
   };
 
   console.log('Upload page rendering');
-  
+
   const handleWizardComplete = (data: any) => {
     console.log('Wizard completed with data:', data);
     setShowWizard(false);
     toast({
-      title: "Data Ingestion Complete",
-      description: "Your data has been processed with the configured methodology.",
+      title: 'Data Ingestion Complete',
+      description: 'Your data has been processed with the configured methodology.',
     });
     // Navigate to overview or ledger to see results
     navigate('/financed-emissions/overview');
@@ -174,7 +187,7 @@ export default function UploadPage() {
             Import your portfolio data with methodology validation and assumptions
           </p>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="p-4">
@@ -226,10 +239,7 @@ export default function UploadPage() {
             </p>
           </CardHeader>
           <CardContent>
-            <DataIngestionWizard 
-              onComplete={handleWizardComplete}
-              className="w-full"
-            />
+            <DataIngestionWizard onComplete={handleWizardComplete} className="w-full" />
           </CardContent>
         </Card>
       )}
@@ -248,8 +258,8 @@ export default function UploadPage() {
                   </p>
                 </div>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowWizard(true)}
                 className="flex items-center gap-2"
               >
@@ -274,7 +284,7 @@ export default function UploadPage() {
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
-            {Array.from(activeUploads.values()).map((upload) => (
+            {Array.from(activeUploads.values()).map(upload => (
               <Card key={upload.jobId} className="p-4">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -282,18 +292,16 @@ export default function UploadPage() {
                       {getStatusIcon(upload.status)}
                       <div>
                         <span className="font-medium">Upload {upload.jobId.slice(-8)}</span>
-                        <Badge variant="outline" className="ml-2">{upload.status}</Badge>
+                        <Badge variant="outline" className="ml-2">
+                          {upload.status}
+                        </Badge>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-muted-foreground">
                         {upload.processedItems}/{upload.totalItems} items
                       </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => cancelUpload(upload.jobId)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => cancelUpload(upload.jobId)}>
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
@@ -330,7 +338,7 @@ export default function UploadPage() {
             Choose your preferred method to import portfolio data
           </p>
         </div>
-        
+
         <Tabs defaultValue="csv" className="space-y-8">
           <TabsList className="grid w-full grid-cols-3 h-12">
             <TabsTrigger value="csv" className="flex items-center gap-2 h-10">
@@ -346,7 +354,7 @@ export default function UploadPage() {
               Sample Data
             </TabsTrigger>
           </TabsList>
-        
+
           {/* CSV Upload & Template */}
           <TabsContent value="csv" className="space-y-8">
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
@@ -409,7 +417,11 @@ export default function UploadPage() {
                                   </p>
                                   <p className="text-sm text-muted-foreground">successful</p>
                                 </div>
-                                <Badge variant={upload.status === 'completed' ? 'default' : 'destructive'}>
+                                <Badge
+                                  variant={
+                                    upload.status === 'completed' ? 'default' : 'destructive'
+                                  }
+                                >
                                   {upload.status}
                                 </Badge>
                               </div>
@@ -441,7 +453,7 @@ export default function UploadPage() {
               </div>
             </div>
           </TabsContent>
-        
+
           {/* System Integration */}
           <TabsContent value="integration" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -478,38 +490,56 @@ export default function UploadPage() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                           <span className="font-medium">LMS Connection</span>
-                          <Badge variant={integrationStatus.lms?.connected ? 'default' : 'destructive'}>
+                          <Badge
+                            variant={integrationStatus.lms?.connected ? 'default' : 'destructive'}
+                          >
                             {integrationStatus.lms?.connected ? 'Connected' : 'Disconnected'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                           <span className="font-medium">EPA API</span>
-                          <Badge variant={integrationStatus.epa_api?.connected ? 'default' : 'destructive'}>
+                          <Badge
+                            variant={
+                              integrationStatus.epa_api?.connected ? 'default' : 'destructive'
+                            }
+                          >
                             {integrationStatus.epa_api?.connected ? 'Connected' : 'Disconnected'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                           <span className="font-medium">Vehicle Database</span>
-                          <Badge variant={integrationStatus.vehicle_db?.connected ? 'default' : 'destructive'}>
+                          <Badge
+                            variant={
+                              integrationStatus.vehicle_db?.connected ? 'default' : 'destructive'
+                            }
+                          >
                             {integrationStatus.vehicle_db?.connected ? 'Connected' : 'Disconnected'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                           <span className="font-medium">Emission Factors API</span>
-                          <Badge variant={integrationStatus.emission_factors_api?.connected ? 'default' : 'destructive'}>
-                            {integrationStatus.emission_factors_api?.connected ? 'Connected' : 'Disconnected'}
+                          <Badge
+                            variant={
+                              integrationStatus.emission_factors_api?.connected
+                                ? 'default'
+                                : 'destructive'
+                            }
+                          >
+                            {integrationStatus.emission_factors_api?.connected
+                              ? 'Connected'
+                              : 'Disconnected'}
                           </Badge>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-3 pt-4 border-t">
-                        <Button 
+                        <Button
                           onClick={() => integrationService.testExternalServices()}
                           className="w-full"
                         >
                           Test All Connections
                         </Button>
-                        <Button 
+                        <Button
                           variant="outline"
                           onClick={loadIntegrationStatus}
                           className="w-full"
