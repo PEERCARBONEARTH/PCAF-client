@@ -130,8 +130,8 @@ class DataIngestionWorkflowService {
         summary: {
           totalProcessed: 247,
           successful: 247,
-          failed: 0
-        }
+          failed: 0,
+        },
       };
 
       return {
@@ -209,9 +209,9 @@ class DataIngestionWorkflowService {
           summary: {
             totalProcessed: 247,
             successful: 247,
-            totalEmissions: 45678.9
+            totalEmissions: 45678.9,
           },
-          processingTime: '8.5 seconds'
+          processingTime: '8.5 seconds',
         };
 
         return {
@@ -266,7 +266,7 @@ class DataIngestionWorkflowService {
         type: 'workflow_complete',
         workflowId: 'data_ingestion',
         results: this.workflowState.results,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.warn('Failed to notify real-time service:', error);

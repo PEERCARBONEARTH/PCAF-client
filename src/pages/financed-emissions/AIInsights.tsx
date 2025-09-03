@@ -29,16 +29,12 @@ import { aiService, AIInsightRequest, AIInsightResponse, AIRecommendation } from
 import { aiAnalyticsNarrativeBuilder, NarrativeContext, InsightNarrative } from "@/services/ai-narrative-builder";
 import { narrativePipelineIntegration, NarrativeInsightCard as NarrativeInsightType } from "@/services/narrative-pipeline-integration";
 import { contextualNarrativeService } from "@/services/contextual-narrative-service";
-import { NarrativeInsightCard } from "@/components/insights/NarrativeInsightCard";
+import NarrativeInsightCard from "@/components/insights/NarrativeInsightCard";
 import { dynamicInsightsEngine, DynamicInsight, BankProfile } from "@/services/dynamic-insights-engine";
 import { bankProfileService } from "@/services/bank-profile-service";
 import DynamicInsightCard from "@/components/insights/DynamicInsightCard";
 import AIContextTooltip from "@/components/insights/AIContextTooltip";
 import BankProfileSetup from "@/components/insights/BankProfileSetup";
-import { contextualNarrativeService } from "@/services/contextual-narrative-service";
-import { contextualNarrativeService } from "@/services/contextual-narrative-service";
-import { contextualNarrativeService } from "@/services/contextual-narrative-service";
-import { contextualNarrativeService } from "@/services/contextual-narrative-service";
 
 // Executive Summary Component
 function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {

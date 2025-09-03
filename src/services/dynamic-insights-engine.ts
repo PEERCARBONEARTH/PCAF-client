@@ -303,7 +303,6 @@ class DynamicInsightsEngine {
             })
             .slice(0, 8); // Limit to top 8 insights
     }
-    }
 
     /**
      * Generate compliance-focused insight
