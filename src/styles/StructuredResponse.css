@@ -434,7 +434,7 @@
 }
 
 .difficulty-easy {
-  background: #dcfce7;
+  background: #dcfce7; /* Uniform green */
   color: #166534;
 }
 
@@ -444,7 +444,7 @@
 }
 
 .difficulty-hard {
-  background: #dcfce7; /* Changed from red to green */
+  background: #dcfce7; /* Uniform green */
   color: #166534;
 }
 
@@ -508,12 +508,12 @@
 }
 
 .status-compliant {
-  background: #dcfce7;
+  background: #dcfce7; /* Uniform green */
   color: #166534;
 }
 
 .status-non-compliant {
-  background: #dcfce7; /* Changed from red to green */
+  background: #dcfce7; /* Uniform green */
   color: #166534;
 }
 
