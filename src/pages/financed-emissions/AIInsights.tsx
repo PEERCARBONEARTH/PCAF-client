@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Brain,
   BarChart3,
@@ -19,22 +19,39 @@ import {
   Activity,
   RefreshCw,
   Loader2,
-  Building2
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useAssumptions } from "@/contexts/AssumptionsContext";
-import { portfolioService } from "@/services/portfolioService";
-import { useToast } from "@/hooks/use-toast";
-import { aiService, AIInsightRequest, AIInsightResponse, AIRecommendation } from "@/services/aiService";
-import { aiAnalyticsNarrativeBuilder, NarrativeContext, InsightNarrative } from "@/services/ai-narrative-builder";
-import { narrativePipelineIntegration, NarrativeInsightCard as NarrativeInsightType } from "@/services/narrative-pipeline-integration";
-import { contextualNarrativeService } from "@/services/contextual-narrative-service";
-import NarrativeInsightCard from "@/components/insights/NarrativeInsightCard";
-import { dynamicInsightsEngine, DynamicInsight, BankProfile } from "@/services/dynamic-insights-engine";
-import { bankProfileService } from "@/services/bank-profile-service";
-import DynamicInsightCard from "@/components/insights/DynamicInsightCard";
-import AIContextTooltip from "@/components/insights/AIContextTooltip";
-import BankProfileSetup from "@/components/insights/BankProfileSetup";
+  Building2,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAssumptions } from '@/contexts/AssumptionsContext';
+import { portfolioService } from '@/services/portfolioService';
+import { useToast } from '@/hooks/use-toast';
+import {
+  aiService,
+  AIInsightRequest,
+  AIInsightResponse,
+  AIRecommendation,
+} from '@/services/aiService';
+import {
+  aiAnalyticsNarrativeBuilder,
+  NarrativeContext,
+  InsightNarrative,
+} from '@/services/ai-narrative-builder';
+import {
+  narrativePipelineIntegration,
+  NarrativeInsightCard as NarrativeInsightType,
+} from '@/services/narrative-pipeline-integration';
+import { contextualNarrativeService } from '@/services/contextual-narrative-service';
+import NarrativeInsightCard from '@/components/insights/NarrativeInsightCard';
+import {
+  dynamicInsightsEngine,
+  DynamicInsight,
+  BankProfile,
+} from '@/services/dynamic-insights-engine';
+import { bankProfileService } from '@/services/bank-profile-service';
+import DynamicInsightCard from '@/components/insights/DynamicInsightCard';
+import AIContextTooltip from '@/components/insights/AIContextTooltip';
+import BankProfileSetup from '@/components/insights/BankProfileSetup';
+import AssumptionsBuilderTrigger from '@/components/assumptions/AssumptionsBuilderTrigger';
 
 // Executive Summary Component
 function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
@@ -47,13 +64,18 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
     loans = [],
     totalEmissions = 0,
     avgDataQuality = 0,
-    evPercentage = 0
+    evPercentage = 0,
   } = portfolioData || {};
 
   const portfolioValue = 8200000; // $8.2M realistic demo value
   const safeDataQuality = Number(avgDataQuality) || 0;
   const riskLevel = safeDataQuality <= 3 ? 'Low' : safeDataQuality <= 4 ? 'Medium' : 'High';
-  const riskColor = safeDataQuality <= 3 ? 'text-green-600' : safeDataQuality <= 4 ? 'text-yellow-600' : 'text-destructive';
+  const riskColor =
+    safeDataQuality <= 3
+      ? 'text-muted-foreground'
+      : safeDataQuality <= 4
+        ? 'text-muted-foreground'
+        : 'text-muted-foreground';
 
   const handleMetricClick = (metricType: string) => {
     setSelectedMetric(selectedMetric === metricType ? null : metricType);
@@ -62,19 +84,28 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
   const getMetricNarrative = (metricType: string) => {
     switch (metricType) {
       case 'portfolio':
-        return contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
-          totalLoans: Array.isArray(loans) ? loans.length : 247,
-          portfolioValue: portfolioValue
-        });
+        return contextualNarrativeService.generateStrategicInsightNarrative(
+          'portfolio_optimization',
+          {
+            totalLoans: Array.isArray(loans) ? loans.length : 247,
+            portfolioValue: portfolioValue,
+          }
+        );
       case 'ev':
         return contextualNarrativeService.generateStrategicInsightNarrative('ev_transition', {
           evPercentage: evPercentage || 0,
-          totalLoans: Array.isArray(loans) ? loans.length : 247
+          totalLoans: Array.isArray(loans) ? loans.length : 247,
         });
       case 'emissions':
-        return contextualNarrativeService.generateEmissionsForecastNarrative('base_case', totalEmissions || 0);
+        return contextualNarrativeService.generateEmissionsForecastNarrative(
+          'base_case',
+          totalEmissions || 0
+        );
       case 'risk':
-        return contextualNarrativeService.generateRiskAnalyticsNarrative('data_quality', riskLevel.toLowerCase());
+        return contextualNarrativeService.generateRiskAnalyticsNarrative(
+          'data_quality',
+          riskLevel.toLowerCase()
+        );
       default:
         return null;
     }
@@ -102,11 +133,13 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           title="EV Transition"
           variant="success"
           narrative={getMetricNarrative('ev')}
-          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500 cursor-pointer"
+          className="hover:shadow-md transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-green-600">{evPercentage?.toFixed(1) || '0.0'}%</div>
+              <div className="text-2xl font-bold">
+                {evPercentage?.toFixed(1) || '0.0'}%
+              </div>
               <p className="text-sm text-muted-foreground">Electric vehicles</p>
             </div>
             <Zap className="h-8 w-8 text-green-500" />
@@ -117,7 +150,7 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           title="Emissions"
           variant="warning"
           narrative={getMetricNarrative('emissions')}
-          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500 cursor-pointer"
+          className="hover:shadow-md transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -132,12 +165,14 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
           title="Risk Level"
           variant={riskLevel === 'Low' ? 'success' : riskLevel === 'Medium' ? 'warning' : 'warning'}
           narrative={getMetricNarrative('risk')}
-          className="hover:shadow-md transition-all duration-200 border-l-4 border-l-red-500 cursor-pointer"
+          className="hover:shadow-md transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <div>
               <div className={`text-2xl font-bold ${riskColor}`}>{riskLevel}</div>
-              <p className="text-sm text-muted-foreground">DQ Score: {safeDataQuality.toFixed(1)}/5</p>
+              <p className="text-sm text-muted-foreground">
+                DQ Score: {safeDataQuality.toFixed(1)}/5
+              </p>
             </div>
             <AlertTriangle className="h-8 w-8 text-red-500" />
           </div>
@@ -149,9 +184,12 @@ function ExecutiveSummary({ portfolioData }: { portfolioData: any }) {
 
 // Critical Alerts Component
 function CriticalAlerts({ portfolioData }: { portfolioData: any }) {
-  if (!portfolioData || !portfolioData.anomalies || portfolioData.anomalies.length === 0) return null;
+  if (!portfolioData || !portfolioData.anomalies || portfolioData.anomalies.length === 0)
+    return null;
 
-  const criticalAnomalies = portfolioData.anomalies.filter((a: any) => a.severity === 'high').slice(0, 3);
+  const criticalAnomalies = portfolioData.anomalies
+    .filter((a: any) => a.severity === 'high')
+    .slice(0, 3);
 
   if (criticalAnomalies.length === 0) return null;
 
@@ -163,7 +201,8 @@ function CriticalAlerts({ portfolioData }: { portfolioData: any }) {
           <AlertDescription>
             <div className="space-y-2">
               <div className="font-semibold text-destructive">
-                {criticalAnomalies.length} Critical Alert{criticalAnomalies.length > 1 ? 's' : ''} Detected
+                {criticalAnomalies.length} Critical Alert{criticalAnomalies.length > 1 ? 's' : ''}{' '}
+                Detected
               </div>
               {criticalAnomalies.slice(0, 2).map((anomaly: any, index: number) => (
                 <div key={index} className="text-sm">
@@ -233,7 +272,10 @@ interface StrategicPartnership {
 }
 
 // Main Dashboard Content
-function DashboardContent({ portfolioData, onViewAdvanced }: {
+function DashboardContent({
+  portfolioData,
+  onViewAdvanced,
+}: {
   portfolioData: any;
   onViewAdvanced?: () => void;
 }) {
@@ -285,17 +327,26 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
         <NarrativeInsightCard
           title="Portfolio Health"
           variant={safeEvPercentage > 30 ? 'success' : safeEvPercentage > 15 ? 'info' : 'warning'}
-          narrative={contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
-            evPercentage: safeEvPercentage,
-            emissionsTrend: emissionsTrend,
-            portfolioData: portfolioData
-          })}
+          narrative={contextualNarrativeService.generateStrategicInsightNarrative(
+            'portfolio_optimization',
+            {
+              evPercentage: safeEvPercentage,
+              emissionsTrend: emissionsTrend,
+              portfolioData: portfolioData,
+            }
+          )}
           className="cursor-pointer hover:shadow-lg transition-all duration-200"
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Activity className="h-5 w-5 text-primary" />
-              <Badge variant="outline">{safeEvPercentage > 30 ? 'Good' : safeEvPercentage > 15 ? 'Fair' : 'Needs Attention'}</Badge>
+              <Badge variant="outline">
+                {safeEvPercentage > 30
+                  ? 'Good'
+                  : safeEvPercentage > 15
+                    ? 'Fair'
+                    : 'Needs Attention'}
+              </Badge>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm items-center group">
@@ -306,9 +357,11 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                     metricType="ev_percentage"
                     metricValue={safeEvPercentage.toFixed(1)}
                     additionalData={{
-                      portfolioSize: Array.isArray(portfolioData?.loans) ? portfolioData.loans.length : 247,
+                      portfolioSize: Array.isArray(portfolioData?.loans)
+                        ? portfolioData.loans.length
+                        : 247,
                       industryBenchmark: 12.5,
-                      trend: 'improving'
+                      trend: 'improving',
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
@@ -327,13 +380,19 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                       type: 'trend_analysis',
                       direction: emissionsTrend < 0 ? 'declining' : 'increasing',
                       timeframe: '12 months',
-                      confidence: 0.85
+                      confidence: 0.85,
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <div className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}>
-                  {emissionsTrend < 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                <div
+                  className={`font-semibold flex items-center gap-1 ${emissionsTrend < 0 ? 'text-green-600' : 'text-destructive'}`}
+                >
+                  {emissionsTrend < 0 ? (
+                    <TrendingDown className="h-3 w-3" />
+                  ) : (
+                    <TrendingUp className="h-3 w-3" />
+                  )}
                   {Math.abs(emissionsTrend || 0).toFixed(1)}%
                 </div>
               </div>
@@ -346,7 +405,7 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                     additionalData={{
                       riskType: 'overall_portfolio_risk',
                       severity: 'medium',
-                      keyFactors: ['Transition risk', 'Data quality', 'Market volatility']
+                      keyFactors: ['Transition risk', 'Data quality', 'Market volatility'],
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
@@ -364,14 +423,18 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
           narrative={contextualNarrativeService.generateAnomalyNarrative({
             severity: Array.isArray(anomalies) && anomalies.length > 3 ? 'high' : 'medium',
             count: Array.isArray(anomalies) ? anomalies.length : 0,
-            type: 'data_quality'
+            type: 'data_quality',
           })}
           className="cursor-pointer"
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Brain className="h-5 w-5 text-primary" />
-              <Badge variant={Array.isArray(anomalies) && anomalies.length > 3 ? "destructive" : "secondary"}>
+              <Badge
+                variant={
+                  Array.isArray(anomalies) && anomalies.length > 3 ? 'destructive' : 'secondary'
+                }
+              >
                 {Array.isArray(anomalies) ? anomalies.length : 0} found
               </Badge>
             </div>
@@ -397,12 +460,15 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                             anomalyType: anomaly.type || 'data_quality',
                             loanId: anomaly.loanId,
                             description: anomaly.description,
-                            severity: anomaly.severity
+                            severity: anomaly.severity,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
-                      <Badge variant={anomaly.severity === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                      <Badge
+                        variant={anomaly.severity === 'high' ? 'destructive' : 'secondary'}
+                        className="text-xs"
+                      >
                         {anomaly.severity}
                       </Badge>
                     </div>
@@ -410,7 +476,12 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
                   </div>
                 ))}
                 {anomalies.length > 3 && (
-                  <Button variant="outline" size="sm" className="w-full mt-3" onClick={onViewAdvanced}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-3"
+                    onClick={onViewAdvanced}
+                  >
                     View All Anomalies ({anomalies.length}) <ArrowRight className="h-4 w-4 ml-1" />
                   </Button>
                 )}
@@ -462,7 +533,9 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
             >
               <div className="text-left">
                 <div className="font-medium">Green Strategy</div>
-                <div className="text-xs text-muted-foreground">Sustainable finance opportunities</div>
+                <div className="text-xs text-muted-foreground">
+                  Sustainable finance opportunities
+                </div>
               </div>
             </Button>
             <Button
@@ -487,19 +560,17 @@ function DashboardContent({ portfolioData, onViewAdvanced }: {
             </Button>
             <Button
               variant="outline"
-              className="justify-start h-auto p-4 border-primary/20 bg-primary/5 hover:bg-primary/10"
+              className="justify-start h-auto p-4 border-border/50 bg-muted/30 hover:bg-muted/50"
               onClick={onViewAdvanced}
             >
               <div className="text-left">
-                <div className="font-medium text-primary">Advanced Analytics</div>
-                <div className="text-xs text-primary/70">5 analysis modules</div>
+                <div className="font-medium">Advanced Analytics</div>
+                <div className="text-xs text-muted-foreground">5 analysis modules</div>
               </div>
             </Button>
           </div>
         </CardContent>
       </Card>
-
-
     </div>
   );
 }
@@ -509,21 +580,23 @@ function AdvancedAnalyticsDashboard({
   setActiveView,
   aiInsights,
   narrativeInsights,
-  portfolioData
+  portfolioData,
 }: {
   setActiveView: (view: 'overview' | 'advanced') => void;
   aiInsights: AIInsightResponse | null;
   narrativeInsights: NarrativeInsightType[];
   portfolioData: any;
 }) {
-  const [activeTab, setActiveTab] = useState<'strategic' | 'emissions' | 'factors' | 'risk' | 'climate' | 'anomaly'>('strategic');
+  const [activeTab, setActiveTab] = useState<
+    'strategic' | 'emissions' | 'factors' | 'risk' | 'climate' | 'anomaly'
+  >('strategic');
 
   const tabs = [
     { id: 'strategic', label: 'Strategic Insights', icon: Target },
     { id: 'emissions', label: 'Emissions Forecasts', icon: TrendingUp },
     { id: 'risk', label: 'Risk Analytics', icon: AlertTriangle },
     { id: 'climate', label: 'Climate Scenarios', icon: Activity },
-    { id: 'anomaly', label: 'Anomaly Detection', icon: Brain }
+    { id: 'anomaly', label: 'Anomaly Detection', icon: Brain },
   ];
 
   return (
@@ -542,7 +615,7 @@ function AdvancedAnalyticsDashboard({
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="bg-green-600 text-white dark:bg-green-500">
+              <Badge variant="secondary">
                 5 insights generated
               </Badge>
               <Button
@@ -561,16 +634,17 @@ function AdvancedAnalyticsDashboard({
 
       {/* Navigation Tabs */}
       <div className="flex items-center justify-center gap-1 p-1 bg-muted/50 rounded-lg border border-border mx-auto max-w-4xl">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <Button
             key={tab.id}
             variant={activeTab === tab.id ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 flex-1 justify-center ${activeTab === tab.id
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-              }`}
+            className={`flex items-center gap-2 flex-1 justify-center ${
+              activeTab === tab.id
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
           >
             <tab.icon className="h-4 w-4" />
             <span className="hidden sm:inline">{tab.label}</span>
@@ -580,16 +654,34 @@ function AdvancedAnalyticsDashboard({
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'strategic' && <StrategicInsights aiInsights={aiInsights} narrativeInsights={narrativeInsights} portfolioData={portfolioData} />}
-      {activeTab === 'emissions' && <EmissionsForecasts aiInsights={aiInsights} portfolioData={portfolioData} />}
-      {activeTab === 'risk' && <RiskAnalytics aiInsights={aiInsights} portfolioData={portfolioData} />}
-      {activeTab === 'climate' && <ClimateScenarios aiInsights={aiInsights} portfolioData={portfolioData} />}
-      {activeTab === 'anomaly' && <AnomalyDetection aiInsights={aiInsights} portfolioData={portfolioData} />}
+      {activeTab === 'strategic' && (
+        <StrategicInsights
+          aiInsights={aiInsights}
+          narrativeInsights={narrativeInsights}
+          portfolioData={portfolioData}
+        />
+      )}
+      {activeTab === 'emissions' && (
+        <EmissionsForecasts aiInsights={aiInsights} portfolioData={portfolioData} />
+      )}
+      {activeTab === 'risk' && (
+        <RiskAnalytics aiInsights={aiInsights} portfolioData={portfolioData} />
+      )}
+      {activeTab === 'climate' && (
+        <ClimateScenarios aiInsights={aiInsights} portfolioData={portfolioData} />
+      )}
+      {activeTab === 'anomaly' && (
+        <AnomalyDetection aiInsights={aiInsights} portfolioData={portfolioData} />
+      )}
     </div>
   );
 }
 
-function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
+function StrategicInsights({
+  aiInsights,
+  narrativeInsights,
+  portfolioData,
+}: {
   aiInsights: AIInsightResponse | null;
   narrativeInsights: NarrativeInsightType[];
   portfolioData: any;
@@ -613,58 +705,71 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         productDevelopment: [],
         customerSegmentation: [],
         esgReporting: [],
-        strategicPartnerships: []
+        strategicPartnerships: [],
       };
     }
 
     const loans = portfolioData.loans;
     const totalLoans = loans.length;
-    const totalValue = loans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0), 0);
+    const totalValue = loans.reduce(
+      (sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0),
+      0
+    );
 
     // Analyze vehicle types and emissions
-    const vehicleAnalysis = loans.reduce((acc: any, loan: any) => {
-      const vehicleType = loan.vehicle_details?.type?.toLowerCase() || 'unknown';
-      const fuelType = loan.vehicle_details?.fuel_type?.toLowerCase() || 'gasoline';
-      const emissions = loan.emissions_data?.annual_emissions_tco2e || loan.emissions_data?.financed_emissions_tco2e || 0;
-      const loanAmount = loan.outstanding_balance || loan.loan_amount || 0;
+    const vehicleAnalysis = loans.reduce(
+      (acc: any, loan: any) => {
+        const vehicleType = loan.vehicle_details?.type?.toLowerCase() || 'unknown';
+        const fuelType = loan.vehicle_details?.fuel_type?.toLowerCase() || 'gasoline';
+        const emissions =
+          loan.emissions_data?.annual_emissions_tco2e ||
+          loan.emissions_data?.financed_emissions_tco2e ||
+          0;
+        const loanAmount = loan.outstanding_balance || loan.loan_amount || 0;
 
-      // Categorize vehicles
-      const isHighEmission = ['truck', 'suv', 'pickup', 'van', 'luxury'].some(type => vehicleType.includes(type)) || emissions > 4.0;
-      const isEV = fuelType.includes('electric');
-      const isHybrid = fuelType.includes('hybrid');
-      const isEfficient = emissions < 2.0 && !isEV;
+        // Categorize vehicles
+        const isHighEmission =
+          ['truck', 'suv', 'pickup', 'van', 'luxury'].some(type => vehicleType.includes(type)) ||
+          emissions > 4.0;
+        const isEV = fuelType.includes('electric');
+        const isHybrid = fuelType.includes('hybrid');
+        const isEfficient = emissions < 2.0 && !isEV;
 
-      if (isEV) {
-        acc.ev.count++;
-        acc.ev.value += loanAmount;
-      } else if (isHybrid) {
-        acc.hybrid.count++;
-        acc.hybrid.value += loanAmount;
-      } else if (isHighEmission) {
-        acc.highEmission.count++;
-        acc.highEmission.value += loanAmount;
-        acc.highEmission.avgEmissions += emissions;
-      } else if (isEfficient) {
-        acc.efficient.count++;
-        acc.efficient.value += loanAmount;
-      } else {
-        acc.standard.count++;
-        acc.standard.value += loanAmount;
+        if (isEV) {
+          acc.ev.count++;
+          acc.ev.value += loanAmount;
+        } else if (isHybrid) {
+          acc.hybrid.count++;
+          acc.hybrid.value += loanAmount;
+        } else if (isHighEmission) {
+          acc.highEmission.count++;
+          acc.highEmission.value += loanAmount;
+          acc.highEmission.avgEmissions += emissions;
+        } else if (isEfficient) {
+          acc.efficient.count++;
+          acc.efficient.value += loanAmount;
+        } else {
+          acc.standard.count++;
+          acc.standard.value += loanAmount;
+        }
+
+        return acc;
+      },
+      {
+        ev: { count: 0, value: 0 },
+        hybrid: { count: 0, value: 0 },
+        highEmission: { count: 0, value: 0, avgEmissions: 0 },
+        efficient: { count: 0, value: 0 },
+        standard: { count: 0, value: 0 },
       }
-
-      return acc;
-    }, {
-      ev: { count: 0, value: 0 },
-      hybrid: { count: 0, value: 0 },
-      highEmission: { count: 0, value: 0, avgEmissions: 0 },
-      efficient: { count: 0, value: 0 },
-      standard: { count: 0, value: 0 }
-    });
+    );
 
     // Calculate percentages
     const evPercentage = totalLoans > 0 ? (vehicleAnalysis.ev.count / totalLoans) * 100 : 0;
-    const highEmissionPercentage = totalLoans > 0 ? (vehicleAnalysis.highEmission.count / totalLoans) * 100 : 0;
-    const efficientPercentage = totalLoans > 0 ? (vehicleAnalysis.efficient.count / totalLoans) * 100 : 0;
+    const highEmissionPercentage =
+      totalLoans > 0 ? (vehicleAnalysis.highEmission.count / totalLoans) * 100 : 0;
+    const efficientPercentage =
+      totalLoans > 0 ? (vehicleAnalysis.efficient.count / totalLoans) * 100 : 0;
 
     // Geographic analysis
     const geographicData = loans.reduce((acc: any, loan: any) => {
@@ -711,7 +816,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
       productDevelopment: [],
       customerSegmentation: [],
       esgReporting: [],
-      strategicPartnerships: []
+      strategicPartnerships: [],
     };
 
     // RISK MANAGEMENT & PORTFOLIO STRATEGY INSIGHTS
@@ -723,7 +828,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         impact: 'Higher default probability during fuel price increases',
         recommendation: 'Monitor fuel price sensitivity and adjust risk models',
         affectedLoans: vehicleAnalysis.highEmission.count,
-        affectedValue: vehicleAnalysis.highEmission.value
+        affectedValue: vehicleAnalysis.highEmission.value,
       });
     }
 
@@ -735,7 +840,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         impact: 'Reduced collateral value and higher loss given default',
         recommendation: 'Adjust loan-to-value ratios for high-emission vehicles',
         affectedLoans: vehicleAnalysis.highEmission.count,
-        affectedValue: vehicleAnalysis.highEmission.value
+        affectedValue: vehicleAnalysis.highEmission.value,
       });
     }
 
@@ -752,7 +857,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         impact: 'Exposure to regional low-emission zones and regulations',
         recommendation: 'Diversify lending across regions and monitor local regulations',
         affectedLoans: topStates[0][1].count,
-        affectedValue: 0
+        affectedValue: 0,
       });
     }
 
@@ -765,7 +870,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         impact: 'Market share growth and ESG positioning',
         recommendation: 'Launch green loan products with preferential rates for EVs',
         potentialMarket: Math.round(totalLoans * 0.2),
-        estimatedRevenue: totalValue * 0.15
+        estimatedRevenue: totalValue * 0.15,
       });
     }
 
@@ -775,9 +880,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         severity: 'medium' as const,
         description: `${efficientPercentage.toFixed(1)}% of customers choose efficient vehicles - lower risk profile`,
         impact: 'Cross-selling opportunity with usage-based insurance',
-        recommendation: 'Partner with insurers for bundled products targeting efficient vehicle owners',
+        recommendation:
+          'Partner with insurers for bundled products targeting efficient vehicle owners',
         potentialMarket: vehicleAnalysis.efficient.count,
-        estimatedRevenue: vehicleAnalysis.efficient.value * 0.05
+        estimatedRevenue: vehicleAnalysis.efficient.value * 0.05,
       });
     }
 
@@ -791,7 +897,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         opportunity: 'Premium sustainable finance products and ESG investments',
         recommendation: 'Target with green bonds, sustainable investment funds',
         segmentSize: luxurySegment.count,
-        avgLoanValue: totalValue / totalLoans
+        avgLoanValue: totalValue / totalLoans,
       });
     }
 
@@ -803,13 +909,19 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         opportunity: 'Value-focused products and cost-saving services',
         recommendation: 'Offer competitive rates and fuel-saving incentives',
         segmentSize: budgetSegment.count,
-        avgLoanValue: totalValue / totalLoans
+        avgLoanValue: totalValue / totalLoans,
       });
     }
 
     // ESG & REPORTING INSIGHTS
-    const totalEmissions = loans.reduce((sum: number, loan: any) =>
-      sum + (loan.emissions_data?.financed_emissions_tco2e || loan.emissions_data?.annual_emissions_tco2e || 0), 0);
+    const totalEmissions = loans.reduce(
+      (sum: number, loan: any) =>
+        sum +
+        (loan.emissions_data?.financed_emissions_tco2e ||
+          loan.emissions_data?.annual_emissions_tco2e ||
+          0),
+      0
+    );
 
     insights.esgReporting.push({
       type: 'Financed Emissions Baseline',
@@ -817,7 +929,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
       emissionIntensity: totalValue > 0 ? (totalEmissions / totalValue) * 1000 : 0,
       description: `Portfolio generates ${totalEmissions.toFixed(1)} tCO2e in financed emissions`,
       opportunity: 'Set science-based targets and track progress',
-      recommendation: 'Establish 30% reduction target by 2030'
+      recommendation: 'Establish 30% reduction target by 2030',
     });
 
     if (evPercentage > 10) {
@@ -825,7 +937,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         type: 'Sustainability Leadership',
         description: `${evPercentage.toFixed(1)}% EV adoption demonstrates climate commitment`,
         opportunity: 'Brand positioning as sustainability leader',
-        recommendation: 'Highlight green portfolio in marketing and investor relations'
+        recommendation: 'Highlight green portfolio in marketing and investor relations',
       });
     }
 
@@ -836,7 +948,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         description: `${vehicleAnalysis.ev.count} EV customers create charging demand`,
         opportunity: 'Investment in charging infrastructure based on customer locations',
         recommendation: 'Partner with charging networks or invest in high-demand areas',
-        marketSize: vehicleAnalysis.ev.count
+        marketSize: vehicleAnalysis.ev.count,
       });
     }
 
@@ -846,7 +958,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         description: 'Large portfolio provides valuable market insights',
         opportunity: 'Anonymized data insights for manufacturers and energy companies',
         recommendation: 'Develop data products showing customer preferences and geographic trends',
-        dataPoints: totalLoans
+        dataPoints: totalLoans,
       });
     }
 
@@ -931,19 +1043,26 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Portfolio Composition Metrics */}
-            <div className="text-center p-4 border rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 hover:shadow-md transition-all duration-200 cursor-pointer group">
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-lg font-bold text-green-700 dark:text-green-300">
-                  {portfolioData?.loans ?
-                    ((portfolioData.loans.filter((l: any) => l.vehicle_details?.fuel_type?.toLowerCase().includes('electric')).length / portfolioData.loans.length) * 100).toFixed(1)
-                    : '7.7'}%
+                <p className="text-lg font-bold">
+                  {portfolioData?.loans
+                    ? (
+                        (portfolioData.loans.filter((l: any) =>
+                          l.vehicle_details?.fuel_type?.toLowerCase().includes('electric')
+                        ).length /
+                          portfolioData.loans.length) *
+                        100
+                      ).toFixed(1)
+                    : '7.7'}
+                  %
                 </p>
                 <AIContextTooltip
                   metricType="portfolio_health"
                   metricValue="ev_adoption"
                   additionalData={{
                     type: 'strategic_positioning',
-                    marketOpportunity: 'Green lending growth potential'
+                    marketOpportunity: 'Green lending growth potential',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -951,22 +1070,27 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <p className="text-xs text-muted-foreground">EV Portfolio Share</p>
             </div>
 
-            <div className="text-center p-4 border rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 hover:shadow-md transition-all duration-200 cursor-pointer group">
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-lg font-bold text-blue-700 dark:text-blue-300">
-                  {portfolioData?.loans ?
-                    ((portfolioData.loans.filter((l: any) => {
-                      const type = l.vehicle_details?.type?.toLowerCase() || '';
-                      return ['truck', 'suv', 'pickup', 'luxury'].some(t => type.includes(t));
-                    }).length / portfolioData.loans.length) * 100).toFixed(1)
-                    : '45.2'}%
+                <p className="text-lg font-bold">
+                  {portfolioData?.loans
+                    ? (
+                        (portfolioData.loans.filter((l: any) => {
+                          const type = l.vehicle_details?.type?.toLowerCase() || '';
+                          return ['truck', 'suv', 'pickup', 'luxury'].some(t => type.includes(t));
+                        }).length /
+                          portfolioData.loans.length) *
+                        100
+                      ).toFixed(1)
+                    : '45.2'}
+                  %
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
                   metricValue="high_emission_exposure"
                   additionalData={{
                     type: 'residual_value_risk',
-                    impact: 'Depreciation acceleration due to regulations'
+                    impact: 'Depreciation acceleration due to regulations',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -974,15 +1098,17 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <p className="text-xs text-muted-foreground">High-Emission Vehicles</p>
             </div>
 
-            <div className="text-center p-4 border rounded-lg bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20 hover:shadow-md transition-all duration-200 cursor-pointer group">
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-lg font-bold text-purple-700 dark:text-purple-300">
-                  {portfolioData?.loans ?
-                    Object.keys(portfolioData.loans.reduce((acc: any, l: any) => {
-                      const state = l.borrower_details?.state || 'Unknown';
-                      acc[state] = true;
-                      return acc;
-                    }, {})).length
+                <p className="text-lg font-bold">
+                  {portfolioData?.loans
+                    ? Object.keys(
+                        portfolioData.loans.reduce((acc: any, l: any) => {
+                          const state = l.borrower_details?.state || 'Unknown';
+                          acc[state] = true;
+                          return acc;
+                        }, {})
+                      ).length
                     : '12'}
                 </p>
                 <AIContextTooltip
@@ -990,7 +1116,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                   metricValue="geographic_diversification"
                   additionalData={{
                     type: 'market_expansion',
-                    opportunity: 'Regional growth and risk management'
+                    opportunity: 'Regional growth and risk management',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -998,19 +1124,26 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <p className="text-xs text-muted-foreground">Geographic Markets</p>
             </div>
 
-            <div className="text-center p-4 border rounded-lg bg-gradient-to-br from-teal-500/10 to-teal-600/10 border-teal-500/20 hover:shadow-md transition-all duration-200 cursor-pointer group">
+            <div className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-lg font-bold text-teal-700 dark:text-teal-300">
-                  {portfolioData?.loans ?
-                    (portfolioData.loans.reduce((sum: number, l: any) => sum + (l.outstanding_balance || l.loan_amount || 0), 0) / 1000000).toFixed(1)
-                    : '8.2'}M
+                <p className="text-lg font-bold">
+                  {portfolioData?.loans
+                    ? (
+                        portfolioData.loans.reduce(
+                          (sum: number, l: any) =>
+                            sum + (l.outstanding_balance || l.loan_amount || 0),
+                          0
+                        ) / 1000000
+                      ).toFixed(1)
+                    : '8.2'}
+                  M
                 </p>
                 <AIContextTooltip
                   metricType="portfolio_health"
                   metricValue="total_exposure"
                   additionalData={{
                     type: 'business_intelligence',
-                    insight: 'Customer segmentation and cross-selling opportunities'
+                    insight: 'Customer segmentation and cross-selling opportunities',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -1028,14 +1161,20 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           <NarrativeInsightCard
             title="Risk Management & Portfolio Strategy"
             variant="warning"
-            narrative={contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
-              riskFactors: strategicAnalysis.riskManagement.length,
-              portfolioData: portfolioData
-            })}
+            narrative={contextualNarrativeService.generateStrategicInsightNarrative(
+              'portfolio_optimization',
+              {
+                riskFactors: strategicAnalysis.riskManagement.length,
+                portfolioData: portfolioData,
+              }
+            )}
           >
             <div className="space-y-3">
               {strategicAnalysis.riskManagement.map((risk, index) => (
-                <div key={index} className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -1047,13 +1186,15 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                             riskType: risk.type.toLowerCase().replace(' ', '_'),
                             impact: risk.impact,
                             affectedLoans: risk.affectedLoans,
-                            affectedValue: risk.affectedValue
+                            affectedValue: risk.affectedValue,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{risk.description}</p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400">{risk.recommendation}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {risk.recommendation}
+                      </p>
                     </div>
                     <Badge variant={risk.severity === 'high' ? 'destructive' : 'secondary'}>
                       {risk.severity}
@@ -1062,7 +1203,9 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                   {risk.affectedLoans && (
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>Affected: {risk.affectedLoans} loans</span>
-                      {risk.affectedValue && <span>Value: ${(risk.affectedValue / 1000000).toFixed(1)}M</span>}
+                      {risk.affectedValue && (
+                        <span>Value: ${(risk.affectedValue / 1000000).toFixed(1)}M</span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1076,14 +1219,20 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           <NarrativeInsightCard
             title="Product Development & Targeted Marketing"
             variant="info"
-            narrative={contextualNarrativeService.generateStrategicInsightNarrative('ev_transition', {
-              opportunities: strategicAnalysis.productDevelopment.length,
-              portfolioData: portfolioData
-            })}
+            narrative={contextualNarrativeService.generateStrategicInsightNarrative(
+              'ev_transition',
+              {
+                opportunities: strategicAnalysis.productDevelopment.length,
+                portfolioData: portfolioData,
+              }
+            )}
           >
             <div className="space-y-3">
               {strategicAnalysis.productDevelopment.map((opportunity, index) => (
-                <div key={index} className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -1095,22 +1244,30 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                             opportunityType: opportunity.type.toLowerCase().replace(' ', '_'),
                             impact: opportunity.impact,
                             potentialMarket: opportunity.potentialMarket,
-                            estimatedRevenue: opportunity.estimatedRevenue
+                            estimatedRevenue: opportunity.estimatedRevenue,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
-                      <p className="text-sm text-muted-foreground mb-1">{opportunity.description}</p>
-                      <p className="text-xs text-green-600 dark:text-green-400">{opportunity.recommendation}</p>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {opportunity.description}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {opportunity.recommendation}
+                      </p>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300">
+                    <Badge variant="outline">
                       Opportunity
                     </Badge>
                   </div>
                   {opportunity.potentialMarket && (
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>Market: {opportunity.potentialMarket} customers</span>
-                      {opportunity.estimatedRevenue && <span>Revenue: ${(opportunity.estimatedRevenue / 1000000).toFixed(1)}M</span>}
+                      {opportunity.estimatedRevenue && (
+                        <span>
+                          Revenue: ${(opportunity.estimatedRevenue / 1000000).toFixed(1)}M
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1124,14 +1281,20 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           <NarrativeInsightCard
             title="Customer Segmentation & Behavior Analysis"
             variant="success"
-            narrative={contextualNarrativeService.generateStrategicInsightNarrative('data_quality', {
-              segments: strategicAnalysis.customerSegmentation.length,
-              portfolioData: portfolioData
-            })}
+            narrative={contextualNarrativeService.generateStrategicInsightNarrative(
+              'data_quality',
+              {
+                segments: strategicAnalysis.customerSegmentation.length,
+                portfolioData: portfolioData,
+              }
+            )}
           >
             <div className="space-y-3">
               {strategicAnalysis.customerSegmentation.map((segment, index) => (
-                <div key={index} className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -1143,15 +1306,17 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                             segmentType: segment.type.toLowerCase().replace(' ', '_'),
                             opportunity: segment.opportunity,
                             segmentSize: segment.segmentSize,
-                            avgLoanValue: segment.avgLoanValue
+                            avgLoanValue: segment.avgLoanValue,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{segment.description}</p>
-                      <p className="text-xs text-teal-600 dark:text-teal-400">{segment.recommendation}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {segment.recommendation}
+                      </p>
                     </div>
-                    <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-300">
+                    <Badge variant="outline">
                       Segment
                     </Badge>
                   </div>
@@ -1170,14 +1335,20 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           <NarrativeInsightCard
             title="ESG & Regulatory Reporting"
             variant="info"
-            narrative={contextualNarrativeService.generateStrategicInsightNarrative('portfolio_optimization', {
-              esgMetrics: strategicAnalysis.esgReporting.length,
-              portfolioData: portfolioData
-            })}
+            narrative={contextualNarrativeService.generateStrategicInsightNarrative(
+              'portfolio_optimization',
+              {
+                esgMetrics: strategicAnalysis.esgReporting.length,
+                portfolioData: portfolioData,
+              }
+            )}
           >
             <div className="space-y-3">
               {strategicAnalysis.esgReporting.map((esg, index) => (
-                <div key={index} className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -1189,22 +1360,26 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                             esgType: esg.type.toLowerCase().replace(' ', '_'),
                             currentEmissions: esg.currentEmissions,
                             emissionIntensity: esg.emissionIntensity,
-                            opportunity: esg.opportunity
+                            opportunity: esg.opportunity,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">{esg.description}</p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400">{esg.recommendation}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {esg.recommendation}
+                      </p>
                     </div>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
+                    <Badge variant="outline">
                       ESG
                     </Badge>
                   </div>
                   {esg.currentEmissions && (
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>Emissions: {esg.currentEmissions.toFixed(1)} tCO2e</span>
-                      {esg.emissionIntensity && <span>Intensity: {esg.emissionIntensity.toFixed(2)} kg/$1k</span>}
+                      {esg.emissionIntensity && (
+                        <span>Intensity: {esg.emissionIntensity.toFixed(2)} kg/$1k</span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1229,7 +1404,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {strategicAnalysis.strategicPartnerships.map((partnership, index) => (
-                <div key={index} className="p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1240,22 +1418,29 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
                           additionalData={{
                             partnershipType: partnership.type.toLowerCase().replace(' ', '_'),
                             opportunity: partnership.opportunity,
-                            marketSize: partnership.marketSize || partnership.dataPoints
+                            marketSize: partnership.marketSize || partnership.dataPoints,
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">{partnership.description}</p>
-                      <p className="text-xs text-purple-600 dark:text-purple-400 mb-2">{partnership.opportunity}</p>
-                      <p className="text-xs text-green-600 dark:text-green-400">{partnership.recommendation}</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {partnership.description}
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {partnership.opportunity}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {partnership.recommendation}
+                      </p>
                     </div>
-                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300">
+                    <Badge variant="outline">
                       Partnership
                     </Badge>
                   </div>
                   {(partnership.marketSize || partnership.dataPoints) && (
                     <div className="text-xs text-muted-foreground">
-                      Market Size: {partnership.marketSize || partnership.dataPoints} {partnership.dataPoints ? 'data points' : 'customers'}
+                      Market Size: {partnership.marketSize || partnership.dataPoints}{' '}
+                      {partnership.dataPoints ? 'data points' : 'customers'}
                     </div>
                   )}
                 </div>
@@ -1275,7 +1460,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
             </div>
           </div>
         ) : dynamicInsights.length > 0 ? (
-          dynamicInsights.map((insight) => (
+          dynamicInsights.map(insight => (
             <DynamicInsightCard
               key={insight.id}
               insight={insight}
@@ -1294,11 +1479,10 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
               <Brain className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-lg font-semibold mb-2">Unlock Strategic Intelligence</h3>
               <p className="text-muted-foreground mb-4">
-                Set up your bank profile to transform from simple lender to strategic partner with AI-powered business insights.
+                Set up your bank profile to transform from simple lender to strategic partner with
+                AI-powered business insights.
               </p>
-              <Button onClick={() => setShowProfileSetup(true)}>
-                Setup Bank Profile
-              </Button>
+              <Button onClick={() => setShowProfileSetup(true)}>Setup Bank Profile</Button>
             </Card>
           )
         ) : (
@@ -1308,9 +1492,7 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
             <p className="text-muted-foreground mb-4">
               Your portfolio analysis is complete. Strategic business intelligence is now available.
             </p>
-            <Button onClick={() => window.location.reload()}>
-              Refresh Insights
-            </Button>
+            <Button onClick={() => window.location.reload()}>Refresh Insights</Button>
           </Card>
         )}
       </div>
@@ -1318,9 +1500,13 @@ function StrategicInsights({ aiInsights, narrativeInsights, portfolioData }: {
   );
 }
 
-
-
-function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
+function EmissionsForecasts({
+  aiInsights,
+  portfolioData,
+}: {
+  aiInsights: AIInsightResponse | null;
+  portfolioData: any;
+}) {
   return (
     <div className="space-y-6">
       <Card>
@@ -1347,7 +1533,7 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
                       additionalData={{
                         type: 'baseline',
                         portfolioSize: portfolioData?.totalLoans || 247,
-                        emissionIntensity: 1.08
+                        emissionIntensity: 1.08,
                       }}
                     />
                   </div>
@@ -1363,11 +1549,13 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
                         type: 'forecast',
                         reductionPercent: -8.6,
                         confidence: 0.85,
-                        scenario: 'base_case'
+                        scenario: 'base_case',
                       }}
                     />
                   </div>
-                  <span className="font-medium text-green-600 dark:text-green-400">245 tCO2e (-8.6%)</span>
+                  <span className="font-medium">
+                    245 tCO2e (-8.6%)
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
@@ -1379,11 +1567,13 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
                         type: 'optimistic_forecast',
                         reductionPercent: -17.9,
                         scenario: 'optimistic',
-                        keyDrivers: ['EV adoption', 'Fleet modernization']
+                        keyDrivers: ['EV adoption', 'Fleet modernization'],
                       }}
                     />
                   </div>
-                  <span className="font-medium text-green-700 dark:text-green-300">220 tCO2e (-17.9%)</span>
+                  <span className="font-medium">
+                    220 tCO2e (-17.9%)
+                  </span>
                 </div>
               </div>
             </div>
@@ -1392,8 +1582,10 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
               <h4 className="font-medium text-foreground">Key Drivers</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-muted-foreground flex-1">EV adoption acceleration (+15% projected)</span>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                  <span className="text-muted-foreground flex-1">
+                    EV adoption acceleration (+15% projected)
+                  </span>
                   <AIContextTooltip
                     metricType="ev_percentage"
                     metricValue="15"
@@ -1401,35 +1593,39 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
                       type: 'growth_projection',
                       currentRate: 7.7,
                       targetRate: 22.7,
-                      timeframe: '12 months'
+                      timeframe: '12 months',
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
                 <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-muted-foreground flex-1">Fleet modernization initiatives</span>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                  <span className="text-muted-foreground flex-1">
+                    Fleet modernization initiatives
+                  </span>
                   <AIContextTooltip
                     metricType="portfolio_health"
                     metricValue="modernization"
                     additionalData={{
                       type: 'fleet_upgrade',
                       affectedLoans: Math.round((portfolioData?.totalLoans || 247) * 0.35),
-                      emissionReduction: 12
+                      emissionReduction: 12,
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
                 <div className="flex items-center gap-2 hover:bg-muted/20 p-2 rounded cursor-pointer group">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-muted-foreground flex-1">Regulatory compliance requirements</span>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                  <span className="text-muted-foreground flex-1">
+                    Regulatory compliance requirements
+                  </span>
                   <AIContextTooltip
                     metricType="risk_analytics"
                     metricValue="compliance"
                     additionalData={{
                       type: 'regulatory_impact',
                       complianceDeadline: '2025',
-                      riskLevel: 'medium'
+                      riskLevel: 'medium',
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
@@ -1449,36 +1645,44 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
             <NarrativeInsightCard
               title="Optimistic Scenario"
               variant="success"
-              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('optimistic', -25)}
-              className="bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative(
+                'optimistic',
+                -25
+              )}
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-800 dark:text-green-200">-25%</p>
-                <p className="text-xs text-green-600 dark:text-green-400">Emissions reduction by 2025</p>
+                <p className="text-2xl font-bold">-25%</p>
+                <p className="text-xs text-muted-foreground">
+                  Emissions reduction by 2025
+                </p>
               </div>
             </NarrativeInsightCard>
 
             <NarrativeInsightCard
               title="Base Case"
               variant="info"
-              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('base_case', -15)}
-              className="bg-blue-500/10 border-blue-500/20 dark:bg-blue-400/10 dark:border-blue-400/20"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative(
+                'base_case',
+                -15
+              )}
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-800 dark:text-blue-200">-15%</p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">Expected reduction</p>
+                <p className="text-2xl font-bold">-15%</p>
+                <p className="text-xs text-muted-foreground">Expected reduction</p>
               </div>
             </NarrativeInsightCard>
 
             <NarrativeInsightCard
               title="Conservative"
               variant="warning"
-              narrative={contextualNarrativeService.generateEmissionsForecastNarrative('conservative', -8)}
-              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20"
+              narrative={contextualNarrativeService.generateEmissionsForecastNarrative(
+                'conservative',
+                -8
+              )}
             >
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-800 dark:text-orange-200">-8%</p>
-                <p className="text-xs text-orange-600 dark:text-orange-400">Minimum expected</p>
+                <p className="text-2xl font-bold">-8%</p>
+                <p className="text-xs text-muted-foreground">Minimum expected</p>
               </div>
             </NarrativeInsightCard>
           </div>
@@ -1488,7 +1692,13 @@ function EmissionsForecasts({ aiInsights, portfolioData }: { aiInsights: AIInsig
   );
 }
 
-function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
+function RiskAnalytics({
+  aiInsights,
+  portfolioData,
+}: {
+  aiInsights: AIInsightResponse | null;
+  portfolioData: any;
+}) {
   // Calculate dynamic risk metrics based on actual portfolio data
   const calculatePortfolioRisks = () => {
     if (!portfolioData?.loans || !Array.isArray(portfolioData.loans)) {
@@ -1497,13 +1707,16 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         physicalRisks: [],
         financialStabilityRisk: 'medium',
         liquidityRisk: 'low',
-        creditRisk: 'medium'
+        creditRisk: 'medium',
       };
     }
 
     const loans = portfolioData.loans;
     const totalLoans = loans.length;
-    const totalValue = loans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0), 0);
+    const totalValue = loans.reduce(
+      (sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0),
+      0
+    );
 
     // Calculate ICE vehicle exposure (transition risk)
     const iceLoans = loans.filter((loan: any) => {
@@ -1531,7 +1744,8 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
 
     // Calculate data quality risk
     const poorDataQualityLoans = loans.filter((loan: any) => {
-      const score = loan.emissions_data?.data_quality_score || loan.data_quality_assessment?.overall_score || 5;
+      const score =
+        loan.emissions_data?.data_quality_score || loan.data_quality_assessment?.overall_score || 5;
       return score >= 4;
     });
     const dataQualityRisk = totalLoans > 0 ? (poorDataQualityLoans.length / totalLoans) * 100 : 0;
@@ -1545,9 +1759,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         severity: 'high' as const,
         description: 'High ICE vehicle exposure to regulatory changes',
         affectedLoans: iceLoans.length,
-        affectedValue: iceLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        affectedValue: iceLoans.reduce(
+          (sum: number, loan: any) => sum + (loan.outstanding_balance || 0),
+          0
+        ),
         timeframe: '2-5 years',
-        impact: 'Potential asset value decline and increased regulatory compliance costs'
+        impact: 'Potential asset value decline and increased regulatory compliance costs',
       });
     } else if (iceExposure > 40) {
       transitionRisks.push({
@@ -1555,9 +1772,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         severity: 'medium' as const,
         description: 'Moderate ICE vehicle exposure to regulatory changes',
         affectedLoans: iceLoans.length,
-        affectedValue: iceLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        affectedValue: iceLoans.reduce(
+          (sum: number, loan: any) => sum + (loan.outstanding_balance || 0),
+          0
+        ),
         timeframe: '3-7 years',
-        impact: 'Gradual transition costs and potential market shifts'
+        impact: 'Gradual transition costs and potential market shifts',
       });
     }
 
@@ -1567,9 +1787,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         severity: 'high' as const,
         description: 'High concentration in high-emission vehicle types',
         affectedLoans: highEmissionLoans.length,
-        affectedValue: highEmissionLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        affectedValue: highEmissionLoans.reduce(
+          (sum: number, loan: any) => sum + (loan.outstanding_balance || 0),
+          0
+        ),
         timeframe: '1-3 years',
-        impact: 'EV technology disruption affecting resale values'
+        impact: 'EV technology disruption affecting resale values',
       });
     } else if (highEmissionExposure > 30) {
       transitionRisks.push({
@@ -1577,9 +1800,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         severity: 'medium' as const,
         description: 'Moderate concentration in high-emission vehicles',
         affectedLoans: highEmissionLoans.length,
-        affectedValue: highEmissionLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        affectedValue: highEmissionLoans.reduce(
+          (sum: number, loan: any) => sum + (loan.outstanding_balance || 0),
+          0
+        ),
         timeframe: '2-5 years',
-        impact: 'Gradual market preference shifts toward cleaner alternatives'
+        impact: 'Gradual market preference shifts toward cleaner alternatives',
       });
     }
 
@@ -1596,9 +1822,11 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         severity: 'medium' as const,
         description: 'Low EV adoption relative to market trends',
         affectedLoans: totalLoans - evLoans.length,
-        affectedValue: totalValue - evLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
+        affectedValue:
+          totalValue -
+          evLoans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || 0), 0),
         timeframe: '1-2 years',
-        impact: 'Consumer preference shifts toward sustainable vehicles'
+        impact: 'Consumer preference shifts toward sustainable vehicles',
       });
     }
 
@@ -1612,7 +1840,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         description: 'High concentration in single geographic area',
         affectedLoans: maxStateConcentration,
         timeframe: 'Ongoing',
-        impact: 'Exposure to regional climate events and natural disasters'
+        impact: 'Exposure to regional climate events and natural disasters',
       });
     } else if (geographicConcentration > 25) {
       physicalRisks.push({
@@ -1621,13 +1849,16 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         description: 'Moderate geographic concentration',
         affectedLoans: maxStateConcentration,
         timeframe: 'Ongoing',
-        impact: 'Some exposure to regional climate risks'
+        impact: 'Some exposure to regional climate risks',
       });
     }
 
     // Assess overall financial stability risk
     let financialStabilityRisk = 'low';
-    if (transitionRisks.some(r => r.severity === 'high') || physicalRisks.some(r => r.severity === 'high')) {
+    if (
+      transitionRisks.some(r => r.severity === 'high') ||
+      physicalRisks.some(r => r.severity === 'high')
+    ) {
       financialStabilityRisk = 'high';
     } else if (transitionRisks.length > 1 || physicalRisks.length > 0) {
       financialStabilityRisk = 'medium';
@@ -1658,8 +1889,8 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         highEmissionExposure,
         geographicConcentration,
         dataQualityRisk,
-        evPercentage
-      }
+        evPercentage,
+      },
     };
   };
 
@@ -1680,16 +1911,15 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className={`text-center p-4 border rounded-lg ${riskAssessment.financialStabilityRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
-              riskAssessment.financialStabilityRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
-                'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
-              } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+            <div
+              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
+            >
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className={`text-2xl font-bold ${riskAssessment.financialStabilityRisk === 'high' ? 'text-red-600' :
-                  riskAssessment.financialStabilityRisk === 'medium' ? 'text-orange-600' :
-                    'text-green-600'
-                  }`}>
-                  {riskAssessment.financialStabilityRisk.charAt(0).toUpperCase() + riskAssessment.financialStabilityRisk.slice(1)}
+                <p
+                  className="text-2xl font-bold"
+                >
+                  {riskAssessment.financialStabilityRisk.charAt(0).toUpperCase() +
+                    riskAssessment.financialStabilityRisk.slice(1)}
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
@@ -1698,7 +1928,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
                     riskType: 'financial_stability',
                     transitionRisks: riskAssessment.transitionRisks.length,
                     physicalRisks: riskAssessment.physicalRisks.length,
-                    portfolioMetrics: riskAssessment.portfolioMetrics
+                    portfolioMetrics: riskAssessment.portfolioMetrics,
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -1706,24 +1936,24 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
               <p className="text-xs text-muted-foreground">Financial Stability Risk</p>
             </div>
 
-            <div className={`text-center p-4 border rounded-lg ${riskAssessment.liquidityRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
-              riskAssessment.liquidityRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
-                'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
-              } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+            <div
+              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
+            >
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className={`text-2xl font-bold ${riskAssessment.liquidityRisk === 'high' ? 'text-red-600' :
-                  riskAssessment.liquidityRisk === 'medium' ? 'text-orange-600' :
-                    'text-green-600'
-                  }`}>
-                  {riskAssessment.liquidityRisk.charAt(0).toUpperCase() + riskAssessment.liquidityRisk.slice(1)}
+                <p
+                  className="text-2xl font-bold"
+                >
+                  {riskAssessment.liquidityRisk.charAt(0).toUpperCase() +
+                    riskAssessment.liquidityRisk.slice(1)}
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
                   metricValue={riskAssessment.liquidityRisk}
                   additionalData={{
                     riskType: 'liquidity_risk',
-                    geographicConcentration: riskAssessment.portfolioMetrics?.geographicConcentration,
-                    dataQualityRisk: riskAssessment.portfolioMetrics?.dataQualityRisk
+                    geographicConcentration:
+                      riskAssessment.portfolioMetrics?.geographicConcentration,
+                    dataQualityRisk: riskAssessment.portfolioMetrics?.dataQualityRisk,
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -1731,16 +1961,15 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
               <p className="text-xs text-muted-foreground">Liquidity Risk</p>
             </div>
 
-            <div className={`text-center p-4 border rounded-lg ${riskAssessment.creditRisk === 'high' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20' :
-              riskAssessment.creditRisk === 'medium' ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' :
-                'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20'
-              } hover:shadow-md transition-all duration-200 cursor-pointer group`}>
+            <div
+              className="text-center p-4 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer group"
+            >
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className={`text-2xl font-bold ${riskAssessment.creditRisk === 'high' ? 'text-red-600' :
-                  riskAssessment.creditRisk === 'medium' ? 'text-orange-600' :
-                    'text-green-600'
-                  }`}>
-                  {riskAssessment.creditRisk.charAt(0).toUpperCase() + riskAssessment.creditRisk.slice(1)}
+                <p
+                  className="text-2xl font-bold"
+                >
+                  {riskAssessment.creditRisk.charAt(0).toUpperCase() +
+                    riskAssessment.creditRisk.slice(1)}
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
@@ -1748,7 +1977,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
                   additionalData={{
                     riskType: 'credit_risk',
                     iceExposure: riskAssessment.portfolioMetrics?.iceExposure,
-                    highEmissionExposure: riskAssessment.portfolioMetrics?.highEmissionExposure
+                    highEmissionExposure: riskAssessment.portfolioMetrics?.highEmissionExposure,
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -1766,12 +1995,17 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
           <NarrativeInsightCard
             title="Transition Risk Analysis"
             variant="warning"
-            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('transition_risk',
-              riskAssessment.transitionRisks.some(r => r.severity === 'high') ? 'high' : 'medium')}
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative(
+              'transition_risk',
+              riskAssessment.transitionRisks.some(r => r.severity === 'high') ? 'high' : 'medium'
+            )}
           >
             <div className="space-y-3">
               {riskAssessment.transitionRisks.map((risk, index) => (
-                <div key={index} className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-medium text-foreground">{risk.type}</p>
@@ -1784,7 +2018,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
                           impact: risk.impact,
                           timeframe: risk.timeframe,
                           affectedLoans: risk.affectedLoans,
-                          affectedValue: risk.affectedValue
+                          affectedValue: risk.affectedValue,
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       />
@@ -1809,12 +2043,17 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
           <NarrativeInsightCard
             title="Physical Risk Exposure"
             variant="info"
-            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk',
-              riskAssessment.physicalRisks.some(r => r.severity === 'high') ? 'high' : 'medium')}
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative(
+              'physical_risk',
+              riskAssessment.physicalRisks.some(r => r.severity === 'high') ? 'high' : 'medium'
+            )}
           >
             <div className="space-y-3">
               {riskAssessment.physicalRisks.map((risk, index) => (
-                <div key={index} className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group">
+                <div
+                  key={index}
+                  className="flex items-start justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors cursor-pointer group"
+                >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-medium text-foreground">{risk.type}</p>
@@ -1826,7 +2065,7 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
                           severity: risk.severity,
                           impact: risk.impact,
                           timeframe: risk.timeframe,
-                          affectedLoans: risk.affectedLoans
+                          affectedLoans: risk.affectedLoans,
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       />
@@ -1848,13 +2087,19 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
           <NarrativeInsightCard
             title="Physical Risk Exposure"
             variant="success"
-            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative('physical_risk', 'low')}
+            narrative={contextualNarrativeService.generateRiskAnalyticsNarrative(
+              'physical_risk',
+              'low'
+            )}
           >
             <div className="text-center py-6">
               <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
-              <p className="font-medium text-green-700 dark:text-green-300 mb-2">Low Physical Risk Exposure</p>
+              <p className="font-medium text-green-700 dark:text-green-300 mb-2">
+                Low Physical Risk Exposure
+              </p>
               <p className="text-sm text-muted-foreground">
-                Your portfolio shows good geographic diversification with limited exposure to acute climate risks.
+                Your portfolio shows good geographic diversification with limited exposure to acute
+                climate risks.
               </p>
             </div>
           </NarrativeInsightCard>
@@ -1873,9 +2118,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
           <div className="space-y-4">
             {/* Risk Assessment and Disclosure */}
             <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
-              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Assessment and Disclosure</h5>
+              <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">
+                Assessment and Disclosure
+              </h5>
               <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
-                Integrate climate-related risks into existing risk management frameworks as required by financial authorities.
+                Integrate climate-related risks into existing risk management frameworks as required
+                by financial authorities.
               </p>
               <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
                 <li>• Conduct comprehensive climate risk assessments quarterly</li>
@@ -1886,12 +2134,14 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
 
             {/* Priority Actions based on identified risks */}
             {riskAssessment.transitionRisks.some(r => r.severity === 'high') && (
-              <div className="p-4 border-l-4 border-l-red-500 bg-red-500/10 dark:bg-red-400/10">
-                <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">Critical Priority</h5>
-                <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+              <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
+                <h5 className="font-medium mb-2">
+                  Critical Priority
+                </h5>
+                <p className="text-sm text-muted-foreground mb-2">
                   High transition risk exposure requires immediate portfolio diversification.
                 </p>
-                <ul className="text-xs text-red-600 dark:text-red-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Accelerate EV financing programs to reduce ICE exposure</li>
                   <li>• Implement stress testing for regulatory policy changes</li>
                   <li>• Develop transition financing for existing borrowers</li>
@@ -1900,12 +2150,14 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
             )}
 
             {riskAssessment.transitionRisks.some(r => r.type === 'Technology Risk') && (
-              <div className="p-4 border-l-4 border-l-orange-500 bg-orange-500/10 dark:bg-orange-400/10">
-                <h5 className="font-medium text-orange-700 dark:text-orange-300 mb-2">Technology Transition</h5>
-                <p className="text-sm text-orange-600 dark:text-orange-400 mb-2">
+              <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
+                <h5 className="font-medium mb-2">
+                  Technology Transition
+                </h5>
+                <p className="text-sm text-muted-foreground mb-2">
                   Prepare for EV technology disruption affecting high-emission vehicle values.
                 </p>
-                <ul className="text-xs text-orange-600 dark:text-orange-400 space-y-1">
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li>• Partner with EV manufacturers and charging networks</li>
                   <li>• Develop expertise in EV technology and market dynamics</li>
                   <li>• Create customer education programs about EV benefits</li>
@@ -1915,7 +2167,9 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
 
             {riskAssessment.physicalRisks.length > 0 && (
               <div className="p-4 border-l-4 border-l-purple-500 bg-purple-500/10 dark:bg-purple-400/10">
-                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">Physical Risk Management</h5>
+                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">
+                  Physical Risk Management
+                </h5>
                 <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
                   Address geographic concentration and climate-related physical risks.
                 </p>
@@ -1928,12 +2182,15 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
             )}
 
             {/* Scenario Analysis */}
-            <div className="p-4 border-l-4 border-l-green-500 bg-green-500/10 dark:bg-green-400/10">
-              <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">Scenario Analysis</h5>
-              <p className="text-sm text-green-600 dark:text-green-400 mb-2">
-                Use scenario analysis to measure potential financial impacts and test portfolio resilience.
+            <div className="p-4 border-l-4 border-l-muted-foreground bg-muted/10">
+              <h5 className="font-medium mb-2">
+                Scenario Analysis
+              </h5>
+              <p className="text-sm text-muted-foreground mb-2">
+                Use scenario analysis to measure potential financial impacts and test portfolio
+                resilience.
               </p>
-              <ul className="text-xs text-green-600 dark:text-green-400 space-y-1">
+              <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• Model different climate pathways and policy scenarios</li>
                 <li>• Test portfolio resilience under various transition speeds</li>
                 <li>• Quantify potential credit losses from climate risks</li>
@@ -1943,9 +2200,12 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
             {/* Sustainable Finance Opportunities */}
             {riskAssessment.portfolioMetrics?.evPercentage < 15 && (
               <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
-                <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">Sustainable Finance</h5>
+                <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">
+                  Sustainable Finance
+                </h5>
                 <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
-                  Mobilize capital to support the transition to a green economy and capture new opportunities.
+                  Mobilize capital to support the transition to a green economy and capture new
+                  opportunities.
                 </p>
                 <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
                   <li>• Develop green loan products with preferential rates</li>
@@ -1961,20 +2221,34 @@ function RiskAnalytics({ aiInsights, portfolioData }: { aiInsights: AIInsightRes
   );
 }
 
-function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
+function ClimateScenarios({
+  aiInsights,
+  portfolioData,
+}: {
+  aiInsights: AIInsightResponse | null;
+  portfolioData: any;
+}) {
   // Calculate dynamic scenario impacts based on actual portfolio composition
   const calculateScenarioImpacts = () => {
     if (!portfolioData?.loans || !Array.isArray(portfolioData.loans)) {
       return {
         orderly: { impact: 8, confidence: 0.7, keyDrivers: [], portfolioResilience: 'medium' },
-        disorderly: { impact: -12, confidence: 0.75, keyDrivers: [], portfolioResilience: 'medium' },
-        hothouse: { impact: -20, confidence: 0.8, keyDrivers: [], portfolioResilience: 'low' }
+        disorderly: {
+          impact: -12,
+          confidence: 0.75,
+          keyDrivers: [],
+          portfolioResilience: 'medium',
+        },
+        hothouse: { impact: -20, confidence: 0.8, keyDrivers: [], portfolioResilience: 'low' },
       };
     }
 
     const loans = portfolioData.loans;
     const totalLoans = loans.length;
-    const totalValue = loans.reduce((sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0), 0);
+    const totalValue = loans.reduce(
+      (sum: number, loan: any) => sum + (loan.outstanding_balance || loan.loan_amount || 0),
+      0
+    );
 
     // Calculate portfolio composition metrics
     const evLoans = loans.filter((loan: any) => {
@@ -2001,15 +2275,23 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
       const vehicleType = loan.vehicle_details?.type?.toLowerCase() || '';
       return highEmissionTypes.some(type => vehicleType.includes(type));
     });
-    const highEmissionPercentage = totalLoans > 0 ? (highEmissionLoans.length / totalLoans) * 100 : 0;
+    const highEmissionPercentage =
+      totalLoans > 0 ? (highEmissionLoans.length / totalLoans) * 100 : 0;
 
     // Calculate data quality score
     const dataQualityScores = loans
-      .map((loan: any) => loan.emissions_data?.data_quality_score || loan.data_quality_assessment?.overall_score || 5)
+      .map(
+        (loan: any) =>
+          loan.emissions_data?.data_quality_score ||
+          loan.data_quality_assessment?.overall_score ||
+          5
+      )
       .filter((score: number) => score !== undefined);
-    const avgDataQuality = dataQualityScores.length > 0
-      ? dataQualityScores.reduce((sum: number, score: number) => sum + score, 0) / dataQualityScores.length
-      : 5.0;
+    const avgDataQuality =
+      dataQualityScores.length > 0
+        ? dataQualityScores.reduce((sum: number, score: number) => sum + score, 0) /
+          dataQualityScores.length
+        : 5.0;
 
     // Calculate geographic concentration
     const stateConcentration = loans.reduce((acc: any, loan: any) => {
@@ -2154,19 +2436,19 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
         impact: Math.round(orderlyImpact * 10) / 10,
         confidence: Math.min(0.95, orderlyConfidence),
         keyDrivers: orderlyDrivers.slice(0, 3),
-        portfolioResilience: getPortfolioResilience(orderlyImpact)
+        portfolioResilience: getPortfolioResilience(orderlyImpact),
       },
       disorderly: {
         impact: Math.round(disorderlyImpact * 10) / 10,
         confidence: Math.min(0.95, disorderlyConfidence),
         keyDrivers: disorderlyDrivers.slice(0, 3),
-        portfolioResilience: getPortfolioResilience(disorderlyImpact)
+        portfolioResilience: getPortfolioResilience(disorderlyImpact),
       },
       hothouse: {
         impact: Math.round(hothouseImpact * 10) / 10,
         confidence: Math.min(0.95, hothouseConfidence),
         keyDrivers: hothouseDrivers.slice(0, 3),
-        portfolioResilience: getPortfolioResilience(hothouseImpact)
+        portfolioResilience: getPortfolioResilience(hothouseImpact),
       },
       portfolioMetrics: {
         evPercentage,
@@ -2174,8 +2456,8 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
         icePercentage,
         highEmissionPercentage,
         avgDataQuality,
-        geographicConcentration
-      }
+        geographicConcentration,
+      },
     };
   };
 
@@ -2191,7 +2473,8 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             Climate Scenario Analysis
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Dynamic portfolio impact assessment under NGFS climate scenarios based on your composition
+            Dynamic portfolio impact assessment under NGFS climate scenarios based on your
+            composition
           </p>
         </CardHeader>
         <CardContent>
@@ -2206,7 +2489,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   metricValue={scenarioAnalysis.portfolioMetrics?.evPercentage}
                   additionalData={{
                     type: 'ev_exposure',
-                    scenarioResilience: 'Provides upside in all transition scenarios'
+                    scenarioResilience: 'Provides upside in all transition scenarios',
                   }}
                 />
               </div>
@@ -2222,7 +2505,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   metricValue={scenarioAnalysis.portfolioMetrics?.icePercentage}
                   additionalData={{
                     type: 'ice_exposure',
-                    scenarioRisk: 'Higher exposure increases transition risk'
+                    scenarioRisk: 'Higher exposure increases transition risk',
                   }}
                 />
               </div>
@@ -2238,7 +2521,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   metricValue={scenarioAnalysis.portfolioMetrics?.geographicConcentration}
                   additionalData={{
                     type: 'geographic_concentration',
-                    physicalRisk: 'Affects physical risk exposure in hot house scenario'
+                    physicalRisk: 'Affects physical risk exposure in hot house scenario',
                   }}
                 />
               </div>
@@ -2254,7 +2537,7 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   metricValue={scenarioAnalysis.portfolioMetrics?.avgDataQuality}
                   additionalData={{
                     type: 'scenario_modeling',
-                    impact: 'Affects scenario modeling accuracy and confidence'
+                    impact: 'Affects scenario modeling accuracy and confidence',
                   }}
                 />
               </div>
@@ -2266,19 +2549,24 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <NarrativeInsightCard
               title="Orderly Transition"
-              variant={scenarioAnalysis.orderly.impact > 0 ? "success" : "warning"}
-              narrative={contextualNarrativeService.generateClimateScenarioNarrative('orderly', scenarioAnalysis.orderly.impact)}
-              className={`${scenarioAnalysis.orderly.impact > 0
-                ? 'bg-green-500/10 border-green-500/20 dark:bg-green-400/10 dark:border-green-400/20'
-                : 'bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20'
-                } hover:shadow-lg transition-all duration-200 cursor-pointer group`}
+              variant={scenarioAnalysis.orderly.impact > 0 ? 'success' : 'warning'}
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative(
+                'orderly',
+                scenarioAnalysis.orderly.impact
+              )}
+              className="hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <p className={`text-2xl font-bold ${scenarioAnalysis.orderly.impact > 0
-                    ? 'text-green-800 dark:text-green-200'
-                    : 'text-orange-800 dark:text-orange-200'}`}>
-                    {scenarioAnalysis.orderly.impact > 0 ? '+' : ''}{scenarioAnalysis.orderly.impact}%
+                  <p
+                    className={`text-2xl font-bold ${
+                      scenarioAnalysis.orderly.impact > 0
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-orange-800 dark:text-orange-200'
+                    }`}
+                  >
+                    {scenarioAnalysis.orderly.impact > 0 ? '+' : ''}
+                    {scenarioAnalysis.orderly.impact}%
                   </p>
                   <AIContextTooltip
                     metricType="climate_scenario"
@@ -2288,14 +2576,18 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                       impactType: scenarioAnalysis.orderly.impact > 0 ? 'positive' : 'negative',
                       confidence: scenarioAnalysis.orderly.confidence,
                       keyFactors: scenarioAnalysis.orderly.keyDrivers,
-                      portfolioResilience: scenarioAnalysis.orderly.portfolioResilience
+                      portfolioResilience: scenarioAnalysis.orderly.portfolioResilience,
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p className={`text-xs mb-3 ${scenarioAnalysis.orderly.impact > 0
-                  ? 'text-green-600 dark:text-green-400'
-                  : 'text-orange-600 dark:text-orange-400'}`}>
+                <p
+                  className={`text-xs mb-3 ${
+                    scenarioAnalysis.orderly.impact > 0
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-orange-600 dark:text-orange-400'
+                  }`}
+                >
                   Portfolio value impact
                 </p>
                 <div className="space-y-1">
@@ -2311,8 +2603,11 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             <NarrativeInsightCard
               title="Disorderly Transition"
               variant="warning"
-              narrative={contextualNarrativeService.generateClimateScenarioNarrative('disorderly', scenarioAnalysis.disorderly.impact)}
-              className="bg-orange-500/10 border-orange-500/20 dark:bg-orange-400/10 dark:border-orange-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative(
+                'disorderly',
+                scenarioAnalysis.disorderly.impact
+              )}
+              className="hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
@@ -2327,12 +2622,14 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                       impactType: 'negative',
                       confidence: scenarioAnalysis.disorderly.confidence,
                       keyFactors: scenarioAnalysis.disorderly.keyDrivers,
-                      portfolioResilience: scenarioAnalysis.disorderly.portfolioResilience
+                      portfolioResilience: scenarioAnalysis.disorderly.portfolioResilience,
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">Portfolio value impact</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400 mb-3">
+                  Portfolio value impact
+                </p>
                 <div className="space-y-1">
                   {scenarioAnalysis.disorderly.keyDrivers.map((driver, index) => (
                     <p key={index} className="text-xs text-muted-foreground">
@@ -2346,7 +2643,10 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             <NarrativeInsightCard
               title="Hot House World"
               variant="warning"
-              narrative={contextualNarrativeService.generateClimateScenarioNarrative('hothouse', scenarioAnalysis.hothouse.impact)}
+              narrative={contextualNarrativeService.generateClimateScenarioNarrative(
+                'hothouse',
+                scenarioAnalysis.hothouse.impact
+              )}
               className="bg-red-500/10 border-red-500/20 dark:bg-red-400/10 dark:border-red-400/20 hover:shadow-lg transition-all duration-200 cursor-pointer group"
             >
               <div className="text-center">
@@ -2362,12 +2662,14 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
                       impactType: 'severe_negative',
                       confidence: scenarioAnalysis.hothouse.confidence,
                       keyFactors: scenarioAnalysis.hothouse.keyDrivers,
-                      portfolioResilience: scenarioAnalysis.hothouse.portfolioResilience
+                      portfolioResilience: scenarioAnalysis.hothouse.portfolioResilience,
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
-                <p className="text-xs text-red-600 dark:text-red-400 mb-3">Portfolio value impact</p>
+                <p className="text-xs text-red-600 dark:text-red-400 mb-3">
+                  Portfolio value impact
+                </p>
                 <div className="space-y-1">
                   {scenarioAnalysis.hothouse.keyDrivers.map((driver, index) => (
                     <p key={index} className="text-xs text-muted-foreground">
@@ -2394,13 +2696,17 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             {/* Orderly Transition Strategy */}
             {scenarioAnalysis.orderly.impact > 5 && (
               <div className="p-4 border-l-4 border-l-green-500 bg-green-500/10 dark:bg-green-400/10">
-                <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">Capitalize on Transition Upside</h5>
+                <h5 className="font-medium text-green-700 dark:text-green-300 mb-2">
+                  Capitalize on Transition Upside
+                </h5>
                 <p className="text-sm text-green-600 dark:text-green-400 mb-2">
                   Your portfolio is well-positioned to benefit from orderly transition scenarios.
                 </p>
                 <ul className="text-xs text-green-600 dark:text-green-400 space-y-1">
                   <li>• Accelerate green financing programs to maximize transition benefits</li>
-                  <li>• Market your sustainable finance capabilities to attract ESG-focused customers</li>
+                  <li>
+                    • Market your sustainable finance capabilities to attract ESG-focused customers
+                  </li>
                   <li>• Consider expanding EV financing products and partnerships</li>
                 </ul>
               </div>
@@ -2409,7 +2715,9 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             {/* Disorderly Transition Protection */}
             {scenarioAnalysis.disorderly.impact < -10 && (
               <div className="p-4 border-l-4 border-l-red-500 bg-red-500/10 dark:bg-red-400/10">
-                <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">Critical: Disorderly Transition Risk</h5>
+                <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">
+                  Critical: Disorderly Transition Risk
+                </h5>
                 <p className="text-sm text-red-600 dark:text-red-400 mb-2">
                   Your portfolio faces significant downside risk in disorderly transition scenarios.
                 </p>
@@ -2424,7 +2732,9 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             {/* Physical Risk Management */}
             {scenarioAnalysis.hothouse.impact < -20 && (
               <div className="p-4 border-l-4 border-l-purple-500 bg-purple-500/10 dark:bg-purple-400/10">
-                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">Physical Risk Mitigation</h5>
+                <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">
+                  Physical Risk Mitigation
+                </h5>
                 <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
                   High exposure to physical climate risks requires proactive management.
                 </p>
@@ -2439,9 +2749,12 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             {/* Data Quality Enhancement */}
             {scenarioAnalysis.portfolioMetrics?.avgDataQuality > 4.0 && (
               <div className="p-4 border-l-4 border-l-blue-500 bg-blue-500/10 dark:bg-blue-400/10">
-                <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Improve Scenario Modeling Accuracy</h5>
+                <h5 className="font-medium text-blue-700 dark:text-blue-300 mb-2">
+                  Improve Scenario Modeling Accuracy
+                </h5>
                 <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
-                  Better data quality will improve scenario analysis confidence and regulatory compliance.
+                  Better data quality will improve scenario analysis confidence and regulatory
+                  compliance.
                 </p>
                 <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
                   <li>• Implement systematic data collection processes</li>
@@ -2452,19 +2765,23 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
             )}
 
             {/* Balanced Portfolio Recognition */}
-            {scenarioAnalysis.orderly.impact > 0 && scenarioAnalysis.disorderly.impact > -10 && scenarioAnalysis.hothouse.impact > -20 && (
-              <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
-                <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">Well-Balanced Portfolio</h5>
-                <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
-                  Your portfolio demonstrates good resilience across multiple climate scenarios.
-                </p>
-                <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
-                  <li>• Maintain current diversification strategy</li>
-                  <li>• Continue gradual transition toward cleaner vehicles</li>
-                  <li>• Monitor scenario developments and adjust strategy accordingly</li>
-                </ul>
-              </div>
-            )}
+            {scenarioAnalysis.orderly.impact > 0 &&
+              scenarioAnalysis.disorderly.impact > -10 &&
+              scenarioAnalysis.hothouse.impact > -20 && (
+                <div className="p-4 border-l-4 border-l-teal-500 bg-teal-500/10 dark:bg-teal-400/10">
+                  <h5 className="font-medium text-teal-700 dark:text-teal-300 mb-2">
+                    Well-Balanced Portfolio
+                  </h5>
+                  <p className="text-sm text-teal-600 dark:text-teal-400 mb-2">
+                    Your portfolio demonstrates good resilience across multiple climate scenarios.
+                  </p>
+                  <ul className="text-xs text-teal-600 dark:text-teal-400 space-y-1">
+                    <li>• Maintain current diversification strategy</li>
+                    <li>• Continue gradual transition toward cleaner vehicles</li>
+                    <li>• Monitor scenario developments and adjust strategy accordingly</li>
+                  </ul>
+                </div>
+              )}
           </div>
         </CardContent>
       </Card>
@@ -2472,7 +2789,13 @@ function ClimateScenarios({ aiInsights, portfolioData }: { aiInsights: AIInsight
   );
 }
 
-function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsightResponse | null; portfolioData: any }) {
+function AnomalyDetection({
+  aiInsights,
+  portfolioData,
+}: {
+  aiInsights: AIInsightResponse | null;
+  portfolioData: any;
+}) {
   const anomalies = [
     {
       id: 'AUTO0156',
@@ -2481,7 +2804,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
       description: 'Unusually high emissions for vehicle class (8.2 tCO2e vs 4.1 avg)',
       confidence: '95%',
       impact: 'Data Quality',
-      recommendation: 'Verify vehicle specifications and usage patterns'
+      recommendation: 'Verify vehicle specifications and usage patterns',
     },
     {
       id: 'AUTO0203',
@@ -2490,7 +2813,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
       description: 'Data quality score 4.5/5 - requires validation',
       confidence: '88%',
       impact: 'PCAF Compliance',
-      recommendation: 'Request additional documentation from borrower'
+      recommendation: 'Request additional documentation from borrower',
     },
     {
       id: 'AUTO0089',
@@ -2499,7 +2822,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
       description: 'Missing fuel efficiency data affecting PCAF score',
       confidence: '92%',
       impact: 'Calculation Accuracy',
-      recommendation: 'Use industry standard estimates with appropriate data quality score'
+      recommendation: 'Use industry standard estimates with appropriate data quality score',
     },
     {
       id: 'AUTO0134',
@@ -2508,8 +2831,8 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
       description: 'Vehicle age discrepancy in emissions calculation',
       confidence: '76%',
       impact: 'Minor Variance',
-      recommendation: 'Cross-reference with vehicle registration data'
-    }
+      recommendation: 'Cross-reference with vehicle registration data',
+    },
   ];
 
   return (
@@ -2536,7 +2859,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                     riskType: 'anomaly_detection',
                     severity: 'high',
                     totalAnomalies: 4,
-                    detectionMethod: 'ML algorithms'
+                    detectionMethod: 'ML algorithms',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -2553,7 +2876,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                     riskType: 'anomaly_detection',
                     severity: 'medium',
                     impact: 'data_quality',
-                    actionRequired: 'validation'
+                    actionRequired: 'validation',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -2570,7 +2893,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                     riskType: 'anomaly_detection',
                     severity: 'low',
                     impact: 'minor_variance',
-                    actionRequired: 'monitoring'
+                    actionRequired: 'monitoring',
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -2587,7 +2910,7 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                     type: 'detection_accuracy',
                     algorithm: 'ensemble_ml',
                     falsePositiveRate: 1.6,
-                    modelConfidence: 0.984
+                    modelConfidence: 0.984,
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 />
@@ -2603,7 +2926,13 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
           <NarrativeInsightCard
             key={index}
             title={`${anomaly.id} - ${anomaly.type}`}
-            variant={anomaly.severity === 'high' ? 'warning' : anomaly.severity === 'medium' ? 'info' : 'default'}
+            variant={
+              anomaly.severity === 'high'
+                ? 'warning'
+                : anomaly.severity === 'medium'
+                  ? 'info'
+                  : 'default'
+            }
             narrative={contextualNarrativeService.generateAnomalyNarrative(anomaly)}
             className="hover:shadow-md transition-all duration-200"
           >
@@ -2611,8 +2940,13 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <Badge
-                    variant={anomaly.severity === 'high' ? 'destructive' :
-                      anomaly.severity === 'medium' ? 'secondary' : 'outline'}
+                    variant={
+                      anomaly.severity === 'high'
+                        ? 'destructive'
+                        : anomaly.severity === 'medium'
+                          ? 'secondary'
+                          : 'outline'
+                    }
                     className="text-xs"
                   >
                     {anomaly.severity} severity
@@ -2647,7 +2981,9 @@ function AnomalyDetection({ aiInsights, portfolioData }: { aiInsights: AIInsight
                   <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
                   <span className="font-medium text-sm text-foreground">Recommended Action:</span>
                 </div>
-                <p className="text-sm text-green-700 dark:text-green-300">{anomaly.recommendation}</p>
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  {anomaly.recommendation}
+                </p>
               </div>
             </div>
           </NarrativeInsightCard>
@@ -2676,11 +3012,13 @@ function AIInsightsPage() {
       // Cleanup any real-time connections when leaving the page
       try {
         // Import and disconnect realTimeService if available
-        import('@/services/realTimeService').then(({ realTimeService }) => {
-          realTimeService.disconnect();
-        }).catch(() => {
-          // Ignore import errors
-        });
+        import('@/services/realTimeService')
+          .then(({ realTimeService }) => {
+            realTimeService.disconnect();
+          })
+          .catch(() => {
+            // Ignore import errors
+          });
       } catch (error) {
         console.warn('Error disconnecting real-time service:', error);
       }
@@ -2710,13 +3048,14 @@ function AIInsightsPage() {
       // 3. Generate actionable AI insights from pipeline data
       console.log('🎯 Processing actionable insights...');
       const insightRequest: AIInsightRequest = {
-        query: "Based on the data pipeline analysis, provide strategic insights for portfolio decarbonization and PCAF compliance",
+        query:
+          'Based on the data pipeline analysis, provide strategic insights for portfolio decarbonization and PCAF compliance',
         context: {
           portfolioSummary: portfolio,
           pipelineInsights: pipelineInsights,
-          analysisType: 'pipeline_enhanced'
+          analysisType: 'pipeline_enhanced',
         },
-        agent: 'advisory'
+        agent: 'advisory',
       };
 
       const insights = await aiService.getAIInsights(insightRequest);
@@ -2730,13 +3069,12 @@ function AIInsightsPage() {
       setRecommendations(recs);
 
       console.log('🎉 All AI insights loaded successfully!');
-
     } catch (error) {
       console.error('❌ Failed to load AI insights:', error);
       console.error('Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
-        error
+        error,
       });
 
       setError('Failed to load AI insights. Using fallback data.');
@@ -2744,7 +3082,9 @@ function AIInsightsPage() {
       // Fallback to basic portfolio data if AI services fail
       console.log('🔄 Using fallback data...');
       const fallbackData = {
-        loans: Array(247).fill(null).map((_, i) => ({ id: `AUTO${String(i + 1).padStart(4, '0')}` })),
+        loans: Array(247)
+          .fill(null)
+          .map((_, i) => ({ id: `AUTO${String(i + 1).padStart(4, '0')}` })),
         totalEmissions: 1847,
         avgDataQuality: 2.8,
         evPercentage: 18.2,
@@ -2753,7 +3093,7 @@ function AIInsightsPage() {
         totalLoanAmount: 8200000,
         totalOutstandingBalance: 7800000,
         totalFinancedEmissions: 1847,
-        averageDataQualityScore: 2.8
+        averageDataQualityScore: 2.8,
       };
       setPortfolioData(fallbackData);
 
@@ -2765,9 +3105,9 @@ function AIInsightsPage() {
       console.log('✅ Fallback data set, component should render now');
 
       toast({
-        title: "AI Services Unavailable",
-        description: "Using cached insights. Some features may be limited.",
-        variant: "destructive"
+        title: 'AI Services Unavailable',
+        description: 'Using cached insights. Some features may be limited.',
+        variant: 'destructive',
       });
     } finally {
       console.log('🏁 Loading complete, setting loading to false');
@@ -2777,15 +3117,16 @@ function AIInsightsPage() {
 
   const refreshAIInsights = async () => {
     toast({
-      title: "Refreshing AI Insights",
-      description: "Generating new insights from latest portfolio data...",
+      title: 'Refreshing AI Insights',
+      description: 'Generating new insights from latest portfolio data...',
     });
     await loadAIInsights();
   };
 
   useEffect(() => {
-    document.title = "AI Insights — Financed Emissions";
-    const desc = "AI-powered insights for financed emissions: portfolio analysis, target tracking, anomaly detection, and strategic recommendations.";
+    document.title = 'AI Insights — Financed Emissions';
+    const desc =
+      'AI-powered insights for financed emissions: portfolio analysis, target tracking, anomaly detection, and strategic recommendations.';
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', desc);
     const link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
@@ -2798,7 +3139,14 @@ function AIInsightsPage() {
     }
   }, []);
 
-  console.log('🎯 AIInsightsPage render - loading:', loading, 'error:', error, 'portfolioData:', !!portfolioData);
+  console.log(
+    '🎯 AIInsightsPage render - loading:',
+    loading,
+    'error:',
+    error,
+    'portfolioData:',
+    !!portfolioData
+  );
 
   // Loading state
   if (loading) {
@@ -2850,7 +3198,8 @@ function AIInsightsPage() {
               <div>
                 <CardTitle className="text-2xl font-bold">AI Insights Dashboard</CardTitle>
                 <p className="text-muted-foreground">
-                  Intelligent analysis of your financed emissions portfolio with actionable recommendations
+                  Intelligent analysis of your financed emissions portfolio with actionable
+                  recommendations
                 </p>
               </div>
             </div>

@@ -270,7 +270,7 @@ export default function AICoPilot() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col pb-safe">
       {/* KIMI-style Header */}
       <div className="text-center py-12">
         <h1 className="text-4xl font-bold tracking-tight mb-4">PCAF COPILOT</h1>
@@ -291,7 +291,7 @@ export default function AICoPilot() {
 
       {/* Messages Area */}
       <div className="flex-1 max-w-4xl mx-auto w-full px-4">
-        <ScrollArea className="h-[60vh] mb-6">
+        <ScrollArea className="h-[55vh] mb-4">
           <div className="space-y-6">
             {messages.length === 0 ? (
               /* Suggested Prompts - KIMI Style */
@@ -447,7 +447,7 @@ export default function AICoPilot() {
       </div>
 
       {/* KIMI-style Input Area */}
-      <div className="max-w-4xl mx-auto w-full px-4 pb-8">
+      <div className="max-w-4xl mx-auto w-full px-4 pb-16 pt-4">
         <div className="relative">
           <Input
             ref={inputRef}
