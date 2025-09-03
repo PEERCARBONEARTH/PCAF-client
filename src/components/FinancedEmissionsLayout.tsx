@@ -32,7 +32,7 @@ import { usePlatform } from '@/contexts/PlatformContext';
 import { OnboardingProvider } from '@/contexts/OnboardingContext';
 import { OnboardingWizard } from './onboarding/OnboardingWizard';
 import { OnboardingChecklistPanel } from './onboarding/OnboardingChecklistPanel';
-import { OnboardingCoachBubble } from './onboarding/OnboardingCoachBubble';
+
 import { useOnboardingTrigger } from '@/hooks/useOnboardingTrigger';
 
 const navigation = [
@@ -268,7 +268,6 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
         </main>
       </div>
       <OnboardingChecklistPanel />
-      <OnboardingCoachBubble />
       <OnboardingWizard />
     </div>
   );

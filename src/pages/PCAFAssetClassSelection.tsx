@@ -6,7 +6,17 @@ import { Badge } from '@/components/ui/badge';
 import { PeercarbonLogo } from '@/components/PeercarbonLogo';
 import { ModeToggle } from '@/components/mode-toggle';
 import { UserMenu } from '@/components/auth/UserMenu';
-import { ArrowLeft, Car, Building2, Factory, Home, Zap, Wind, Banknote, TrendingUp } from 'lucide-react';
+import {
+  ArrowLeft,
+  Car,
+  Building2,
+  Factory,
+  Home,
+  Zap,
+  Wind,
+  Banknote,
+  TrendingUp,
+} from 'lucide-react';
 
 const assetClasses = [
   {
@@ -15,7 +25,7 @@ const assetClasses = [
     description: 'Passenger cars, motorcycles, and commercial vehicles',
     icon: Car,
     available: true,
-    route: '/financed-emissions'
+    route: '/financed-emissions',
   },
   {
     id: 'green-finance-platform',
@@ -23,7 +33,7 @@ const assetClasses = [
     description: 'Automated green portfolio management with performance-driven disbursements',
     icon: TrendingUp,
     available: true,
-    route: '/green-finance'
+    route: '/green-finance',
   },
   {
     id: 'listed-equity-corporate-bonds',
@@ -31,7 +41,7 @@ const assetClasses = [
     description: 'Publicly traded equity investments and corporate debt securities',
     icon: Building2,
     available: false,
-    route: null
+    route: null,
   },
   {
     id: 'business-loans-unlisted-equity',
@@ -39,7 +49,7 @@ const assetClasses = [
     description: 'Corporate lending and private equity investments',
     icon: Factory,
     available: false,
-    route: null
+    route: null,
   },
   {
     id: 'project-finance',
@@ -47,7 +57,7 @@ const assetClasses = [
     description: 'Energy, infrastructure, and industrial projects',
     icon: Wind,
     available: false,
-    route: null
+    route: null,
   },
   {
     id: 'commercial-real-estate',
@@ -55,7 +65,7 @@ const assetClasses = [
     description: 'Office buildings, retail, and industrial properties',
     icon: Building2,
     available: false,
-    route: null
+    route: null,
   },
   {
     id: 'mortgages',
@@ -63,7 +73,7 @@ const assetClasses = [
     description: 'Residential property financing and home loans',
     icon: Home,
     available: false,
-    route: null
+    route: null,
   },
   {
     id: 'sovereign-debt',
@@ -71,17 +81,17 @@ const assetClasses = [
     description: 'Government bonds and sovereign debt instruments',
     icon: Banknote,
     available: false,
-    route: null
-  }
+    route: null,
+  },
 ];
 
 export default function PCAFAssetClassSelection() {
   const navigate = useNavigate();
   const { setPlatform } = usePlatform();
 
-  const handleAssetClassSelect = (assetClass: typeof assetClasses[0]) => {
+  const handleAssetClassSelect = (assetClass: (typeof assetClasses)[0]) => {
     if (!assetClass.available) return;
-    
+
     setPlatform('financed-emissions');
     navigate(assetClass.route!);
   };
@@ -127,43 +137,49 @@ export default function PCAFAssetClassSelection() {
               <Badge variant="outline" className="text-finance border-finance/30">
                 PCAF Compliant
               </Badge>
-              <Badge variant="secondary">
-                Asset Class Selection
-              </Badge>
+              <Badge variant="secondary">Asset Class Selection</Badge>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Select PCAF Asset Class
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose the asset class for your financed emissions tracking. Each class follows PCAF methodology standards for accurate carbon attribution.
+              Choose the asset class for your financed emissions tracking. Each class follows PCAF
+              methodology standards for accurate carbon attribution.
             </p>
           </div>
 
           {/* Asset Class Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {assetClasses.map((assetClass) => (
-              <Card 
+            {assetClasses.map(assetClass => (
+              <Card
                 key={assetClass.id}
                 className={`group transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/50 ${
-                  assetClass.available 
-                    ? 'hover:shadow-2xl hover:scale-[1.02] cursor-pointer hover:border-finance/30' 
+                  assetClass.available
+                    ? 'hover:shadow-2xl hover:scale-[1.02] cursor-pointer hover:border-finance/30'
                     : 'opacity-60 cursor-not-allowed'
                 }`}
                 onClick={() => handleAssetClassSelect(assetClass)}
               >
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className={`p-3 rounded-sm ${
-                      assetClass.available 
-                        ? 'bg-finance/10 group-hover:bg-finance/20' 
-                        : 'bg-muted/20'
-                    }`}>
-                      <assetClass.icon className={`h-6 w-6 ${
-                        assetClass.available ? 'text-finance' : 'text-muted-foreground'
-                      }`} />
+                    <div
+                      className={`p-3 rounded-sm ${
+                        assetClass.available
+                          ? 'bg-finance/10 group-hover:bg-finance/20'
+                          : 'bg-muted/20'
+                      }`}
+                    >
+                      <assetClass.icon
+                        className={`h-6 w-6 ${
+                          assetClass.available ? 'text-finance' : 'text-muted-foreground'
+                        }`}
+                      />
                     </div>
                     {assetClass.available ? (
-                      <Badge variant="default" className="bg-green-500/10 text-green-600 border-green-500/30">
+                      <Badge
+                        variant="default"
+                        className="bg-green-500/10 text-green-600 border-green-500/30"
+                      >
                         Closed Beta
                       </Badge>
                     ) : (
@@ -172,30 +188,22 @@ export default function PCAFAssetClassSelection() {
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className={`text-lg ${
-                    assetClass.available ? 'text-foreground' : 'text-muted-foreground'
-                  }`}>
+                  <CardTitle
+                    className={`text-lg ${
+                      assetClass.available ? 'text-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
                     {assetClass.title}
                   </CardTitle>
-                  <CardDescription className="text-sm">
-                    {assetClass.description}
-                  </CardDescription>
+                  <CardDescription className="text-sm">{assetClass.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {assetClass.available ? (
-                    <Button 
-                      className="w-full bg-finance hover:bg-finance/90"
-                      size="sm"
-                    >
+                    <Button className="w-full bg-finance hover:bg-finance/90" size="sm">
                       Enter Platform
                     </Button>
                   ) : (
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      size="sm"
-                      disabled
-                    >
+                    <Button variant="outline" className="w-full" size="sm" disabled>
                       In Development
                     </Button>
                   )}
@@ -213,11 +221,15 @@ export default function PCAFAssetClassSelection() {
               <div>
                 <h3 className="font-semibold text-foreground mb-2">PCAF Accreditation Status</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  PeerCarbon is currently undergoing PCAF (Partnership for Carbon Accounting Financials) accreditation. 
-                  Our Motor Vehicle Loans asset class is fully operational and compliant with PCAF methodology.
+                  PeerCarbon is currently undergoing PCAF (Partnership for Carbon Accounting
+                  Financials) accreditation. Our Motor Vehicle Loans asset class is fully
+                  operational and compliant with PCAF methodology.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="default" className="bg-green-500/10 text-green-600 border-green-500/30">
+                  <Badge
+                    variant="default"
+                    className="bg-green-500/10 text-green-600 border-green-500/30"
+                  >
                     ✓ Motor Vehicle Loans - Closed Beta
                   </Badge>
                   <Badge variant="outline" className="text-amber-600 border-amber-500/30">
@@ -231,7 +243,8 @@ export default function PCAFAssetClassSelection() {
           {/* Footer */}
           <div className="text-center mt-8">
             <p className="text-sm text-muted-foreground">
-              Need access to additional asset classes? Contact our team for early access and implementation timelines.
+              Need access to additional asset classes? Contact our team for early access and
+              implementation timelines.
             </p>
           </div>
         </div>
