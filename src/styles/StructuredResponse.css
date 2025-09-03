@@ -444,8 +444,8 @@
 }
 
 .difficulty-hard {
-  background: #fecaca;
-  color: #991b1b;
+  background: #dcfce7; /* Changed from red to green */
+  color: #166534;
 }
 
 .field-source, .field-example {
@@ -513,8 +513,8 @@
 }
 
 .status-non-compliant {
-  background: #fecaca;
-  color: #991b1b;
+  background: #dcfce7; /* Changed from red to green */
+  color: #166534;
 }
 
 .status-partial {
