@@ -39,10 +39,10 @@ The Inter font implementation is **100% complete** and ready for production use.
 ```typescript
 // In tailwind.config.ts
 fontFamily: {
-  'sans': ['Inter', 'Raleway', 'system-ui', '-apple-system', 'sans-serif'],
+  'sans': ['Inter',  'system-ui', '-apple-system', 'sans-serif'],
   'inter': ['Inter', 'sans-serif'],
-  'raleway': ['Raleway', 'sans-serif'],
-  'display': ['Inter', 'Raleway', 'system-ui', 'sans-serif'],
+  'raleway': [ 'sans-serif'],
+  'display': ['Inter',  'system-ui', 'sans-serif'],
   'body': ['Inter', 'system-ui', 'sans-serif']
 }
 ```

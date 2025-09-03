@@ -35,10 +35,10 @@
 ```typescript
 // Enhanced Font System
 fontFamily: {
-  'sans': ['Inter', 'Raleway', 'system-ui', '-apple-system', 'sans-serif'],
+  'sans': ['Inter',  'system-ui', '-apple-system', 'sans-serif'],
   'inter': ['Inter', 'sans-serif'],
-  'raleway': ['Raleway', 'sans-serif'],
-  'display': ['Inter', 'Raleway', 'system-ui', 'sans-serif'],
+  'raleway': [ 'sans-serif'],
+  'display': ['Inter',  'system-ui', 'sans-serif'],
   'body': ['Inter', 'system-ui', 'sans-serif']
 }
 ```
