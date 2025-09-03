@@ -183,7 +183,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                         {/* Step Labels */}
                         <div className="flex items-center justify-between text-xs">
                             {steps.map((step) => {
-                                const isActive = step.id === currentStep;
+                                const isActive = step.id === workflowState.currentStep;
                                 const isCompleted = isStepComplete(step.id);
                                 const canNavigate = isCompleted || isActive;
 
@@ -193,7 +193,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                                         className={`text-center max-w-20 transition-all ${
                                             canNavigate ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'
                                         }`}
-                                        onClick={() => canNavigate && setCurrentStep(step.id)}
+                                        onClick={() => canNavigate && dataIngestionWorkflowService.navigateToStep(step.id)}
                                     >
                                         <div className={`font-medium transition-colors ${
                                             isActive ? 'text-primary' : 

@@ -294,6 +294,15 @@ class DynamicInsightsEngine {
                 })
                 .slice(0, 8); // Limit to top 8 insights
         }
+
+        // Return insights after successful AI generation
+        return insights
+            .sort((a, b) => {
+                const priorityWeight = { critical: 4, high: 3, medium: 2, low: 1 };
+                return priorityWeight[b.priority] - priorityWeight[a.priority];
+            })
+            .slice(0, 8); // Limit to top 8 insights
+    }
     }
 
     /**
