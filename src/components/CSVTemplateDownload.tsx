@@ -210,7 +210,7 @@ export function CSVTemplateDownload() {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-brown-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
               <div className="text-sm">
                 <p className="font-medium text-yellow-800 dark:text-yellow-200">Important Notes</p>
