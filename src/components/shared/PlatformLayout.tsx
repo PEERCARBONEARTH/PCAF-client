@@ -25,7 +25,7 @@ export function PlatformLayout({ children }: PlatformLayoutProps) {
 
   const handleSwitchPlatform = () => {
     clearPlatform();
-    navigate('/pcaf-asset-class-selection');
+    navigate('/pcaf-asset-class');
   };
 
   const platformTitle = currentPlatform === 'green-finance' 

@@ -93,7 +93,7 @@ function FinancedEmissionsLayoutContent({ children }: FinancedEmissionsLayoutPro
 
   const handleSwitchPlatform = () => {
     clearPlatform();
-    navigate('/pcaf-asset-class-selection');
+    navigate('/pcaf-asset-class');
   };
 
   const isActiveRoute = (href: string) => {
