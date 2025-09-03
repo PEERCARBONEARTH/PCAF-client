@@ -2719,7 +2719,7 @@ function AnomalyDetection({
   portfolioData: any;
 }) {
   // Use actual anomalies from portfolio data if available, otherwise use fallback data
-  const anomalies = portfolioData?.anomalies || aiInsights?.anomalies || [
+  const anomalies = portfolioData?.anomalies || [
     {
       id: 'AUTO0156',
       severity: 'high',
