@@ -263,7 +263,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                 <div className="flex items-center gap-2">
                     {getCurrentStepIndex() === steps.length - 1 ? (
                         <Button
-                            onClick={() => onComplete?.(stepData)}
+                            onClick={() => onComplete?.(workflowState.results)}
                             disabled={!canProceed()}
                             className="flex items-center gap-2"
                         >
