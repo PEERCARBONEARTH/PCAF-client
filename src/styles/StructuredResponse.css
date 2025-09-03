@@ -316,7 +316,7 @@
 }
 
 .required-badge {
-  background: #5c3a00ff;
+  background: #10b981;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -491,7 +491,7 @@
 }
 
 .requirement-badge.mandatory {
-  background: #5c3a00ff;
+  background: #10b981;
   color: white;
 }
 
@@ -579,7 +579,7 @@
 }
 
 .metric-critical {
-  border-left: 4px solid #5c3a00ff;
+  border-left: 4px solid #10b981;
 }
 
 .metric-header {
@@ -626,7 +626,7 @@
 }
 
 .priority-high {
-  border-left: 4px solid #5c3a00ff;
+  border-left: 4px solid #10b981;
 }
 
 .priority-medium {
@@ -653,7 +653,7 @@
 }
 
 .priority-badge.priority-high {
-  background: #5c3a00ff;
+  background: #10b981;
 }
 
 .priority-badge.priority-medium {
