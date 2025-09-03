@@ -1,9 +1,9 @@
 /* Structured Response Styles */
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 .structured-response {
   max-width: 100%;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Raleway', "Inter", system-ui, -apple-system, sans-serif;
 }
 
 /* Confidence Badge */
