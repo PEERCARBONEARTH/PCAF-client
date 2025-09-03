@@ -165,25 +165,88 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Page Header */}
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Data Ingestion</h1>
+          <p className="text-lg text-muted-foreground mt-2">
+            Import your portfolio data with methodology validation and assumptions
+          </p>
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Upload className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Active Uploads</p>
+                <p className="text-2xl font-bold">{activeUploads.size}</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Recent Uploads</p>
+                <p className="text-2xl font-bold">{uploadHistory.length}</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Validation Errors</p>
+                <p className="text-2xl font-bold">{errorCount}</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Methodology-First Data Ingestion Wizard */}
       {showWizard && (
-        <DataIngestionWizard 
-          onComplete={handleWizardComplete}
-          className="mb-8"
-        />
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Methodology-First Data Ingestion
+            </CardTitle>
+            <p className="text-muted-foreground">
+              Configure your PCAF methodology before uploading data for accurate calculations
+            </p>
+          </CardHeader>
+          <CardContent>
+            <DataIngestionWizard 
+              onComplete={handleWizardComplete}
+              className="w-full"
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Toggle between Wizard and Traditional Upload */}
       {!showWizard && (
-        <Card>
+        <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-900/10">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">Traditional Upload Mode</h3>
-                <p className="text-sm text-muted-foreground">
-                  Using legacy upload without methodology validation
-                </p>
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                <div>
+                  <h3 className="font-medium">Traditional Upload Mode</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Using legacy upload without methodology validation
+                  </p>
+                </div>
               </div>
               <Button 
                 variant="outline" 
