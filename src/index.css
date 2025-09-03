@@ -156,7 +156,7 @@
 
   .dark {
     /* Dark mode with human warmth */
-    --background: 0 0% 10%; /* Changed to darker grey for dark mode */
+    --background:218, 33%, 55%; /* Changed to darker grey for dark mode */
     --foreground: 142 65% 95%; /* Uniform green */
     --card: 220 20% 12%;
     --card-foreground: 220 15% 92%;
