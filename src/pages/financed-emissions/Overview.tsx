@@ -751,7 +751,7 @@ function OverviewPage() {
           </AlertDescription>
         </Alert>
 
-        <Alert className="border-orange-200 bg-orange-50">
+        <Alert className="border-brown-200 bg-orange-50">
           <AlertTriangle className="h-5 w-5 text-orange-600" />
           <AlertDescription>
             <div className="space-y-3">

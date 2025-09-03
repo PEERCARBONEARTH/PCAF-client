@@ -204,7 +204,7 @@ export function DataIngestionWizard({ onComplete, className = "" }: DataIngestio
                                         </div>
                                         <div className="flex items-center justify-center gap-1 mt-1">
                                             {step.critical && (
-                                                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-brown-200">
                                                     Critical
                                                 </Badge>
                                             )}
@@ -617,7 +617,7 @@ function MethodologyStep({ onComplete }: { onComplete: (data: any) => void }) {
 
     return (
         <div className="space-y-6">
-            <Alert className="border-orange-200 bg-orange-50">
+            <Alert className="border-brown-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
                     <strong>Critical Step:</strong> Configure per-vehicle-type activity basis and statistical sources used when Option 1 data isn't available.

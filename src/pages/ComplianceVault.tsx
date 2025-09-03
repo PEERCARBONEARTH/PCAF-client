@@ -307,7 +307,7 @@ export default function ComplianceVault() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-yellow-950/20 rounded-lg">
                       <span className="text-sm font-medium">Environmental permit renewal</span>
                       <Badge variant="outline" className="bg-orange-500/10 text-orange-600">
                         Due in 7 days

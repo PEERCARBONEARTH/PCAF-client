@@ -212,7 +212,7 @@ export function PWAInstallPrompt() {
     <>
       {/* Offline Alert */}
       {showOfflineAlert && (
-        <Alert className="fixed top-4 left-4 right-4 z-50 border-orange-200 bg-orange-50">
+        <Alert className="fixed top-4 left-4 right-4 z-50 border-brown-200 bg-orange-50">
           <WifiOff className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <span>You're offline. Using cached data.</span>

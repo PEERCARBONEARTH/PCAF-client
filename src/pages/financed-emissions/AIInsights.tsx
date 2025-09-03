@@ -2426,7 +2426,7 @@ function ClimateScenarios({
             <div className="text-center p-4 border rounded-lg bg-muted/20">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <p className="text-lg font-bold text-foreground">
-                  {scenarioAnalysis.portfolioMetrics?.evPercentage.toFixed(1)}%
+                  {scenarioAnalysis.portfolioMetrics?.evPercentage?.toFixed(1) || '0.0'}%
                 </p>
                 <AIContextTooltip
                   metricType="portfolio_health"
@@ -2442,7 +2442,7 @@ function ClimateScenarios({
             <div className="text-center p-4 border rounded-lg bg-muted/20">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <p className="text-lg font-bold text-foreground">
-                  {scenarioAnalysis.portfolioMetrics?.icePercentage.toFixed(1)}%
+                  {scenarioAnalysis.portfolioMetrics?.icePercentage?.toFixed(1) || '0.0'}%
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
@@ -2458,7 +2458,7 @@ function ClimateScenarios({
             <div className="text-center p-4 border rounded-lg bg-muted/20">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <p className="text-lg font-bold text-foreground">
-                  {scenarioAnalysis.portfolioMetrics?.geographicConcentration.toFixed(1)}%
+                  {scenarioAnalysis.portfolioMetrics?.geographicConcentration?.toFixed(1) || '0.0'}%
                 </p>
                 <AIContextTooltip
                   metricType="risk_analytics"
@@ -2474,7 +2474,7 @@ function ClimateScenarios({
             <div className="text-center p-4 border rounded-lg bg-muted/20">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <p className="text-lg font-bold text-foreground">
-                  {scenarioAnalysis.portfolioMetrics?.avgDataQuality.toFixed(1)}
+                  {scenarioAnalysis.portfolioMetrics?.avgDataQuality?.toFixed(1) || '5.0'}
                 </p>
                 <AIContextTooltip
                   metricType="data_quality"
@@ -2671,22 +2671,23 @@ function ClimateScenarios({
             )}
 
             {/* Data Quality Enhancement */}
-            {scenarioAnalysis.portfolioMetrics?.avgDataQuality > 4.0 && (
-              <div className="p-4 border-l-4 border-l-border bg-muted/20">
-                <h5 className="font-medium text-foreground mb-2">
-                  Improve Scenario Modeling Accuracy
-                </h5>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Better data quality will improve scenario analysis confidence and regulatory
-                  compliance.
-                </p>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  <li>• Implement systematic data collection processes</li>
-                  <li>• Invest in staff training and data management systems</li>
-                  <li>• Create incentives for customers to provide better data</li>
-                </ul>
-              </div>
-            )}
+            {scenarioAnalysis.portfolioMetrics?.avgDataQuality &&
+              scenarioAnalysis.portfolioMetrics.avgDataQuality > 4.0 && (
+                <div className="p-4 border-l-4 border-l-border bg-muted/20">
+                  <h5 className="font-medium text-foreground mb-2">
+                    Improve Scenario Modeling Accuracy
+                  </h5>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Better data quality will improve scenario analysis confidence and regulatory
+                    compliance.
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Implement systematic data collection processes</li>
+                    <li>• Invest in staff training and data management systems</li>
+                    <li>• Create incentives for customers to provide better data</li>
+                  </ul>
+                </div>
+              )}
 
             {/* Balanced Portfolio Recognition */}
             {scenarioAnalysis.orderly.impact > 0 &&

@@ -352,7 +352,7 @@ function RiskAnalysis({ insights, loading }: { insights: any[]; loading: boolean
 
       <div className="grid gap-6 md:grid-cols-2">
         {insights.map((insight) => (
-          <Card key={insight.id} className="border-orange-200">
+          <Card key={insight.id} className="border-brown-200">
             <CardHeader>
               <div className="flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-orange-600 mt-1" />

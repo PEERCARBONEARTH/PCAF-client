@@ -962,7 +962,7 @@ export default function OverviewPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-brown-200">
               <CardContent className="pt-4">
                 <div className="space-y-2">
                   <p className="text-sm text-orange-700">Max Concentration</p>
@@ -1327,7 +1327,7 @@ export default function OverviewPage() {
           <CardContent className="space-y-6">
             {/* Portfolio Factor Quality */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="border-orange-200 bg-orange-50">
+              <Card className="border-brown-200 bg-orange-50">
                 <CardContent className="pt-4">
                   <div className="space-y-2">
                     <p className="text-sm text-orange-700 font-medium">Portfolio Factor Quality</p>
@@ -1472,7 +1472,7 @@ export default function OverviewPage() {
               </Alert>
 
               {/* Specific Warnings */}
-              <Alert className="border-orange-200 bg-orange-50">
+              <Alert className="border-brown-200 bg-orange-50">
                 <Info className="h-4 w-4" />
                 <AlertDescription>
                   <div className="space-y-2">
