@@ -54,6 +54,7 @@ import ReportTemplates from "./pages/financed-emissions/ReportTemplates";
 import EmissionsSummaryPage from "./pages/financed-emissions/Summary";
 import AIInsightsPage from "./pages/financed-emissions/AIInsights";
 import AICoPilotPage from "./pages/financed-emissions/AICoPilot";
+import RAGManagementPage from "./pages/financed-emissions/RAGManagement";
 import ClimateRiskPage from "./pages/financed-emissions/ClimateRisk";
 import ScenarioModelingPage from "./pages/financed-emissions/ScenarioModeling";
 import FinancedEmissionsSettings from "./pages/financed-emissions/Settings";
@@ -136,6 +137,7 @@ const FinancedEmissionsRoutes = () => {
         <Route path="overview" element={<OverviewPage />} />
         <Route path="ai-insights" element={<AIInsightsPage />} />
         <Route path="ai-copilot" element={<AICoPilotPage />} />
+        <Route path="rag-management" element={<RAGManagementPage />} />
         {/* Legacy routes redirect to unified AI insights */}
         <Route path="climate-risk" element={<Navigate to="/financed-emissions/ai-insights?tab=risk" replace />} />
         <Route path="scenario-modeling" element={<Navigate to="/financed-emissions/ai-insights?tab=scenarios" replace />} />

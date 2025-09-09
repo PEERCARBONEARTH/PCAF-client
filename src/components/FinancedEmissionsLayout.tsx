@@ -67,6 +67,11 @@ const navigation = [
     icon: MessageCircle,
   },
   {
+    name: 'RAG Management',
+    href: '/financed-emissions/rag-management',
+    icon: Database,
+  },
+  {
     name: 'Settings',
     href: '/financed-emissions/settings',
     icon: Settings,
