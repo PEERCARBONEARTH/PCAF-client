@@ -90,7 +90,14 @@ export function AIInsightsPanel({
             {lastUpdated && (
               <div className="flex items-center text-sm text-gray-500">
                 <Clock className="h-4 w-4 mr-1" />
-                {lastUpdated.toLocaleTimeString()}
+                {(() => {
+                  try {
+                    const date = lastUpdated instanceof Date ? lastUpdated : new Date(lastUpdated);
+                    return isNaN(date.getTime()) ? 'Invalid date' : date.toLocaleTimeString();
+                  } catch (error) {
+                    return 'Unknown time';
+                  }
+                })()}
               </div>
             )}
             
