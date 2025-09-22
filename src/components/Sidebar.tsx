@@ -129,6 +129,15 @@ const greenFinanceItems = [
     icon: Store,
     description: "Third-party integrations",
     category: "integrations"
+  },
+  {
+    id: "pcaf-calculator",
+    name: "PCAF Calculator",
+    href: "/green-finance/pcaf-calculator",
+    icon: Target,
+    description: "Comprehensive PCAF platform",
+    category: "analytics",
+    isNew: true
   }
 ];
 
@@ -148,6 +157,15 @@ const financedEmissionsItems = [
     icon: Calculator,
     description: "Emissions Summary",
     category: "workflow"
+  },
+  {
+    id: "pcaf-calculator",
+    name: "PCAF Calculator",
+    href: "/financed-emissions/pcaf-calculator",
+    icon: Target,
+    description: "Comprehensive PCAF platform",
+    category: "workflow",
+    isNew: true
   },
   {
     id: "ledger",

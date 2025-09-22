@@ -252,6 +252,105 @@ class APIClient {
       body: JSON.stringify(batchData),
     });
   }
+
+  // PCAF Attribution Standards APIs
+  async calculateAttribution(inputs: any): Promise<APIResponse> {
+    return this.request('/api/v1/pcaf-attribution/calculate', {
+      method: 'POST',
+      body: JSON.stringify(inputs),
+    });
+  }
+
+  async getAttributionPortfolioSummary(): Promise<APIResponse> {
+    return this.request('/api/v1/pcaf-attribution/portfolio-summary');
+  }
+
+  async batchCalculateAttribution(inputs: any[]): Promise<APIResponse> {
+    return this.request('/api/v1/pcaf-attribution/batch-calculate', {
+      method: 'POST',
+      body: JSON.stringify({ inputs }),
+    });
+  }
+
+  async getAttributionComplianceReport(): Promise<APIResponse> {
+    return this.request('/api/v1/pcaf-attribution/compliance-report');
+  }
+
+  // Avoided Emissions APIs
+  async calculateAvoidedEmissions(inputs: any): Promise<APIResponse> {
+    return this.request('/api/v1/avoided-emissions/calculate', {
+      method: 'POST',
+      body: JSON.stringify(inputs),
+    });
+  }
+
+  async getAvoidedEmissionsPortfolioSummary(): Promise<APIResponse> {
+    return this.request('/api/v1/avoided-emissions/portfolio-summary');
+  }
+
+  async getAvoidedEmissionsResults(): Promise<APIResponse> {
+    return this.request('/api/v1/avoided-emissions/results');
+  }
+
+  async getAvoidedEmissionsPCAFCompliance(): Promise<APIResponse> {
+    return this.request('/api/v1/avoided-emissions/pcaf-compliance');
+  }
+
+  async generateAvoidedEmissionsPCAFReport(): Promise<Blob> {
+    const response = await fetch(`${this.baseURL}/api/v1/avoided-emissions/pcaf-report`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.authToken ? `Bearer ${this.authToken}` : '',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to generate PCAF report');
+    }
+    
+    return response.blob();
+  }
+
+  async exportAvoidedEmissionsToExcel(): Promise<Blob> {
+    const response = await fetch(`${this.baseURL}/api/v1/avoided-emissions/export-excel`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.authToken ? `Bearer ${this.authToken}` : '',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to export to Excel');
+    }
+    
+    return response.blob();
+  }
+
+  async generateAvoidedEmissionsPCAFDisclosure(): Promise<APIResponse> {
+    return this.request('/api/v1/avoided-emissions/pcaf-disclosure', {
+      method: 'POST',
+    });
+  }
+
+  // PCAF Compliance APIs
+  async getPCAFComplianceOverview(): Promise<APIResponse> {
+    return this.request('/api/v1/pcaf-compliance/overview');
+  }
+
+  async generatePCAFComplianceReport(): Promise<Blob> {
+    const response = await fetch(`${this.baseURL}/api/v1/pcaf-compliance/report`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.authToken ? `Bearer ${this.authToken}` : '',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to generate compliance report');
+    }
+    
+    return response.blob();
+  }
 }
 
 // Create API client instance
