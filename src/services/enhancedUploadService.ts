@@ -96,13 +96,20 @@ class EnhancedUploadService {
     try {
       // Check if API is available, fallback to mock validation if not
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      
-      const response = await fetch(`${apiBaseUrl}/loans/bulk-intake`, {
+
+      // Prepare headers - only include Authorization if token exists
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+
+      const authToken = localStorage.getItem('auth_token');
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/v1/loans/bulk-intake`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
+        headers,
         body: JSON.stringify({
           loans: csvData.map(loan => ({
             borrower_name: loan.borrower_name,
@@ -367,13 +374,20 @@ class EnhancedUploadService {
         startTime
       });
 
+      // Prepare headers - only include Authorization if token exists
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+
+      const authToken = localStorage.getItem('auth_token');
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
       // Call backend bulk intake endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/loans/bulk-intake`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/loans/bulk-intake`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
+        headers,
         body: JSON.stringify({
           loans: csvData.map(loan => ({
             borrower_name: loan.borrower_name,
@@ -501,7 +515,7 @@ class EnhancedUploadService {
 
     while (Date.now() - startWait < maxWaitTime) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/loans/batch-jobs/${batchJobId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/loans/batch-jobs/${batchJobId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
           }
@@ -579,7 +593,7 @@ class EnhancedUploadService {
     failedItems: number;
   }>> {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/loans/upload-history?limit=${limit}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/loans/upload-history?limit=${limit}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
