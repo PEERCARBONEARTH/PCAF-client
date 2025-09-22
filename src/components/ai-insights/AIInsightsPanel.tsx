@@ -15,17 +15,17 @@ const USER_ROLES = [
   { value: 'risk_manager', label: 'Risk Manager', icon: AlertCircle },
   { value: 'compliance_officer', label: 'Compliance Officer', icon: Users },
   { value: 'loan_officer', label: 'Loan Officer', icon: Users },
-  { value: 'data_analyst', label: 'Data Analyst', icon: Brain }
+  { value: 'data_analyst', label: 'Data Analyst', icon: Brain },
 ];
 
 export function AIInsightsPanel({
   userRole = 'risk_manager',
   className = '',
   showRefreshButton = true,
-  showRoleSelector = false
+  showRoleSelector = false,
 }: AIInsightsPanelProps) {
   const [selectedRole, setSelectedRole] = useState(userRole);
-  
+
   const {
     insights,
     isLoading,
@@ -34,12 +34,12 @@ export function AIInsightsPanel({
     hasRecentInsights,
     refreshInsights,
     loadInsightsForRole,
-    summary
+    summary,
   } = useAIInsights({
     userRole: selectedRole,
     autoRefresh: true,
     refreshIntervalMinutes: 30,
-    loadOnMount: true
+    loadOnMount: true,
   });
 
   const handleRoleChange = async (newRole: string) => {
@@ -85,7 +85,7 @@ export function AIInsightsPanel({
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {lastUpdated && (
               <div className="flex items-center text-sm text-gray-500">
@@ -100,7 +100,7 @@ export function AIInsightsPanel({
                 })()}
               </div>
             )}
-            
+
             {showRefreshButton && (
               <button
                 onClick={handleRefresh}
@@ -117,15 +117,13 @@ export function AIInsightsPanel({
         {/* Role Selector */}
         {showRoleSelector && (
           <div className="mt-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              View for Role:
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">View for Role:</label>
             <select
               value={selectedRole}
-              onChange={(e) => handleRoleChange(e.target.value)}
+              onChange={e => handleRoleChange(e.target.value)}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
-              {USER_ROLES.map((role) => (
+              {USER_ROLES.map(role => (
                 <option key={role.value} value={role.value}>
                   {role.label}
                 </option>
@@ -146,13 +144,9 @@ export function AIInsightsPanel({
           <div className="space-y-6">
             {/* Executive Summary */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {insights.title}
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{insights.title}</h3>
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                <p className="text-sm text-blue-800 font-medium">
-                  {insights.executiveSummary}
-                </p>
+                <p className="text-sm text-blue-800 font-medium">{insights.executiveSummary}</p>
               </div>
             </div>
 
@@ -209,7 +203,7 @@ export function AIInsightsPanel({
             {/* Detailed Narrative */}
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">Detailed Analysis</h4>
-              <div 
+              <div
                 className="text-sm text-gray-700 prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: insights.narrative.replace(/\n/g, '<br />') }}
               />

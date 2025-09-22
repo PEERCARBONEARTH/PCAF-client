@@ -215,7 +215,9 @@ class AIInsightsService {
     }
     
     const now = Date.now();
-    const lastUpdated = this.state.lastUpdated.getTime();
+    const lastUpdated = this.state.lastUpdated instanceof Date 
+      ? this.state.lastUpdated.getTime() 
+      : new Date(this.state.lastUpdated).getTime();
     const maxAge = maxAgeMinutes * 60 * 1000;
     
     return (now - lastUpdated) < maxAge;
@@ -230,7 +232,9 @@ class AIInsightsService {
   } {
     const hasInsights = !!this.state.insights;
     const lastUpdated = this.state.lastUpdated 
-      ? this.state.lastUpdated.toLocaleString() 
+      ? (this.state.lastUpdated instanceof Date 
+          ? this.state.lastUpdated.toLocaleString() 
+          : new Date(this.state.lastUpdated).toLocaleString())
       : null;
     const keyTakeaway = this.state.insights?.keyTakeaways?.[0] || null;
     const isStale = !this.hasRecentInsights();
