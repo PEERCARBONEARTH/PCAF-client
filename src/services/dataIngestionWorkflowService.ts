@@ -1,5 +1,9 @@
-import { enhancedUploadService } from './enhancedUploadService';
 import { realTimeService } from './realTimeService';
+import { serviceAbstractionLayer } from './serviceAbstractionLayer';
+import { mockDataService } from './mockDataService';
+import { errorHandlingService } from './errorHandlingService';
+import { dataSynchronizationService } from './dataSynchronizationService';
+import { progressTrackingService } from './progressTrackingService';
 
 export interface WorkflowStep {
   id: string;
@@ -10,271 +14,63 @@ export interface WorkflowStep {
   timestamp?: Date;
 }
 
+export interface WorkflowError {
+  id: string;
+  stepId: string;
+  error: Error;
+  timestamp: Date;
+  resolved: boolean;
+}
+
+export interface WorkflowWarning {
+  id: string;
+  stepId: string;
+  message: string;
+  timestamp: Date;
+  acknowledged: boolean;
+}
+
 export interface WorkflowState {
   currentStep: string;
   steps: Record<string, WorkflowStep>;
   isComplete: boolean;
   results?: any;
+  
+  // Enhanced state management
+  errors: WorkflowError[];
+  warnings: WorkflowWarning[];
+  canRetry: boolean;
+  retryCount: number;
+  lastError?: Error;
+  
+  // Degradation mode
+  mockMode: boolean;
+  degradationReason?: string;
+  
+  // Persistence
+  savedAt?: Date;
+  sessionId: string;
+  
+  // Progress tracking
+  overallProgress: number;
+  estimatedTimeRemaining?: number;
 }
 
 class DataIngestionWorkflowService {
-  private workflowState: WorkflowState = {
-    currentStep: 'source',
-    steps: {
-      source: {
-        id: 'source',
-        title: 'Data Source',
-        description: 'Select and configure your data source',
-        status: 'active',
-      },
-      methodology: {
-        id: 'methodology',
-        title: 'Methodology & Assumptions',
-        description: 'Configure activity factors and data sources',
-        status: 'pending',
-      },
-      validation: {
-        id: 'validation',
-        title: 'Data Validation',
-        description: 'Review and validate data quality',
-        status: 'pending',
-      },
-      processing: {
-        id: 'processing',
-        title: 'Processing',
-        description: 'Process and calculate emissions',
-        status: 'pending',
-      },
-    },
-    isComplete: false,
-  };
-
+  private workflowState: WorkflowState;
   private listeners: Array<(state: WorkflowState) => void> = [];
+  private readonly STORAGE_KEY = 'pcaf_workflow_state';
+  private readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
 
-  getWorkflowState(): WorkflowState {
-    return { ...this.workflowState };
+  constructor() {
+    this.workflowState = this.initializeWorkflowState();
+    this.loadPersistedState();
   }
 
-  subscribe(listener: (state: WorkflowState) => void): () => void {
-    this.listeners.push(listener);
-    return () => {
-      const index = this.listeners.indexOf(listener);
-      if (index > -1) {
-        this.listeners.splice(index, 1);
-      }
-    };
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach(listener => listener(this.getWorkflowState()));
-  }
-
-  async completeStep(stepId: string, data: any): Promise<void> {
-    if (!this.workflowState.steps[stepId]) {
-      throw new Error(`Step ${stepId} not found`);
-    }
-
-    // Update current step
-    this.workflowState.steps[stepId] = {
-      ...this.workflowState.steps[stepId],
-      status: 'completed',
-      data,
-      timestamp: new Date(),
-    };
-
-    // Move to next step
-    const stepOrder = ['source', 'methodology', 'validation', 'processing'];
-    const currentIndex = stepOrder.indexOf(stepId);
-
-    if (currentIndex < stepOrder.length - 1) {
-      const nextStepId = stepOrder[currentIndex + 1];
-      this.workflowState.currentStep = nextStepId;
-      this.workflowState.steps[nextStepId].status = 'active';
-    } else {
-      // Workflow complete
-      this.workflowState.isComplete = true;
-      await this.finalizeWorkflow();
-    }
-
-    this.notifyListeners();
-  }
-
-  async processDataSource(sourceConfig: any): Promise<any> {
-    try {
-      switch (sourceConfig.source) {
-        case 'csv':
-          return await this.processCsvUpload(sourceConfig);
-        case 'lms':
-          return await this.processLmsIntegration(sourceConfig);
-        case 'api':
-          return await this.processApiIntegration(sourceConfig);
-        default:
-          throw new Error(`Unsupported data source: ${sourceConfig.source}`);
-      }
-    } catch (error) {
-      console.error('Data source processing failed:', error);
-      throw error;
-    }
-  }
-
-  private async processCsvUpload(config: any): Promise<any> {
-    if (!config.file) {
-      throw new Error('No file provided for CSV upload');
-    }
-
-    try {
-      // Use the enhanced upload service - simulate file processing
-      // Since uploadFile doesn't exist, we'll simulate the upload process
-      const uploadResult = {
-        jobId: `upload_${Date.now()}`,
-        summary: {
-          totalProcessed: 247,
-          successful: 247,
-          failed: 0,
-        },
-      };
-
-      return {
-        type: 'csv',
-        fileName: config.fileName,
-        uploadId: uploadResult.jobId,
-        recordCount: uploadResult.summary?.totalProcessed || 0,
-        status: 'uploaded',
-      };
-    } catch (error) {
-      console.error('CSV upload failed:', error);
-      throw new Error('Failed to upload CSV file');
-    }
-  }
-
-  private async processLmsIntegration(config: any): Promise<any> {
-    // Simulate LMS integration
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          type: 'lms',
-          endpoint: config.endpoint,
-          connectionStatus: 'connected',
-          recordCount: 1247,
-          lastSync: new Date(),
-        });
-      }, 2000);
-    });
-  }
-
-  private async processApiIntegration(config: any): Promise<any> {
-    // Simulate API integration
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          type: 'api',
-          endpoint: config.endpoint,
-          authMethod: config.authMethod,
-          connectionStatus: 'connected',
-          recordCount: 856,
-          lastSync: new Date(),
-        });
-      }, 1500);
-    });
-  }
-
-  async validateData(validationConfig: any): Promise<any> {
-    // Simulate data validation process
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          dataFormat: { passed: true, message: 'Data format validation passed' },
-          methodology: { passed: true, message: 'Methodology configuration validated' },
-          pcafCompliance: { passed: true, message: 'PCAF compliance check passed' },
-          dataQuality: {
-            passed: true,
-            score: 3.2,
-            message: 'Average data quality score: 3.2 (PCAF compliant)',
-          },
-          coverage: { passed: true, percentage: 95, message: '95% portfolio coverage achieved' },
-        });
-      }, 3000);
-    });
-  }
-
-  async processEmissions(processingConfig: any): Promise<any> {
-    const sourceData = this.workflowState.steps.source.data;
-    const methodologyData = this.workflowState.steps.methodology.data;
-
-    try {
-      // If we have an upload ID from CSV, use the enhanced upload service
-      if (sourceData?.uploadId) {
-        // Since processUpload doesn't exist, simulate processing
-        const processingResult = {
-          summary: {
-            totalProcessed: 247,
-            successful: 247,
-            totalEmissions: 45678.9,
-          },
-          processingTime: '8.5 seconds',
-        };
-
-        return {
-          totalLoans: processingResult.summary?.totalProcessed || 0,
-          processedLoans: processingResult.summary?.successful || 0,
-          successfulCalculations: processingResult.summary?.successful || 0,
-          averageDataQuality: 3.2,
-          totalEmissions: processingResult.summary?.totalEmissions || 45678.9,
-          processingTime: processingResult.processingTime || '8.5 seconds',
-          complianceStatus: 'PCAF Compliant',
-          uploadId: sourceData.uploadId,
-        };
-      } else {
-        // Simulate processing for other data sources
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve({
-              totalLoans: 1247,
-              processedLoans: 1247,
-              successfulCalculations: 1189,
-              averageDataQuality: 3.2,
-              totalEmissions: 45678.9,
-              processingTime: '8.5 seconds',
-              complianceStatus: 'PCAF Compliant',
-            });
-          }, 5000);
-        });
-      }
-    } catch (error) {
-      console.error('Emissions processing failed:', error);
-      throw error;
-    }
-  }
-
-  private async finalizeWorkflow(): Promise<void> {
-    const processingResults = this.workflowState.steps.processing.data?.results;
-
-    this.workflowState.results = {
-      completedAt: new Date(),
-      summary: processingResults,
-      workflowData: {
-        source: this.workflowState.steps.source.data,
-        methodology: this.workflowState.steps.methodology.data,
-        validation: this.workflowState.steps.validation.data,
-        processing: this.workflowState.steps.processing.data,
-      },
-    };
-
-    // Notify real-time service of completion using send method
-    try {
-      realTimeService.send({
-        type: 'workflow_complete',
-        workflowId: 'data_ingestion',
-        results: this.workflowState.results,
-        timestamp: Date.now(),
-      });
-    } catch (error) {
-      console.warn('Failed to notify real-time service:', error);
-    }
-  }
-
-  resetWorkflow(): void {
-    this.workflowState = {
+  private initializeWorkflowState(): WorkflowState {
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    return {
       currentStep: 'source',
       steps: {
         source: {
@@ -303,9 +99,942 @@ class DataIngestionWorkflowService {
         },
       },
       isComplete: false,
+      errors: [],
+      warnings: [],
+      canRetry: false,
+      retryCount: 0,
+      mockMode: false,
+      sessionId,
+      overallProgress: 0
+    };
+  }
+
+  getWorkflowState(): WorkflowState {
+    return { ...this.workflowState };
+  }
+
+  subscribe(listener: (state: WorkflowState) => void): () => void {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
+
+  private notifyListeners() {
+    this.saveState();
+    this.listeners.forEach(listener => listener(this.getWorkflowState()));
+  }
+
+  // State persistence methods
+  private saveState(): void {
+    try {
+      const stateToSave = {
+        ...this.workflowState,
+        savedAt: new Date()
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (error) {
+      console.warn('Failed to save workflow state:', error);
+    }
+  }
+
+  private loadPersistedState(): void {
+    try {
+      const savedState = localStorage.getItem(this.STORAGE_KEY);
+      if (!savedState) return;
+
+      const parsedState = JSON.parse(savedState);
+      
+      // Check if state is not too old
+      if (parsedState.savedAt) {
+        const savedTime = new Date(parsedState.savedAt).getTime();
+        const now = Date.now();
+        
+        if (now - savedTime > this.SESSION_TIMEOUT) {
+          console.log('Saved workflow state expired, starting fresh');
+          this.clearSavedState();
+          return;
+        }
+      }
+
+      // Validate state structure
+      if (this.isValidWorkflowState(parsedState)) {
+        this.workflowState = {
+          ...this.workflowState,
+          ...parsedState,
+          sessionId: this.workflowState.sessionId // Keep current session ID
+        };
+        console.log('Restored workflow state from previous session');
+      }
+    } catch (error) {
+      console.warn('Failed to load persisted workflow state:', error);
+      this.clearSavedState();
+    }
+  }
+
+  private isValidWorkflowState(state: any): boolean {
+    return (
+      state &&
+      typeof state.currentStep === 'string' &&
+      state.steps &&
+      typeof state.steps === 'object' &&
+      typeof state.isComplete === 'boolean' &&
+      Array.isArray(state.errors) &&
+      Array.isArray(state.warnings)
+    );
+  }
+
+  clearSavedState(): void {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to clear saved workflow state:', error);
+    }
+  }
+
+  async completeStep(stepId: string, data: any): Promise<void> {
+    if (!this.workflowState.steps[stepId]) {
+      throw new Error(`Step ${stepId} not found`);
+    }
+
+    // Start progress tracking for step completion
+    const operationId = progressTrackingService.startOperation(
+      stepId, 
+      `complete_${stepId}`, 
+      1
+    );
+
+    try {
+      // Clear any previous errors for this step
+      this.clearStepErrors(stepId);
+
+      // Update progress: validation phase
+      progressTrackingService.updateProgressById(
+        operationId, 
+        25, 
+        'Validating step completion...'
+      );
+
+      // Validate step completion based on step type
+      await this.validateStepCompletion(stepId, data);
+
+      // Update progress: updating state
+      progressTrackingService.updateProgressById(
+        operationId, 
+        50, 
+        'Updating workflow state...'
+      );
+
+      // Update current step
+      this.workflowState.steps[stepId] = {
+        ...this.workflowState.steps[stepId],
+        status: 'completed',
+        data,
+        timestamp: new Date(),
+      };
+
+      // Update overall progress
+      this.updateOverallProgress();
+
+      // Update progress: navigation
+      progressTrackingService.updateProgressById(
+        operationId, 
+        75, 
+        'Moving to next step...'
+      );
+
+      // Move to next step
+      const stepOrder = ['source', 'methodology', 'validation', 'processing'];
+      const currentIndex = stepOrder.indexOf(stepId);
+
+      if (currentIndex < stepOrder.length - 1) {
+        const nextStepId = stepOrder[currentIndex + 1];
+        this.workflowState.currentStep = nextStepId;
+        this.workflowState.steps[nextStepId].status = 'active';
+      } else {
+        // Workflow complete
+        this.workflowState.isComplete = true;
+        this.workflowState.overallProgress = 100;
+        await this.finalizeWorkflow();
+      }
+
+      // Reset retry state on successful completion
+      this.workflowState.canRetry = false;
+      this.workflowState.retryCount = 0;
+      this.workflowState.lastError = undefined;
+
+      // Complete progress tracking
+      progressTrackingService.completeOperation(
+        operationId, 
+        `${this.workflowState.steps[stepId].title} completed successfully`
+      );
+
+      this.notifyListeners();
+    } catch (error) {
+      // Fail progress tracking
+      progressTrackingService.failOperation(
+        operationId, 
+        `Failed to complete ${stepId}: ${(error as Error).message}`
+      );
+      
+      await this.handleStepError(stepId, error as Error);
+      throw error;
+    }
+  }
+
+  // Enhanced error handling methods
+  private async handleStepError(stepId: string, error: Error): Promise<void> {
+    const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const workflowError: WorkflowError = {
+      id: errorId,
+      stepId,
+      error,
+      timestamp: new Date(),
+      resolved: false
     };
 
+    this.workflowState.errors.push(workflowError);
+    this.workflowState.lastError = error;
+    this.workflowState.canRetry = errorHandlingService.isRetryableError(error);
+    this.workflowState.steps[stepId].status = 'error';
+
+    // Report error to error handling service
+    const context = errorHandlingService.createErrorContext(
+      `workflow_step_${stepId}`,
+      {
+        stepId,
+        workflowState: this.workflowState
+      }
+    );
+    errorHandlingService.reportError(error, context);
+
     this.notifyListeners();
+  }
+
+  private clearStepErrors(stepId: string): void {
+    this.workflowState.errors = this.workflowState.errors.filter(
+      error => error.stepId !== stepId
+    );
+  }
+
+  private async validateStepCompletion(stepId: string, data: any): Promise<void> {
+    switch (stepId) {
+      case 'source':
+        if (!data || (!data.file && !data.endpoint)) {
+          throw new Error('Data source configuration is incomplete');
+        }
+        break;
+        
+      case 'methodology':
+        if (!data || !data.activityFactorSource || !data.dataQualityApproach || !data.assumptionsValidated) {
+          throw new Error('Methodology configuration is incomplete. Please ensure all required fields are completed and validated.');
+        }
+        
+        // Validate vehicle assumptions
+        if (!data.vehicleAssumptions || Object.keys(data.vehicleAssumptions).length === 0) {
+          throw new Error('Vehicle assumptions are required for methodology configuration');
+        }
+        
+        // Validate each vehicle assumption
+        for (const [vehicleType, assumptions] of Object.entries(data.vehicleAssumptions)) {
+          const vehicleData = assumptions as any;
+          if (!vehicleData.activityBasis || !vehicleData.fuelType || !vehicleData.annualDistance || vehicleData.annualDistance <= 0) {
+            throw new Error(`Invalid configuration for ${vehicleType}: all fields must be completed with valid values`);
+          }
+          
+          if (vehicleData.annualDistance > 100000) {
+            // Add warning but don't fail
+            const warningId = `warning_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            this.workflowState.warnings.push({
+              id: warningId,
+              stepId,
+              message: `Unusually high annual distance (${vehicleData.annualDistance}) for ${vehicleType}`,
+              timestamp: new Date(),
+              acknowledged: false
+            });
+          }
+        }
+        
+        // Validate custom factors if using custom source
+        if (data.activityFactorSource === 'custom' && (!data.customFactors || Object.keys(data.customFactors).length === 0)) {
+          throw new Error('Custom emission factors are required when using custom activity factor source');
+        }
+        break;
+        
+      case 'validation':
+        if (!data || !data.validationResults) {
+          throw new Error('Data validation results are required');
+        }
+        break;
+        
+      case 'processing':
+        if (!data || !data.totalLoans || !data.successfulCalculations) {
+          throw new Error('Processing results are incomplete');
+        }
+        break;
+        
+      default:
+        // No specific validation for unknown steps
+        break;
+    }
+  }
+
+  private updateOverallProgress(): void {
+    const stepOrder = ['source', 'methodology', 'validation', 'processing'];
+    const completedSteps = stepOrder.filter(
+      stepId => this.workflowState.steps[stepId].status === 'completed'
+    ).length;
+    
+    this.workflowState.overallProgress = (completedSteps / stepOrder.length) * 100;
+  }
+
+  async processDataSource(sourceConfig: any): Promise<any> {
+    const operationId = progressTrackingService.startOperation(
+      'source', 
+      `process_${sourceConfig.source}`,
+      sourceConfig.source === 'csv' ? (sourceConfig.file?.size || 1000) / 1000 : 1
+    );
+
+    try {
+      progressTrackingService.updateProgressById(
+        operationId, 
+        10, 
+        'Initializing data source processing...'
+      );
+
+      // Check if we should use mock mode
+      if (this.workflowState.mockMode || serviceAbstractionLayer.isInMockMode('upload')) {
+        progressTrackingService.updateProgressById(
+          operationId, 
+          25, 
+          'Using mock data source...'
+        );
+        const result = await this.processMockDataSource(sourceConfig);
+        progressTrackingService.completeOperation(
+          operationId, 
+          'Mock data source processed successfully'
+        );
+        return result;
+      }
+
+      progressTrackingService.updateProgressById(
+        operationId, 
+        25, 
+        'Connecting to data source...'
+      );
+
+      let result;
+      switch (sourceConfig.source) {
+        case 'csv':
+          result = await this.processCsvUpload(sourceConfig, operationId);
+          break;
+        case 'lms':
+          result = await this.processLmsIntegration(sourceConfig, operationId);
+          break;
+        case 'api':
+          result = await this.processApiIntegration(sourceConfig, operationId);
+          break;
+        default:
+          throw new Error(`Unsupported data source: ${sourceConfig.source}`);
+      }
+
+      progressTrackingService.completeOperation(
+        operationId, 
+        'Data source processed successfully'
+      );
+      return result;
+    } catch (error) {
+      console.error('Data source processing failed:', error);
+      
+      // Try fallback to mock if not already in mock mode
+      if (!this.workflowState.mockMode) {
+        console.log('Falling back to mock data source processing');
+        progressTrackingService.updateProgressById(
+          operationId, 
+          50, 
+          'Falling back to mock data...'
+        );
+        
+        this.enableMockMode('Data source service unavailable');
+        const result = await this.processMockDataSource(sourceConfig);
+        
+        progressTrackingService.completeOperation(
+          operationId, 
+          'Fallback to mock data completed'
+        );
+        return result;
+      }
+      
+      progressTrackingService.failOperation(
+        operationId, 
+        `Data source processing failed: ${(error as Error).message}`
+      );
+      throw error;
+    }
+  }
+
+  private async processMockDataSource(sourceConfig: any): Promise<any> {
+    await mockDataService.simulateNetworkDelay();
+    
+    switch (sourceConfig.source) {
+      case 'csv':
+        return {
+          type: 'csv',
+          fileName: sourceConfig.fileName || 'mock_data.csv',
+          uploadId: `mock_upload_${Date.now()}`,
+          recordCount: 247,
+          status: 'uploaded',
+          fromMock: true
+        };
+      case 'lms':
+        return {
+          type: 'lms',
+          endpoint: sourceConfig.endpoint || 'mock://lms-endpoint',
+          connectionStatus: 'connected',
+          recordCount: 1247,
+          lastSync: new Date(),
+          fromMock: true
+        };
+      case 'api':
+        return {
+          type: 'api',
+          endpoint: sourceConfig.endpoint || 'mock://api-endpoint',
+          authMethod: sourceConfig.authMethod || 'api_key',
+          connectionStatus: 'connected',
+          recordCount: 856,
+          lastSync: new Date(),
+          fromMock: true
+        };
+      default:
+        throw new Error(`Unsupported mock data source: ${sourceConfig.source}`);
+    }
+  }
+
+  private async processCsvUpload(config: any, operationId?: string): Promise<any> {
+    if (!config.file) {
+      throw new Error('No file provided for CSV upload');
+    }
+
+    try {
+      if (operationId) {
+        progressTrackingService.updateProgressById(
+          operationId, 
+          40, 
+          'Processing CSV file...'
+        );
+      }
+
+      // If we already have validation results from the enhanced upload component, use them
+      if (config.validationResult) {
+        if (operationId) {
+          progressTrackingService.updateProgressById(
+            operationId, 
+            80, 
+            'Using pre-validated results...'
+          );
+        }
+
+        return {
+          type: 'csv',
+          fileName: config.fileName,
+          uploadId: config.uploadId || `upload_${Date.now()}`,
+          recordCount: config.validationResult.summary.totalRows,
+          validRecords: config.validationResult.summary.validRows,
+          errorRecords: config.validationResult.summary.errorRows,
+          warningRecords: config.validationResult.summary.warningRows,
+          status: config.validationResult.isValid ? 'validated' : 'validation_failed',
+          validationResult: config.validationResult,
+          fromMock: false
+        };
+      }
+
+      if (operationId) {
+        progressTrackingService.updateProgressById(
+          operationId, 
+          60, 
+          'Uploading to server...'
+        );
+      }
+
+      // Fallback to service abstraction layer for resilient upload
+      const result = await serviceAbstractionLayer.callService(
+        'upload',
+        '/loans/bulk-intake',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            fileName: config.fileName,
+            fileSize: config.file.size,
+            validate_only: true
+          })
+        },
+        async () => {
+          // Mock fallback
+          await mockDataService.simulateNetworkDelay();
+          return mockDataService.generateMockUploadResult(config.fileName);
+        }
+      );
+
+      if (!result.success) {
+        throw result.error || new Error('Upload service failed');
+      }
+
+      if (operationId) {
+        progressTrackingService.updateProgressById(
+          operationId, 
+          90, 
+          'Finalizing upload...'
+        );
+      }
+
+      return {
+        type: 'csv',
+        fileName: config.fileName,
+        uploadId: result.data?.jobId || `upload_${Date.now()}`,
+        recordCount: result.data?.summary?.totalProcessed || 247,
+        status: 'uploaded',
+        fromMock: result.fromMock
+      };
+    } catch (error) {
+      console.error('CSV upload failed:', error);
+      throw new Error('Failed to upload CSV file');
+    }
+  }
+
+  private async processLmsIntegration(config: any, operationId?: string): Promise<any> {
+    // Simulate LMS integration with progress tracking
+    return new Promise(resolve => {
+      let progress = 50;
+      const interval = setInterval(() => {
+        if (operationId) {
+          progress += 10;
+          progressTrackingService.updateProgressById(
+            operationId, 
+            Math.min(progress, 90), 
+            progress < 70 ? 'Connecting to LMS...' : 
+            progress < 90 ? 'Syncing data...' : 'Finalizing connection...'
+          );
+        }
+      }, 400);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        resolve({
+          type: 'lms',
+          endpoint: config.endpoint,
+          connectionStatus: 'connected',
+          recordCount: 1247,
+          lastSync: new Date(),
+        });
+      }, 2000);
+    });
+  }
+
+  private async processApiIntegration(config: any, operationId?: string): Promise<any> {
+    // Simulate API integration with progress tracking
+    return new Promise(resolve => {
+      let progress = 50;
+      const interval = setInterval(() => {
+        if (operationId) {
+          progress += 15;
+          progressTrackingService.updateProgressById(
+            operationId, 
+            Math.min(progress, 90), 
+            progress < 65 ? 'Authenticating with API...' : 
+            progress < 80 ? 'Fetching data...' : 'Processing response...'
+          );
+        }
+      }, 300);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        resolve({
+          type: 'api',
+          endpoint: config.endpoint,
+          authMethod: config.authMethod,
+          connectionStatus: 'connected',
+          recordCount: 856,
+          lastSync: new Date(),
+        });
+      }, 1500);
+    });
+  }
+
+  async validateData(validationConfig: any): Promise<any> {
+    const operationId = progressTrackingService.startOperation(
+      'validation', 
+      'data_validation',
+      this.workflowState.steps.source?.data?.recordCount || 100
+    );
+
+    try {
+      progressTrackingService.updateProgressById(
+        operationId, 
+        10, 
+        'Starting data validation...'
+      );
+
+      // Use service abstraction layer for resilient validation
+      const result = await serviceAbstractionLayer.callService(
+        'validation',
+        '/loans/validate',
+        {
+          method: 'POST',
+          body: JSON.stringify(validationConfig)
+        },
+        async () => {
+          // Mock fallback with progress updates
+          progressTrackingService.updateProgressById(
+            operationId, 
+            30, 
+            'Using mock validation service...'
+          );
+          
+          await mockDataService.simulateNetworkDelay(2000, 4000);
+          
+          // Simulate progress during validation
+          for (let i = 40; i <= 80; i += 10) {
+            progressTrackingService.updateProgressById(
+              operationId, 
+              i, 
+              `Validating records... ${i}%`
+            );
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+          
+          return mockDataService.generateMockDataValidation();
+        }
+      );
+
+      if (!result.success) {
+        throw result.error || new Error('Validation service failed');
+      }
+
+      progressTrackingService.updateProgressById(
+        operationId, 
+        90, 
+        'Finalizing validation results...'
+      );
+
+      const finalResult = {
+        ...result.data,
+        fromMock: result.fromMock
+      };
+
+      progressTrackingService.completeOperation(
+        operationId, 
+        'Data validation completed successfully'
+      );
+
+      return finalResult;
+    } catch (error) {
+      console.error('Data validation failed:', error);
+      
+      // Fallback to mock validation if not already using it
+      if (!this.workflowState.mockMode) {
+        console.log('Falling back to mock validation');
+        progressTrackingService.updateProgressById(
+          operationId, 
+          50, 
+          'Falling back to mock validation...'
+        );
+        
+        await mockDataService.simulateNetworkDelay(2000, 4000);
+        
+        const result = {
+          ...mockDataService.generateMockDataValidation(),
+          fromMock: true
+        };
+
+        progressTrackingService.completeOperation(
+          operationId, 
+          'Mock validation completed'
+        );
+        
+        return result;
+      }
+      
+      progressTrackingService.failOperation(
+        operationId, 
+        `Data validation failed: ${(error as Error).message}`
+      );
+      throw error;
+    }
+  }
+
+  async processEmissions(processingConfig: any): Promise<any> {
+    const sourceData = this.workflowState.steps.source.data;
+    const methodologyData = this.workflowState.steps.methodology.data;
+    const recordCount = sourceData?.recordCount || 247;
+
+    const operationId = progressTrackingService.startOperation(
+      'processing', 
+      'emissions_calculation',
+      recordCount
+    );
+
+    try {
+      progressTrackingService.updateProgressById(
+        operationId, 
+        5, 
+        'Initializing emissions processing...'
+      );
+
+      // Use service abstraction layer for resilient processing
+      const result = await serviceAbstractionLayer.callService(
+        'processing',
+        '/loans/process-emissions',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            uploadId: sourceData?.uploadId,
+            methodology: methodologyData,
+            ...processingConfig
+          })
+        },
+        async () => {
+          // Mock fallback with detailed progress tracking
+          progressTrackingService.updateProgressById(
+            operationId, 
+            15, 
+            'Using mock processing service...'
+          );
+          
+          // Simulate realistic processing with progress updates
+          const steps = [
+            { progress: 25, message: 'Loading loan data...' },
+            { progress: 40, message: 'Applying methodology factors...' },
+            { progress: 55, message: 'Calculating emissions...' },
+            { progress: 70, message: 'Validating calculations...' },
+            { progress: 85, message: 'Generating reports...' }
+          ];
+
+          for (const step of steps) {
+            progressTrackingService.updateProgressById(
+              operationId, 
+              step.progress, 
+              step.message,
+              Math.floor((step.progress / 100) * recordCount)
+            );
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          
+          await mockDataService.simulateProcessingTime(recordCount);
+          return mockDataService.generateMockProcessingResult(sourceData?.uploadId);
+        }
+      );
+
+      if (!result.success) {
+        throw result.error || new Error('Processing service failed');
+      }
+
+      progressTrackingService.updateProgressById(
+        operationId, 
+        95, 
+        'Finalizing processing results...'
+      );
+
+      const finalResult = {
+        ...result.data,
+        fromMock: result.fromMock
+      };
+
+      progressTrackingService.completeOperation(
+        operationId, 
+        `Successfully processed ${recordCount} loans`
+      );
+
+      return finalResult;
+    } catch (error) {
+      console.error('Emissions processing failed:', error);
+      
+      // Fallback to mock processing if not already using it
+      if (!this.workflowState.mockMode) {
+        console.log('Falling back to mock processing');
+        progressTrackingService.updateProgressById(
+          operationId, 
+          30, 
+          'Falling back to mock processing...'
+        );
+        
+        await mockDataService.simulateProcessingTime(recordCount);
+        
+        const result = {
+          ...mockDataService.generateMockProcessingResult(sourceData?.uploadId),
+          fromMock: true
+        };
+
+        progressTrackingService.completeOperation(
+          operationId, 
+          'Mock processing completed'
+        );
+        
+        return result;
+      }
+      
+      progressTrackingService.failOperation(
+        operationId, 
+        `Emissions processing failed: ${(error as Error).message}`
+      );
+      throw error;
+    }
+  }
+
+  private async finalizeWorkflow(): Promise<void> {
+    const processingResults = this.workflowState.steps.processing.data;
+
+    this.workflowState.results = {
+      completedAt: new Date(),
+      summary: processingResults,
+      workflowData: {
+        source: this.workflowState.steps.source.data,
+        methodology: this.workflowState.steps.methodology.data,
+        validation: this.workflowState.steps.validation.data,
+        processing: this.workflowState.steps.processing.data,
+      },
+    };
+
+    // Create ingestion result for data synchronization
+    const ingestionResult = {
+      uploadId: this.workflowState.steps.source.data?.uploadId || `workflow_${Date.now()}`,
+      totalLoans: processingResults?.totalLoans || 0,
+      successfulCalculations: processingResults?.successfulCalculations || 0,
+      totalEmissions: processingResults?.totalEmissions || 0,
+      averageDataQuality: processingResults?.averageDataQuality || 3.0,
+      processingTime: processingResults?.processingTime || '0 seconds',
+      timestamp: new Date(),
+      fromMock: processingResults?.fromMock || false
+    };
+
+    console.log('🔄 Starting data synchronization with result:', ingestionResult);
+
+    // Trigger data synchronization across all components
+    try {
+      await dataSynchronizationService.onIngestionComplete(ingestionResult);
+      console.log('✅ Data synchronization completed successfully');
+      
+      // Force a page refresh event to ensure dashboard updates
+      window.dispatchEvent(new CustomEvent('dataIngestionComplete', { 
+        detail: ingestionResult 
+      }));
+      
+      // Specifically trigger AI insights update
+      window.dispatchEvent(new CustomEvent('aiInsightsRefresh', {
+        detail: {
+          trigger: 'data_ingestion_complete',
+          ingestionResult,
+          timestamp: new Date()
+        }
+      }));
+      
+    } catch (error) {
+      console.error('❌ Failed to synchronize data across components:', error);
+    }
+
+    // Notify real-time service of completion using send method
+    try {
+      realTimeService.send({
+        type: 'workflow_complete',
+        workflowId: 'data_ingestion',
+        results: this.workflowState.results,
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      console.warn('Failed to notify real-time service:', error);
+    }
+  }
+
+  resetWorkflow(): void {
+    this.workflowState = this.initializeWorkflowState();
+    this.clearSavedState();
+    this.notifyListeners();
+  }
+
+  // Enhanced workflow control methods
+  async retryStep(stepId: string): Promise<void> {
+    if (!this.workflowState.steps[stepId]) {
+      throw new Error(`Step ${stepId} not found`);
+    }
+
+    this.workflowState.retryCount++;
+    this.workflowState.steps[stepId].status = 'active';
+    this.workflowState.currentStep = stepId;
+    
+    // Clear errors for this step
+    this.clearStepErrors(stepId);
+    
+    this.notifyListeners();
+  }
+
+  skipStep(stepId: string, reason: string): void {
+    if (!this.workflowState.steps[stepId]) {
+      throw new Error(`Step ${stepId} not found`);
+    }
+
+    // Add warning about skipped step
+    const warningId = `warning_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const warning: WorkflowWarning = {
+      id: warningId,
+      stepId,
+      message: `Step skipped: ${reason}`,
+      timestamp: new Date(),
+      acknowledged: false
+    };
+
+    this.workflowState.warnings.push(warning);
+    this.workflowState.steps[stepId].status = 'completed';
+    this.workflowState.steps[stepId].data = { skipped: true, reason };
+
+    // Move to next step
+    const stepOrder = ['source', 'methodology', 'validation', 'processing'];
+    const currentIndex = stepOrder.indexOf(stepId);
+
+    if (currentIndex < stepOrder.length - 1) {
+      const nextStepId = stepOrder[currentIndex + 1];
+      this.workflowState.currentStep = nextStepId;
+      this.workflowState.steps[nextStepId].status = 'active';
+    }
+
+    this.updateOverallProgress();
+    this.notifyListeners();
+  }
+
+  enableMockMode(reason?: string): void {
+    this.workflowState.mockMode = true;
+    this.workflowState.degradationReason = reason || 'Mock mode enabled manually';
+    serviceAbstractionLayer.enableGlobalMockMode();
+    this.notifyListeners();
+  }
+
+  disableMockMode(): void {
+    this.workflowState.mockMode = false;
+    this.workflowState.degradationReason = undefined;
+    serviceAbstractionLayer.disableGlobalMockMode();
+    this.notifyListeners();
+  }
+
+  isInMockMode(): boolean {
+    return this.workflowState.mockMode;
+  }
+
+  acknowledgeWarning(warningId: string): void {
+    const warning = this.workflowState.warnings.find(w => w.id === warningId);
+    if (warning) {
+      warning.acknowledged = true;
+      this.notifyListeners();
+    }
+  }
+
+  resolveError(errorId: string): void {
+    const error = this.workflowState.errors.find(e => e.id === errorId);
+    if (error) {
+      error.resolved = true;
+      this.notifyListeners();
+    }
   }
 
   navigateToStep(stepId: string): void {

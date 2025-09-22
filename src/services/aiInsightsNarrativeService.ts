@@ -18,17 +18,212 @@ export interface PortfolioMetrics {
   totalLoans: number;
   totalExposure: number;
   complianceStatus: string;
+  lastUpdated?: Date;
+  dataVersion?: string;
   [key: string]: any;
+}
+
+export interface LoanData {
+  id: string;
+  amount: number;
+  vehicleType: string;
+  fuelType: string;
+  emissions: number;
+  dataQuality: number;
+  [key: string]: any;
+}
+
+export interface AIInsightsUpdateEvent {
+  type: 'data_ingestion_complete' | 'portfolio_updated' | 'manual_refresh';
+  timestamp: Date;
+  portfolioMetrics: PortfolioMetrics;
+  loanData?: LoanData[];
+  source: string;
 }
 
 class AIInsightsNarrativeService {
   private static instance: AIInsightsNarrativeService;
+  private currentPortfolioMetrics?: PortfolioMetrics;
+  private currentLoanData?: LoanData[];
+  private lastAnalysisTimestamp?: Date;
+  private updateListeners: Array<(insights: InsightNarrative) => void> = [];
 
   static getInstance(): AIInsightsNarrativeService {
     if (!AIInsightsNarrativeService.instance) {
       AIInsightsNarrativeService.instance = new AIInsightsNarrativeService();
     }
     return AIInsightsNarrativeService.instance;
+  }
+
+  constructor() {
+    this.setupDataIngestionListeners();
+  }
+
+  private setupDataIngestionListeners(): void {
+    // Listen for data ingestion completion events
+    if (typeof window !== 'undefined') {
+      window.addEventListener('dataIngestionComplete', (event: any) => {
+        this.handleDataIngestionComplete(event.detail);
+      });
+      
+      // Listen for specific AI insights refresh events
+      window.addEventListener('aiInsightsRefresh', (event: any) => {
+        console.log('🤖 AI Insights: Received refresh event', event.detail);
+        this.handleDataIngestionComplete(event.detail.ingestionResult);
+      });
+    }
+  }
+
+  // Data update methods
+  async handleDataIngestionComplete(ingestionResult: any): Promise<void> {
+    console.log('🤖 AI Insights: Processing data ingestion completion...', ingestionResult);
+    
+    try {
+      // Extract portfolio metrics from ingestion result
+      const portfolioMetrics = this.extractPortfolioMetricsFromIngestion(ingestionResult);
+      
+      // Update current data
+      await this.updatePortfolioData(portfolioMetrics);
+      
+      // Trigger AI analysis refresh
+      await this.refreshAIAnalysis('data_ingestion_complete', portfolioMetrics);
+      
+      console.log('✅ AI Insights: Successfully updated with new ingestion data');
+    } catch (error) {
+      console.error('❌ AI Insights: Failed to process ingestion completion:', error);
+    }
+  }
+
+  async updatePortfolioData(metrics: PortfolioMetrics, loanData?: LoanData[]): Promise<void> {
+    this.currentPortfolioMetrics = {
+      ...metrics,
+      lastUpdated: new Date(),
+      dataVersion: `v${Date.now()}`
+    };
+    
+    if (loanData) {
+      this.currentLoanData = loanData;
+    }
+    
+    console.log('📊 AI Insights: Portfolio data updated', {
+      totalLoans: metrics.totalLoans,
+      totalEmissions: metrics.totalFinancedEmissions,
+      dataQuality: metrics.dataQualityScore
+    });
+  }
+
+  async refreshAIAnalysis(
+    triggerType: 'data_ingestion_complete' | 'portfolio_updated' | 'manual_refresh',
+    portfolioMetrics?: PortfolioMetrics,
+    userRole: string = 'risk_manager'
+  ): Promise<InsightNarrative> {
+    console.log(`🔄 AI Insights: Refreshing analysis (trigger: ${triggerType})`);
+    
+    const metricsToUse = portfolioMetrics || this.currentPortfolioMetrics;
+    
+    if (!metricsToUse) {
+      throw new Error('No portfolio metrics available for AI analysis');
+    }
+    
+    // Generate fresh insights with updated data
+    const insights = this.generatePortfolioOverviewNarrative(metricsToUse, userRole);
+    
+    // Update analysis timestamp
+    this.lastAnalysisTimestamp = new Date();
+    
+    // Notify listeners of updated insights
+    this.notifyInsightsUpdate(insights);
+    
+    // Create update event for logging/tracking
+    const updateEvent: AIInsightsUpdateEvent = {
+      type: triggerType,
+      timestamp: new Date(),
+      portfolioMetrics: metricsToUse,
+      loanData: this.currentLoanData,
+      source: 'aiInsightsNarrativeService'
+    };
+    
+    console.log('✨ AI Insights: Analysis refreshed successfully', updateEvent);
+    
+    return insights;
+  }
+
+  private extractPortfolioMetricsFromIngestion(ingestionResult: any): PortfolioMetrics {
+    return {
+      totalFinancedEmissions: ingestionResult.totalEmissions || 0,
+      emissionIntensity: this.calculateEmissionIntensity(
+        ingestionResult.totalEmissions || 0,
+        ingestionResult.totalLoans || 1
+      ),
+      dataQualityScore: ingestionResult.averageDataQuality || 3.0,
+      totalLoans: ingestionResult.totalLoans || 0,
+      totalExposure: (ingestionResult.totalLoans || 0) * 50000, // Estimate exposure
+      complianceStatus: this.determineComplianceStatus(ingestionResult.averageDataQuality || 3.0),
+      lastUpdated: new Date(ingestionResult.timestamp),
+      dataVersion: `ingestion_${ingestionResult.uploadId}`
+    };
+  }
+
+  private calculateEmissionIntensity(totalEmissions: number, totalLoans: number): number {
+    if (totalLoans === 0) return 0;
+    // Calculate emissions per $1000 of exposure (assuming average loan of $50k)
+    const totalExposure = totalLoans * 50000;
+    return (totalEmissions / totalExposure) * 1000;
+  }
+
+  private determineComplianceStatus(dataQualityScore: number): string {
+    if (dataQualityScore <= 2.5) return 'Excellent';
+    if (dataQualityScore <= 3.0) return 'Compliant';
+    if (dataQualityScore <= 3.5) return 'Needs Improvement';
+    return 'Critical';
+  }
+
+  // Subscription methods for components to listen to insights updates
+  subscribeToInsightsUpdates(callback: (insights: InsightNarrative) => void): () => void {
+    this.updateListeners.push(callback);
+    
+    // Return unsubscribe function
+    return () => {
+      const index = this.updateListeners.indexOf(callback);
+      if (index > -1) {
+        this.updateListeners.splice(index, 1);
+      }
+    };
+  }
+
+  private notifyInsightsUpdate(insights: InsightNarrative): void {
+    this.updateListeners.forEach(listener => {
+      try {
+        listener(insights);
+      } catch (error) {
+        console.error('Error notifying insights update listener:', error);
+      }
+    });
+  }
+
+  // Get current insights without regenerating
+  getCurrentInsights(userRole: string = 'risk_manager'): InsightNarrative | null {
+    if (!this.currentPortfolioMetrics) {
+      return null;
+    }
+    
+    return this.generatePortfolioOverviewNarrative(this.currentPortfolioMetrics, userRole);
+  }
+
+  // Check if insights are stale and need refresh
+  areInsightsStale(maxAgeMinutes: number = 30): boolean {
+    if (!this.lastAnalysisTimestamp) return true;
+    
+    const now = Date.now();
+    const analysisTime = this.lastAnalysisTimestamp.getTime();
+    const maxAge = maxAgeMinutes * 60 * 1000;
+    
+    return (now - analysisTime) > maxAge;
+  }
+
+  // Force refresh insights manually
+  async forceRefreshInsights(userRole: string = 'risk_manager'): Promise<InsightNarrative> {
+    return this.refreshAIAnalysis('manual_refresh', this.currentPortfolioMetrics, userRole);
   }
 
   generatePortfolioOverviewNarrative(metrics: PortfolioMetrics, userRole: string = 'risk_manager'): InsightNarrative {

@@ -2,7 +2,7 @@ import { toast } from '@/hooks/use-toast';
 
 export interface RealTimeUpdate {
   id: string;
-  type: 'loan_created' | 'loan_updated' | 'loan_deleted' | 'calculation_completed' | 'portfolio_updated' | 'system_status' | 'data_quality_alert' | 'sync_status' | 'ai_insight' | 'upload_progress' | 'batch_job_update';
+  type: 'loan_created' | 'loan_updated' | 'loan_deleted' | 'calculation_completed' | 'portfolio_updated' | 'system_status' | 'data_quality_alert' | 'sync_status' | 'ai_insight' | 'upload_progress' | 'batch_job_update' | 'progress_update' | 'operation_started' | 'operation_completed';
   data: any;
   timestamp: Date;
   userId?: string;
@@ -404,6 +404,36 @@ class RealTimeService {
             variant: "destructive"
           });
         }
+        break;
+
+      case 'progress_update':
+        // Don't show toast for every progress update to avoid spam
+        if (update.data.status === 'completed') {
+          toast({
+            title: "Operation Complete",
+            description: update.data.message || `${update.data.operation} completed successfully`,
+          });
+        } else if (update.data.status === 'failed') {
+          toast({
+            title: "Operation Failed",
+            description: update.data.message || `${update.data.operation} failed`,
+            variant: "destructive"
+          });
+        }
+        break;
+
+      case 'operation_started':
+        toast({
+          title: "Operation Started",
+          description: update.data.message || `${update.data.operation} has begun`,
+        });
+        break;
+
+      case 'operation_completed':
+        toast({
+          title: "Operation Complete",
+          description: update.data.message || `${update.data.operation} completed successfully`,
+        });
         break;
 
       case 'batch_job_update':

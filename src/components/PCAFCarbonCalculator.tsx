@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/hooks/use-toast";
-import { platformRAGService } from "@/services/platform-rag-service";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
+import { platformRAGService } from '@/services/platform-rag-service';
 import {
   Calculator,
   Building2,
@@ -24,14 +24,14 @@ import {
   Brain,
   Shield,
   Leaf,
-  Factory
-} from "lucide-react";
+  Factory,
+} from 'lucide-react';
 
 // Import new PCAF components
-import { AvoidedEmissionsCalculator } from "@/components/avoided-emissions/AvoidedEmissionsCalculator";
-import { AvoidedEmissionsReporting } from "@/components/avoided-emissions/AvoidedEmissionsReporting";
-import { AttributionStandardsCalculator } from "@/components/pcaf-standards/AttributionStandardsCalculator";
-import { PCAFComplianceDashboard } from "@/components/pcaf-standards/PCAFComplianceDashboard";
+import { AvoidedEmissionsCalculator } from '@/components/avoided-emissions/AvoidedEmissionsCalculator';
+import { AvoidedEmissionsReporting } from '@/components/avoided-emissions/AvoidedEmissionsReporting';
+import { AttributionStandardsCalculator } from '@/components/pcaf-standards/AttributionStandardsCalculator';
+import { PCAFComplianceDashboard } from '@/components/pcaf-standards/PCAFComplianceDashboard';
 
 interface EmissionSource {
   category: string;
@@ -54,59 +54,59 @@ interface CalculationResult {
 
 export function PCAFCarbonCalculator() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("compliance");
+  const [activeTab, setActiveTab] = useState('compliance');
   const [bankInfo, setBankInfo] = useState({
-    name: "",
-    reportingPeriod: "",
-    baseCurrency: "EUR"
+    name: '',
+    reportingPeriod: '',
+    baseCurrency: 'EUR',
   });
 
   // Scope 1 emissions sources
   const [scope1Sources, setScope1Sources] = useState<EmissionSource[]>([
     {
-      category: "Stationary Combustion",
+      category: 'Stationary Combustion',
       scope: 1,
-      activity: "Natural Gas",
+      activity: 'Natural Gas',
       quantity: 0,
-      unit: "MWh",
+      unit: 'MWh',
       emissionFactor: 0.184, // kg CO2e/kWh
       co2Equivalent: 0,
-      dataQuality: 3
+      dataQuality: 3,
     },
     {
-      category: "Mobile Combustion",
+      category: 'Mobile Combustion',
       scope: 1,
-      activity: "Company Vehicles",
+      activity: 'Company Vehicles',
       quantity: 0,
-      unit: "Liters",
+      unit: 'Liters',
       emissionFactor: 2.31, // kg CO2e/liter diesel
       co2Equivalent: 0,
-      dataQuality: 3
-    }
+      dataQuality: 3,
+    },
   ]);
 
   // Scope 2 emissions sources
   const [scope2Sources, setScope2Sources] = useState<EmissionSource[]>([
     {
-      category: "Purchased Electricity",
+      category: 'Purchased Electricity',
       scope: 2,
-      activity: "Grid Electricity",
+      activity: 'Grid Electricity',
       quantity: 0,
-      unit: "MWh",
+      unit: 'MWh',
       emissionFactor: 0.233, // kg CO2e/kWh (EU average)
       co2Equivalent: 0,
-      dataQuality: 2
+      dataQuality: 2,
     },
     {
-      category: "Purchased Heating",
+      category: 'Purchased Heating',
       scope: 2,
-      activity: "District Heating",
+      activity: 'District Heating',
       quantity: 0,
-      unit: "MWh",
+      unit: 'MWh',
       emissionFactor: 0.156, // kg CO2e/kWh
       co2Equivalent: 0,
-      dataQuality: 3
-    }
+      dataQuality: 3,
+    },
   ]);
 
   const [calculation, setCalculation] = useState<CalculationResult>({
@@ -114,21 +114,27 @@ export function PCAFCarbonCalculator() {
     totalScope2: 0,
     totalEmissions: 0,
     dataQualityScore: 0,
-    pcafCompliant: false
+    pcafCompliant: false,
   });
 
-  const [aiValidation, setAiValidation] = useState<string>("");
+  const [aiValidation, setAiValidation] = useState<string>('');
   const [loadingValidation, setLoadingValidation] = useState(false);
 
-  const updateEmissionSource = (sources: EmissionSource[], index: number, field: keyof EmissionSource, value: any) => {
+  const updateEmissionSource = (
+    sources: EmissionSource[],
+    index: number,
+    field: keyof EmissionSource,
+    value: any
+  ) => {
     const updated = [...sources];
     updated[index] = { ...updated[index], [field]: value };
-    
+
     // Recalculate CO2 equivalent
     if (field === 'quantity' || field === 'emissionFactor') {
-      updated[index].co2Equivalent = updated[index].quantity * updated[index].emissionFactor / 1000; // Convert to tonnes
+      updated[index].co2Equivalent =
+        (updated[index].quantity * updated[index].emissionFactor) / 1000; // Convert to tonnes
     }
-    
+
     return updated;
   };
 
@@ -136,13 +142,14 @@ export function PCAFCarbonCalculator() {
     const totalScope1 = scope1Sources.reduce((sum, source) => sum + source.co2Equivalent, 0);
     const totalScope2 = scope2Sources.reduce((sum, source) => sum + source.co2Equivalent, 0);
     const totalEmissions = totalScope1 + totalScope2;
-    
+
     // Calculate weighted average data quality score (PCAF methodology)
     const allSources = [...scope1Sources, ...scope2Sources];
     const totalEmissionWeight = allSources.reduce((sum, source) => sum + source.co2Equivalent, 0);
-    const weightedDataQuality = allSources.reduce((sum, source) => {
-      return sum + (source.dataQuality * source.co2Equivalent);
-    }, 0) / totalEmissionWeight;
+    const weightedDataQuality =
+      allSources.reduce((sum, source) => {
+        return sum + source.dataQuality * source.co2Equivalent;
+      }, 0) / totalEmissionWeight;
 
     const pcafCompliant = weightedDataQuality <= 3.5; // PCAF requirement for good data quality
 
@@ -151,11 +158,11 @@ export function PCAFCarbonCalculator() {
       totalScope2,
       totalEmissions,
       dataQualityScore: weightedDataQuality || 0,
-      pcafCompliant
+      pcafCompliant,
     });
 
     toast({
-      title: "Calculation Complete",
+      title: 'Calculation Complete',
       description: `Total emissions: ${totalEmissions.toFixed(2)} tCO₂e. PCAF Compliant: ${pcafCompliant ? 'Yes' : 'No'}`,
     });
 
@@ -165,7 +172,7 @@ export function PCAFCarbonCalculator() {
       totalScope2,
       totalEmissions,
       dataQualityScore: weightedDataQuality || 0,
-      pcafCompliant
+      pcafCompliant,
     });
   };
 
@@ -179,7 +186,7 @@ export function PCAFCarbonCalculator() {
           calculation: calculationResult,
           scope1Sources: scope1Sources.length,
           scope2Sources: scope2Sources.length,
-          bankInfo
+          bankInfo,
         }
       );
       setAiValidation(response.response);
@@ -192,14 +199,14 @@ export function PCAFCarbonCalculator() {
 
   const addEmissionSource = (scope: 1 | 2) => {
     const newSource: EmissionSource = {
-      category: "",
+      category: '',
       scope,
-      activity: "",
+      activity: '',
       quantity: 0,
-      unit: "MWh",
+      unit: 'MWh',
       emissionFactor: 0,
       co2Equivalent: 0,
-      dataQuality: 3
+      dataQuality: 3,
     };
 
     if (scope === 1) {
@@ -211,17 +218,18 @@ export function PCAFCarbonCalculator() {
 
   const generateReport = () => {
     toast({
-      title: "Report Generated",
-      description: "PCAF-compliant carbon footprint report has been generated and is ready for download.",
+      title: 'Report Generated',
+      description:
+        'PCAF-compliant carbon footprint report has been generated and is ready for download.',
     });
   };
 
   const getDataQualityLabel = (score: number) => {
-    if (score <= 1.5) return { label: "Excellent", color: "text-success" };
-    if (score <= 2.5) return { label: "Good", color: "text-primary" };
-    if (score <= 3.5) return { label: "Fair", color: "text-warning" };
-    if (score <= 4.5) return { label: "Poor", color: "text-destructive" };
-    return { label: "Very Poor", color: "text-destructive" };
+    if (score <= 1.5) return { label: 'Excellent', color: 'text-success' };
+    if (score <= 2.5) return { label: 'Good', color: 'text-primary' };
+    if (score <= 3.5) return { label: 'Fair', color: 'text-warning' };
+    if (score <= 4.5) return { label: 'Poor', color: 'text-destructive' };
+    return { label: 'Very Poor', color: 'text-destructive' };
   };
 
   return (
@@ -232,7 +240,8 @@ export function PCAFCarbonCalculator() {
           <div>
             <h2 className="text-xl font-semibold text-foreground">PCAF Comprehensive Platform</h2>
             <p className="text-sm text-muted-foreground">
-              Complete PCAF implementation: Attribution Standards A/B/C, Avoided Emissions, Multi-Asset Class Support, and Scope 1 & 2 calculations
+              Complete PCAF implementation: Attribution Standards A/B/C, Avoided Emissions,
+              Multi-Asset Class Support, and Scope 1 & 2 calculations
             </p>
           </div>
           <div className="ml-auto flex gap-2">
@@ -256,7 +265,7 @@ export function PCAFCarbonCalculator() {
               <Input
                 id="bankName"
                 value={bankInfo.name}
-                onChange={(e) => setBankInfo(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e => setBankInfo(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Enter bank/financial institution name"
               />
             </div>
@@ -265,7 +274,7 @@ export function PCAFCarbonCalculator() {
               <Input
                 id="reportingPeriod"
                 value={bankInfo.reportingPeriod}
-                onChange={(e) => setBankInfo(prev => ({ ...prev, reportingPeriod: e.target.value }))}
+                onChange={e => setBankInfo(prev => ({ ...prev, reportingPeriod: e.target.value }))}
                 placeholder="e.g., 2024"
               />
             </div>
@@ -274,7 +283,7 @@ export function PCAFCarbonCalculator() {
               <Input
                 id="baseCurrency"
                 value={bankInfo.baseCurrency}
-                onChange={(e) => setBankInfo(prev => ({ ...prev, baseCurrency: e.target.value }))}
+                onChange={e => setBankInfo(prev => ({ ...prev, baseCurrency: e.target.value }))}
                 placeholder="EUR"
               />
             </div>
@@ -332,7 +341,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Category</Label>
                         <Input
                           value={source.category}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'category', e.target.value))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(scope1Sources, index, 'category', e.target.value)
+                            )
+                          }
                           placeholder="e.g., Stationary Combustion"
                         />
                       </div>
@@ -340,7 +353,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Activity</Label>
                         <Input
                           value={source.activity}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'activity', e.target.value))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(scope1Sources, index, 'activity', e.target.value)
+                            )
+                          }
                           placeholder="e.g., Natural Gas"
                         />
                       </div>
@@ -349,7 +366,16 @@ export function PCAFCarbonCalculator() {
                         <Input
                           type="number"
                           value={source.quantity}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'quantity', parseFloat(e.target.value) || 0))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(
+                                scope1Sources,
+                                index,
+                                'quantity',
+                                parseFloat(e.target.value) || 0
+                              )
+                            )
+                          }
                           placeholder="0"
                         />
                       </div>
@@ -357,7 +383,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Unit</Label>
                         <Input
                           value={source.unit}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'unit', e.target.value))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(scope1Sources, index, 'unit', e.target.value)
+                            )
+                          }
                           placeholder="MWh"
                         />
                       </div>
@@ -367,7 +397,16 @@ export function PCAFCarbonCalculator() {
                           type="number"
                           step="0.001"
                           value={source.emissionFactor}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'emissionFactor', parseFloat(e.target.value) || 0))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(
+                                scope1Sources,
+                                index,
+                                'emissionFactor',
+                                parseFloat(e.target.value) || 0
+                              )
+                            )
+                          }
                           placeholder="0.184"
                         />
                       </div>
@@ -378,15 +417,25 @@ export function PCAFCarbonCalculator() {
                           min="1"
                           max="5"
                           value={source.dataQuality}
-                          onChange={(e) => setScope1Sources(updateEmissionSource(scope1Sources, index, 'dataQuality', parseInt(e.target.value) || 3))}
+                          onChange={e =>
+                            setScope1Sources(
+                              updateEmissionSource(
+                                scope1Sources,
+                                index,
+                                'dataQuality',
+                                parseInt(e.target.value) || 3
+                              )
+                            )
+                          }
                         />
                       </div>
                     </div>
                     <div className="mt-4 flex items-center justify-between">
                       <div className="text-sm text-muted-foreground">
-                        CO₂ Equivalent: <span className="font-medium">{source.co2Equivalent.toFixed(3)} tCO₂e</span>
+                        CO₂ Equivalent:{' '}
+                        <span className="font-medium">{source.co2Equivalent.toFixed(3)} tCO₂e</span>
                       </div>
-                      <Badge variant={source.dataQuality <= 3 ? "secondary" : "outline"}>
+                      <Badge variant={source.dataQuality <= 3 ? 'secondary' : 'outline'}>
                         PCAF Score: {source.dataQuality}
                       </Badge>
                     </div>
@@ -416,7 +465,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Category</Label>
                         <Input
                           value={source.category}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'category', e.target.value))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(scope2Sources, index, 'category', e.target.value)
+                            )
+                          }
                           placeholder="e.g., Purchased Electricity"
                         />
                       </div>
@@ -424,7 +477,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Activity</Label>
                         <Input
                           value={source.activity}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'activity', e.target.value))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(scope2Sources, index, 'activity', e.target.value)
+                            )
+                          }
                           placeholder="e.g., Grid Electricity"
                         />
                       </div>
@@ -433,7 +490,16 @@ export function PCAFCarbonCalculator() {
                         <Input
                           type="number"
                           value={source.quantity}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'quantity', parseFloat(e.target.value) || 0))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(
+                                scope2Sources,
+                                index,
+                                'quantity',
+                                parseFloat(e.target.value) || 0
+                              )
+                            )
+                          }
                           placeholder="0"
                         />
                       </div>
@@ -441,7 +507,11 @@ export function PCAFCarbonCalculator() {
                         <Label>Unit</Label>
                         <Input
                           value={source.unit}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'unit', e.target.value))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(scope2Sources, index, 'unit', e.target.value)
+                            )
+                          }
                           placeholder="MWh"
                         />
                       </div>
@@ -451,7 +521,16 @@ export function PCAFCarbonCalculator() {
                           type="number"
                           step="0.001"
                           value={source.emissionFactor}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'emissionFactor', parseFloat(e.target.value) || 0))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(
+                                scope2Sources,
+                                index,
+                                'emissionFactor',
+                                parseFloat(e.target.value) || 0
+                              )
+                            )
+                          }
                           placeholder="0.233"
                         />
                       </div>
@@ -462,15 +541,25 @@ export function PCAFCarbonCalculator() {
                           min="1"
                           max="5"
                           value={source.dataQuality}
-                          onChange={(e) => setScope2Sources(updateEmissionSource(scope2Sources, index, 'dataQuality', parseInt(e.target.value) || 3))}
+                          onChange={e =>
+                            setScope2Sources(
+                              updateEmissionSource(
+                                scope2Sources,
+                                index,
+                                'dataQuality',
+                                parseInt(e.target.value) || 3
+                              )
+                            )
+                          }
                         />
                       </div>
                     </div>
                     <div className="mt-4 flex items-center justify-between">
                       <div className="text-sm text-muted-foreground">
-                        CO₂ Equivalent: <span className="font-medium">{source.co2Equivalent.toFixed(3)} tCO₂e</span>
+                        CO₂ Equivalent:{' '}
+                        <span className="font-medium">{source.co2Equivalent.toFixed(3)} tCO₂e</span>
                       </div>
-                      <Badge variant={source.dataQuality <= 3 ? "secondary" : "outline"}>
+                      <Badge variant={source.dataQuality <= 3 ? 'secondary' : 'outline'}>
                         PCAF Score: {source.dataQuality}
                       </Badge>
                     </div>
@@ -497,9 +586,14 @@ export function PCAFCarbonCalculator() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{calculation.totalScope1.toFixed(2)}</div>
+                  <div className="text-3xl font-bold text-foreground">
+                    {calculation.totalScope1.toFixed(2)}
+                  </div>
                   <p className="text-sm text-muted-foreground">tonnes CO₂e</p>
-                  <Progress value={(calculation.totalScope1 / calculation.totalEmissions) * 100 || 0} className="mt-2" />
+                  <Progress
+                    value={(calculation.totalScope1 / calculation.totalEmissions) * 100 || 0}
+                    className="mt-2"
+                  />
                 </CardContent>
               </Card>
 
@@ -511,9 +605,14 @@ export function PCAFCarbonCalculator() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{calculation.totalScope2.toFixed(2)}</div>
+                  <div className="text-3xl font-bold text-foreground">
+                    {calculation.totalScope2.toFixed(2)}
+                  </div>
                   <p className="text-sm text-muted-foreground">tonnes CO₂e</p>
-                  <Progress value={(calculation.totalScope2 / calculation.totalEmissions) * 100 || 0} className="mt-2" />
+                  <Progress
+                    value={(calculation.totalScope2 / calculation.totalEmissions) * 100 || 0}
+                    className="mt-2"
+                  />
                 </CardContent>
               </Card>
 
@@ -522,7 +621,9 @@ export function PCAFCarbonCalculator() {
                   <CardTitle className="text-lg">Total Emissions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-primary">{calculation.totalEmissions.toFixed(2)}</div>
+                  <div className="text-3xl font-bold text-primary">
+                    {calculation.totalEmissions.toFixed(2)}
+                  </div>
                   <p className="text-sm text-muted-foreground">tonnes CO₂e</p>
                   <div className="mt-2 flex items-center gap-2">
                     {calculation.pcafCompliant ? (
@@ -530,7 +631,9 @@ export function PCAFCarbonCalculator() {
                     ) : (
                       <AlertTriangle className="h-4 w-4 text-warning" />
                     )}
-                    <span className={`text-sm ${calculation.pcafCompliant ? 'text-success' : 'text-warning'}`}>
+                    <span
+                      className={`text-sm ${calculation.pcafCompliant ? 'text-success' : 'text-warning'}`}
+                    >
                       {calculation.pcafCompliant ? 'PCAF Compliant' : 'Improve Data Quality'}
                     </span>
                   </div>
@@ -545,20 +648,25 @@ export function PCAFCarbonCalculator() {
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <div className="text-2xl font-bold text-foreground">{calculation.dataQualityScore.toFixed(2)}</div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {calculation.dataQualityScore.toFixed(2)}
+                    </div>
                     <p className="text-sm text-muted-foreground">Weighted Average PCAF Score</p>
                   </div>
-                  <Badge variant={calculation.pcafCompliant ? "secondary" : "outline"} className={getDataQualityLabel(calculation.dataQualityScore).color}>
+                  <Badge
+                    variant={calculation.pcafCompliant ? 'secondary' : 'outline'}
+                    className={getDataQualityLabel(calculation.dataQualityScore).color}
+                  >
                     {getDataQualityLabel(calculation.dataQualityScore).label}
                   </Badge>
                 </div>
                 <Progress value={((5 - calculation.dataQualityScore) / 4) * 100} className="mb-4" />
-                
+
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    PCAF requires data quality scores ≤ 3.5 for compliant reporting. 
-                    Lower scores indicate higher data quality and accuracy.
+                    PCAF requires data quality scores ≤ 3.5 for compliant reporting. Lower scores
+                    indicate higher data quality and accuracy.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -573,22 +681,27 @@ export function PCAFCarbonCalculator() {
                   PCAF Compliance Report
                 </CardTitle>
                 <CardDescription>
-                  Generate a comprehensive report following PCAF Global GHG Accounting and Reporting Standard
+                  Generate a comprehensive report following PCAF Global GHG Accounting and Reporting
+                  Standard
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium">Institution:</span> {bankInfo.name || "Not specified"}
+                    <span className="font-medium">Institution:</span>{' '}
+                    {bankInfo.name || 'Not specified'}
                   </div>
                   <div>
-                    <span className="font-medium">Reporting Period:</span> {bankInfo.reportingPeriod || "Not specified"}
+                    <span className="font-medium">Reporting Period:</span>{' '}
+                    {bankInfo.reportingPeriod || 'Not specified'}
                   </div>
                   <div>
-                    <span className="font-medium">Total Scope 1 + 2:</span> {calculation.totalEmissions.toFixed(2)} tCO₂e
+                    <span className="font-medium">Total Scope 1 + 2:</span>{' '}
+                    {calculation.totalEmissions.toFixed(2)} tCO₂e
                   </div>
                   <div>
-                    <span className="font-medium">Data Quality Score:</span> {calculation.dataQualityScore.toFixed(2)}
+                    <span className="font-medium">Data Quality Score:</span>{' '}
+                    {calculation.dataQualityScore.toFixed(2)}
                   </div>
                 </div>
 
