@@ -51,11 +51,11 @@ const navigation = [
     href: '/financed-emissions/upload',
     icon: Upload,
   },
-  {
-    name: 'PCAF Calculator',
-    href: '/financed-emissions/pcaf-calculator',
-    icon: Target,
-  },
+  // {
+  //   name: 'PCAF Calculator',
+  //   href: '/financed-emissions/pcaf-calculator',
+  //   icon: Target,
+  // },
   {
     name: 'Reports',
     href: '/financed-emissions/reports',
