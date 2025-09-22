@@ -455,7 +455,9 @@ export function RetryMechanismPanel({
                         Attempt {attempt.attempt}
                       </div>
                       <div className="text-xs text-gray-600">
-                        {attempt.timestamp.toLocaleTimeString()}
+                        {attempt.timestamp instanceof Date 
+                          ? attempt.timestamp.toLocaleTimeString() 
+                          : new Date(attempt.timestamp).toLocaleTimeString()}
                       </div>
                     </div>
                   </div>

@@ -83,7 +83,7 @@ class ProgressTrackingService {
       progress: update.data.progress || 0,
       status: this.mapRealTimeStatus(update.data.status),
       message: update.data.message || 'Processing...',
-      timestamp: new Date(update.timestamp),
+      timestamp: update.timestamp instanceof Date ? update.timestamp : new Date(update.timestamp),
       estimatedTimeRemaining: update.data.estimatedTimeRemaining,
       totalItems: update.data.totalItems,
       processedItems: update.data.processedItems,
@@ -101,7 +101,7 @@ class ProgressTrackingService {
       progress: update.data.progress || 0,
       status: this.mapRealTimeStatus(update.data.status),
       message: update.data.message || `${update.data.jobType} in progress...`,
-      timestamp: new Date(update.timestamp),
+      timestamp: update.timestamp instanceof Date ? update.timestamp : new Date(update.timestamp),
       estimatedTimeRemaining: update.data.estimatedTimeRemaining,
       totalItems: update.data.totalItems,
       processedItems: update.data.processedItems,
@@ -169,6 +169,22 @@ class ProgressTrackingService {
           this.clearPersistedState();
           return;
         }
+      }
+
+      // Convert timestamp strings back to Date objects
+      if (parsedState.recentUpdates) {
+        parsedState.recentUpdates = parsedState.recentUpdates.map((update: any) => ({
+          ...update,
+          timestamp: new Date(update.timestamp)
+        }));
+      }
+
+      if (parsedState.currentOperation) {
+        parsedState.currentOperation.timestamp = new Date(parsedState.currentOperation.timestamp);
+      }
+
+      if (parsedState.persistedAt) {
+        parsedState.persistedAt = new Date(parsedState.persistedAt);
       }
 
       // Restore state but mark as inactive since we're loading from storage

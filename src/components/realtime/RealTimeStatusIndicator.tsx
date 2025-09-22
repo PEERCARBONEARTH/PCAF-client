@@ -304,7 +304,9 @@ function RealTimeStatusDetails({
                     {formatUpdateType(update.type)}
                   </div>
                   <div className="text-muted-foreground">
-                    {update.timestamp.toLocaleTimeString()}
+                    {update.timestamp instanceof Date 
+                      ? update.timestamp.toLocaleTimeString() 
+                      : new Date(update.timestamp).toLocaleTimeString()}
                   </div>
                 </div>
               </div>

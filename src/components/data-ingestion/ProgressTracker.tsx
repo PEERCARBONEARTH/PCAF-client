@@ -8,6 +8,7 @@ import {
   useProgressTracking, 
   useFormattedTimeRemaining 
 } from '@/hooks/useProgressTracking';
+import { safeToLocaleTimeString } from '@/utils/dateUtils';
 import {
   Clock,
   CheckCircle,
@@ -231,7 +232,7 @@ export function ProgressTracker({
                     <div>
                       <div className="text-xs font-medium">{update.message}</div>
                       <div className="text-xs text-muted-foreground">
-                        {update.timestamp.toLocaleTimeString()}
+                        {safeToLocaleTimeString(update.timestamp)}
                       </div>
                     </div>
                   </div>
