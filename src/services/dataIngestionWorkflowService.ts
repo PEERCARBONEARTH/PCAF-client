@@ -949,21 +949,26 @@ class DataIngestionWorkflowService {
         throw new Error('No loan data available for processing');
       }
 
-      // Direct API call for processing
+      // Direct API call for processing - FIXED TO USE BULK-INTAKE
       const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/v1/loans/bulk-intake`;
-      console.log('🚀 Calling processing API directly:', apiUrl);
+      console.log('🚀 PROCESSING API CALL - Using bulk-intake endpoint:', apiUrl);
+      console.log('📊 Loan data being sent:', loanData.length, 'loans');
+
+      const requestBody = {
+        loans: loanData,
+        validate_only: false,
+        batch_size: 50,
+        calculate_emissions: true,
+      };
+
+      console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          loans: loanData,
-          validate_only: false,
-          batch_size: 50,
-          calculate_emissions: true,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
