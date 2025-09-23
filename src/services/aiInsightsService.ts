@@ -22,6 +22,9 @@ class AIInsightsService {
   private config: AIInsightsConfig;
   private listeners: Array<(state: AIInsightsState) => void> = [];
   private refreshTimer?: NodeJS.Timeout;
+  private lastRefreshTime: Map<string, number> = new Map();
+  private readonly REFRESH_DEBOUNCE_DELAY = 3000; // 3 seconds
+  private activeRefreshes: Set<string> = new Set();
 
   static getInstance(): AIInsightsService {
     if (!AIInsightsService.instance) {
@@ -47,6 +50,36 @@ class AIInsightsService {
 
     this.setupDataSynchronizationListeners();
     this.setupAutoRefresh();
+  }
+
+  /**
+   * Check if refresh should be allowed (prevents rapid successive refreshes)
+   */
+  private shouldAllowRefresh(refreshId: string): boolean {
+    const now = Date.now();
+    const lastTime = this.lastRefreshTime.get(refreshId) || 0;
+    
+    if (now - lastTime < this.REFRESH_DEBOUNCE_DELAY) {
+      console.warn('AI Insights refresh debounced', { refreshId, timeSinceLastRefresh: now - lastTime });
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
+   * Mark refresh as started
+   */
+  private markRefreshStarted(refreshId: string): void {
+    this.activeRefreshes.add(refreshId);
+    this.lastRefreshTime.set(refreshId, Date.now());
+  }
+
+  /**
+   * Mark refresh as completed
+   */
+  private markRefreshCompleted(refreshId: string): void {
+    this.activeRefreshes.delete(refreshId);
   }
 
   private setupDataSynchronizationListeners(): void {
@@ -85,8 +118,17 @@ class AIInsightsService {
   }
 
   private async handleDataIngestionUpdate(ingestionData: any): Promise<void> {
+    const updateId = `ingestion_${ingestionData.uploadId || Date.now()}`;
+    
+    // Check if update should be allowed (debouncing)
+    if (!this.shouldAllowRefresh(updateId)) {
+      console.log('🚫 AI Insights ingestion update debounced for:', updateId);
+      return;
+    }
+
     console.log('🔄 AI Insights Service: Processing data ingestion update', ingestionData);
     
+    this.markRefreshStarted(updateId);
     this.updateState({
       isLoading: true,
       error: null
@@ -105,7 +147,7 @@ class AIInsightsService {
           dataVersion: `ingestion_${ingestionData.uploadId || Date.now()}`
         });
       } else {
-        // Force refresh if no current insights available
+        // Force refresh if no current insights available (but only if not recently refreshed)
         await this.refreshInsights();
       }
       
@@ -115,14 +157,30 @@ class AIInsightsService {
         isLoading: false,
         error: `Failed to update insights: ${(error as Error).message}`
       });
+    } finally {
+      this.markRefreshCompleted(updateId);
     }
   }
 
   async refreshInsights(userRole?: string): Promise<void> {
     const roleToUse = userRole || this.config.userRole;
+    const refreshId = `refresh_${roleToUse}`;
+    
+    // Check if refresh should be allowed (debouncing)
+    if (!this.shouldAllowRefresh(refreshId)) {
+      console.log('🚫 AI Insights refresh debounced for role:', roleToUse);
+      return;
+    }
+
+    // Check if refresh is already in progress
+    if (this.activeRefreshes.has(refreshId)) {
+      console.log('⏳ AI Insights refresh already in progress for role:', roleToUse);
+      return;
+    }
     
     console.log(`🔄 AI Insights Service: Refreshing insights for role: ${roleToUse}`);
     
+    this.markRefreshStarted(refreshId);
     this.updateState({
       isLoading: true,
       error: null
@@ -146,6 +204,8 @@ class AIInsightsService {
         isLoading: false,
         error: `Failed to refresh insights: ${(error as Error).message}`
       });
+    } finally {
+      this.markRefreshCompleted(refreshId);
     }
   }
 

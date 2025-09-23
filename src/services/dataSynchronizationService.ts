@@ -43,6 +43,9 @@ class DataSynchronizationService {
   private dataVersions: Map<string, string> = new Map();
   private updateListeners: Map<string, Array<(data: any) => void>> = new Map();
   private lastIngestionResult?: IngestionResult;
+  private lastSyncTime: Map<string, number> = new Map();
+  private readonly SYNC_DEBOUNCE_DELAY = 5000; // 5 seconds
+  private activeSyncs: Set<string> = new Set();
 
   static getInstance(): DataSynchronizationService {
     if (!DataSynchronizationService.instance) {
@@ -54,6 +57,36 @@ class DataSynchronizationService {
   constructor() {
     this.initializeDataVersions();
     this.setupRealTimeListeners();
+  }
+
+  /**
+   * Check if sync should be allowed (prevents rapid successive syncs)
+   */
+  private shouldAllowSync(syncId: string): boolean {
+    const now = Date.now();
+    const lastTime = this.lastSyncTime.get(syncId) || 0;
+    
+    if (now - lastTime < this.SYNC_DEBOUNCE_DELAY) {
+      console.warn('Sync request debounced', { syncId, timeSinceLastSync: now - lastTime });
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
+   * Mark sync as started
+   */
+  private markSyncStarted(syncId: string): void {
+    this.activeSyncs.add(syncId);
+    this.lastSyncTime.set(syncId, Date.now());
+  }
+
+  /**
+   * Mark sync as completed
+   */
+  private markSyncCompleted(syncId: string): void {
+    this.activeSyncs.delete(syncId);
   }
 
   private initializeDataVersions(): void {
@@ -92,9 +125,24 @@ class DataSynchronizationService {
   }
 
   async onIngestionComplete(ingestionResult: IngestionResult): Promise<void> {
+    const syncId = `ingestion_${ingestionResult.uploadId}`;
+    
+    // Check if we should allow this sync (debouncing)
+    if (!this.shouldAllowSync(syncId)) {
+      console.log('🚫 Sync request debounced for:', syncId);
+      return;
+    }
+
+    // Check if sync is already in progress
+    if (this.activeSyncs.has(syncId)) {
+      console.log('⏳ Sync already in progress for:', syncId);
+      return;
+    }
+
     console.log('🚀 Data ingestion completed, synchronizing all components...', ingestionResult);
     
     this.lastIngestionResult = ingestionResult;
+    this.markSyncStarted(syncId);
     
     try {
       // Update all components in parallel
@@ -130,6 +178,8 @@ class DataSynchronizationService {
           ingestionId: ingestionResult.uploadId
         }
       });
+    } finally {
+      this.markSyncCompleted(syncId);
     }
   }
 
@@ -167,6 +217,14 @@ class DataSynchronizationService {
   }
 
   async updateAIInsights(ingestionResult: IngestionResult): Promise<void> {
+    const aiInsightsId = `ai_insights_${ingestionResult.uploadId}`;
+    
+    // Check if AI insights update should be allowed
+    if (!this.shouldAllowSync(aiInsightsId)) {
+      console.log('🚫 AI insights update debounced for:', aiInsightsId);
+      return;
+    }
+
     console.log('🤖 Updating AI insights with new loan data...', ingestionResult);
     
     try {
@@ -185,10 +243,10 @@ class DataSynchronizationService {
         dataVersion: `ingestion_${ingestionResult.uploadId}`
       };
       
-      // Update AI insights with new portfolio data
+      // Update AI insights with new portfolio data (with debouncing)
       await aiInsightsNarrativeService.updatePortfolioData(portfolioMetrics);
       
-      // Trigger AI analysis refresh
+      // Trigger AI analysis refresh (only if not recently refreshed)
       await aiInsightsNarrativeService.refreshAIAnalysis('data_ingestion_complete', portfolioMetrics);
       
       // Simulate API call for backend integration (if needed)
@@ -205,6 +263,9 @@ class DataSynchronizationService {
         portfolioMetrics
       });
       
+      // Mark AI insights sync as completed
+      this.markSyncCompleted(aiInsightsId);
+      
       console.log('✅ AI insights updated successfully with ingestion data');
       
     } catch (error) {
@@ -219,6 +280,9 @@ class DataSynchronizationService {
       
       this.setDataVersion('ai-insights', `v${Date.now()}`);
       this.notifyComponentUpdate('ai-insights', 'recalculate', ingestionResult);
+      
+      // Mark AI insights sync as completed even on error
+      this.markSyncCompleted(aiInsightsId);
     }
   }
 

@@ -61,10 +61,43 @@ class DataIngestionWorkflowService {
   private listeners: Array<(state: WorkflowState) => void> = [];
   private readonly STORAGE_KEY = 'pcaf_workflow_state';
   private readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
+  private lastStepCompletionTime: Map<string, number> = new Map();
+  private readonly STEP_DEBOUNCE_DELAY = 2000; // 2 seconds
+  private activeStepCompletions: Set<string> = new Set();
 
   constructor() {
     this.workflowState = this.initializeWorkflowState();
     this.loadPersistedState();
+  }
+
+  /**
+   * Check if step completion should be allowed (prevents rapid successive completions)
+   */
+  private shouldAllowStepCompletion(stepId: string): boolean {
+    const now = Date.now();
+    const lastTime = this.lastStepCompletionTime.get(stepId) || 0;
+    
+    if (now - lastTime < this.STEP_DEBOUNCE_DELAY) {
+      console.warn('Step completion debounced', { stepId, timeSinceLastCompletion: now - lastTime });
+      return false;
+    }
+    
+    return true;
+  }
+
+  /**
+   * Mark step completion as started
+   */
+  private markStepCompletionStarted(stepId: string): void {
+    this.activeStepCompletions.add(stepId);
+    this.lastStepCompletionTime.set(stepId, Date.now());
+  }
+
+  /**
+   * Mark step completion as finished
+   */
+  private markStepCompletionFinished(stepId: string): void {
+    this.activeStepCompletions.delete(stepId);
   }
 
   private initializeWorkflowState(): WorkflowState {
@@ -200,6 +233,21 @@ class DataIngestionWorkflowService {
       throw new Error(`Step ${stepId} not found`);
     }
 
+    // Check if step completion should be allowed (debouncing)
+    if (!this.shouldAllowStepCompletion(stepId)) {
+      console.log('🚫 Step completion debounced for:', stepId);
+      return;
+    }
+
+    // Check if step completion is already in progress
+    if (this.activeStepCompletions.has(stepId)) {
+      console.log('⏳ Step completion already in progress for:', stepId);
+      return;
+    }
+
+    // Mark step completion as started
+    this.markStepCompletionStarted(stepId);
+
     // Start progress tracking for step completion
     const operationId = progressTrackingService.startOperation(
       stepId, 
@@ -282,6 +330,9 @@ class DataIngestionWorkflowService {
       
       await this.handleStepError(stepId, error as Error);
       throw error;
+    } finally {
+      // Mark step completion as finished
+      this.markStepCompletionFinished(stepId);
     }
   }
 
