@@ -616,16 +616,20 @@ class DataIngestionWorkflowService {
         );
       }
 
+      // Parse CSV file and extract loan data
+      const csvData = await this.parseCsvFile(config.file);
+      
       // Fallback to service abstraction layer for resilient upload
       const result = await serviceAbstractionLayer.callService(
         'upload',
-        '/loans/bulk-intake',
+        '/api/v1/loans/bulk-intake',
         {
           method: 'POST',
           body: JSON.stringify({
-            fileName: config.fileName,
-            fileSize: config.file.size,
-            validate_only: true
+            loans: csvData,
+            validate_only: true,
+            batch_size: 50,
+            calculate_emissions: false
           })
         },
         async () => {
@@ -651,14 +655,140 @@ class DataIngestionWorkflowService {
         type: 'csv',
         fileName: config.fileName,
         uploadId: result.data?.jobId || `upload_${Date.now()}`,
-        recordCount: result.data?.summary?.totalProcessed || 247,
+        recordCount: csvData.length,
         status: 'uploaded',
-        fromMock: result.fromMock
+        fromMock: result.fromMock,
+        loanData: csvData // Store the parsed loan data for processing step
       };
     } catch (error) {
       console.error('CSV upload failed:', error);
       throw new Error('Failed to upload CSV file');
     }
+  }
+
+  private async parseCsvFile(file: File): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        try {
+          const csvText = event.target?.result as string;
+          const lines = csvText.split('\n').filter(line => line.trim());
+          
+          if (lines.length < 2) {
+            throw new Error('CSV file must have at least a header and one data row');
+          }
+          
+          const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+          const loans = [];
+          
+          for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            
+            if (values.length !== headers.length) {
+              continue; // Skip malformed rows
+            }
+            
+            const loan: any = {};
+            headers.forEach((header, index) => {
+              const value = values[index];
+              
+              // Map CSV headers to expected loan structure
+              switch (header.toLowerCase()) {
+                case 'borrower_name':
+                case 'borrower name':
+                  loan.borrower_name = value;
+                  break;
+                case 'loan_amount':
+                case 'loan amount':
+                  loan.loan_amount = parseFloat(value) || 0;
+                  break;
+                case 'outstanding_balance':
+                case 'outstanding balance':
+                  loan.outstanding_balance = parseFloat(value) || 0;
+                  break;
+                case 'interest_rate':
+                case 'interest rate':
+                  loan.interest_rate = parseFloat(value) || 0;
+                  break;
+                case 'term_months':
+                case 'term months':
+                  loan.term_months = parseInt(value) || 0;
+                  break;
+                case 'origination_date':
+                case 'origination date':
+                  loan.origination_date = value;
+                  break;
+                case 'vehicle_make':
+                case 'vehicle make':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.make = value;
+                  break;
+                case 'vehicle_model':
+                case 'vehicle model':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.model = value;
+                  break;
+                case 'vehicle_year':
+                case 'vehicle year':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.year = parseInt(value) || 0;
+                  break;
+                case 'vehicle_type':
+                case 'vehicle type':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.type = value || 'passenger_car';
+                  break;
+                case 'fuel_type':
+                case 'fuel type':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.fuel_type = value || 'gasoline';
+                  break;
+                case 'vehicle_value':
+                case 'vehicle value':
+                case 'value_at_origination':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.value_at_origination = parseFloat(value) || 0;
+                  break;
+                case 'efficiency_mpg':
+                case 'fuel_efficiency_mpg':
+                case 'mpg':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.efficiency_mpg = parseFloat(value) || 0;
+                  break;
+                case 'annual_mileage':
+                case 'estimated_annual_mileage':
+                case 'mileage':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.annual_mileage = parseFloat(value) || 0;
+                  break;
+                case 'vin':
+                  loan.vehicle_details = loan.vehicle_details || {};
+                  loan.vehicle_details.vin = value;
+                  break;
+                default:
+                  // Store unmapped fields as-is
+                  loan[header] = value;
+              }
+            });
+            
+            loans.push(loan);
+          }
+          
+          console.log(`📊 Parsed ${loans.length} loans from CSV file`);
+          resolve(loans);
+          
+        } catch (error) {
+          reject(new Error(`Failed to parse CSV file: ${error.message}`));
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read CSV file'));
+      };
+      
+      reader.readAsText(file);
+    });
   }
 
   private async processLmsIntegration(config: any, operationId?: string): Promise<any> {
@@ -734,13 +864,23 @@ class DataIngestionWorkflowService {
         'Starting data validation...'
       );
 
+      // Get the loan data from the source step
+      const sourceData = this.workflowState.steps.source?.data;
+      const loanData = sourceData?.loanData || [];
+      
+      if (loanData.length === 0) {
+        throw new Error('No loan data available for validation');
+      }
+
       // Use service abstraction layer for resilient validation
       const result = await serviceAbstractionLayer.callService(
         'validation',
-        '/loans/validate',
+        '/api/v1/loans/validate',
         {
           method: 'POST',
-          body: JSON.stringify(validationConfig)
+          body: JSON.stringify({
+            loans: loanData
+          })
         },
         async () => {
           // Mock fallback with progress updates
@@ -840,16 +980,24 @@ class DataIngestionWorkflowService {
         'Initializing emissions processing...'
       );
 
+      // Get the loan data from the source step
+      const loanData = sourceData?.loanData || [];
+      
+      if (loanData.length === 0) {
+        throw new Error('No loan data available for processing');
+      }
+
       // Use service abstraction layer for resilient processing
       const result = await serviceAbstractionLayer.callService(
         'processing',
-        '/loans/process-emissions',
+        '/api/v1/loans/bulk-intake',
         {
           method: 'POST',
           body: JSON.stringify({
-            uploadId: sourceData?.uploadId,
-            methodology: methodologyData,
-            ...processingConfig
+            loans: loanData,
+            validate_only: false,
+            batch_size: 50,
+            calculate_emissions: true
           })
         },
         async () => {

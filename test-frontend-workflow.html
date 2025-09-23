@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Frontend Workflow Integration</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .results { background: #f8f9fa; padding: 15px; border-radius: 3px; margin-top: 10px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        pre { white-space: pre-wrap; word-wrap: break-word; max-height: 300px; overflow-y: auto; }
+        .file-input { margin: 10px 0; }
+        .progress { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: #007bff; transition: width 0.3s ease; }
+        .step { padding: 10px; margin: 5px 0; border-left: 4px solid #ddd; }
+        .step.active { border-left-color: #007bff; background: #f0f8ff; }
+        .step.completed { border-left-color: #28a745; background: #f0fff0; }
+        .step.error { border-left-color: #dc3545; background: #fff0f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Frontend Workflow Integration Test</h1>
+        
+        <div class="section">
+            <h2>1. CSV File Upload Test</h2>
+            <div class="file-input">
+                <input type="file" id="csvFile" accept=".csv" />
+                <button onclick="testCsvUpload()" id="uploadBtn">Upload CSV</button>
+            </div>
+            <div class="progress" id="uploadProgress" style="display: none;">
+                <div class="progress-bar" id="uploadProgressBar"></div>
+            </div>
+            <div id="uploadResults" class="results" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>2. Workflow Steps</h2>
+            <div id="workflowSteps">
+                <div class="step" id="step-source">
+                    <strong>Source:</strong> <span id="source-status">Pending</span>
+                </div>
+                <div class="step" id="step-methodology">
+                    <strong>Methodology:</strong> <span id="methodology-status">Pending</span>
+                </div>
+                <div class="step" id="step-validation">
+                    <strong>Validation:</strong> <span id="validation-status">Pending</span>
+                </div>
+                <div class="step" id="step-processing">
+                    <strong>Processing:</strong> <span id="processing-status">Pending</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. API Integration Test</h2>
+            <button onclick="testDirectAPI()">Test Direct API Call</button>
+            <div id="apiResults" class="results" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>4. Upload History</h2>
+            <button onclick="checkUploadHistory()">Check Upload History</button>
+            <div id="historyResults" class="results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let workflowInProgress = false;
+
+        // Create sample CSV content
+        function createSampleCSV() {
+            const csvContent = `borrower_name,loan_amount,outstanding_balance,interest_rate,term_months,origination_date,vehicle_make,vehicle_model,vehicle_year,vehicle_type,fuel_type,vehicle_value,efficiency_mpg,annual_mileage
+John Doe,30000,25000,0.045,60,2024-01-15,Toyota,Camry,2022,passenger_car,gasoline,30000,28,12000
+Jane Smith,45000,40000,0.038,72,2024-02-01,Tesla,Model 3,2023,passenger_car,electric,45000,120,10000
+Bob Johnson,35000,30000,0.042,60,2024-01-20,Honda,Accord,2021,passenger_car,gasoline,35000,30,15000`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            return new File([blob], 'test_loans.csv', { type: 'text/csv' });
+        }
+
+        async function testCsvUpload() {
+            const fileInput = document.getElementById('csvFile');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const resultsDiv = document.getElementById('uploadResults');
+
+            let file = fileInput.files[0];
+            
+            // If no file selected, create a sample CSV
+            if (!file) {
+                file = createSampleCSV();
+                console.log('📄 Using sample CSV file');
+            }
+
+            if (workflowInProgress) {
+                alert('Workflow already in progress. Please wait...');
+                return;
+            }
+
+            workflowInProgress = true;
+            uploadBtn.disabled = true;
+            progressDiv.style.display = 'block';
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = 'results';
+            resultsDiv.innerHTML = '🔄 Starting workflow...';
+
+            try {
+                // Step 1: Source (CSV Upload)
+                updateStep('source', 'active', 'Processing CSV...');
+                updateProgress(10);
+                
+                const csvData = await parseCsvFile(file);
+                console.log('📊 Parsed CSV data:', csvData);
+                
+                updateStep('source', 'completed', `Parsed ${csvData.length} loans`);
+                updateProgress(25);
+
+                // Step 2: Methodology (Mock)
+                updateStep('methodology', 'active', 'Applying methodology...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                updateStep('methodology', 'completed', 'Methodology applied');
+                updateProgress(50);
+
+                // Step 3: Validation
+                updateStep('validation', 'active', 'Validating data...');
+                const validationResult = await validateLoans(csvData);
+                updateStep('validation', 'completed', `Validated ${validationResult.data.validation_summary.valid_loans} loans`);
+                updateProgress(75);
+
+                // Step 4: Processing
+                updateStep('processing', 'active', 'Processing loans...');
+                const processingResult = await processLoans(csvData);
+                updateStep('processing', 'completed', `Processed ${processingResult.data.successful_loans} loans`);
+                updateProgress(100);
+
+                resultsDiv.className = 'results success';
+                resultsDiv.innerHTML = `
+                    <h3>✅ Workflow Completed Successfully!</h3>
+                    <p><strong>Job ID:</strong> ${processingResult.data.batch_job_id}</p>
+                    <p><strong>Total Processed:</strong> ${processingResult.data.total_processed}</p>
+                    <p><strong>Successful:</strong> ${processingResult.data.successful_loans}</p>
+                    <p><strong>Failed:</strong> ${processingResult.data.failed_loans}</p>
+                    <pre>${JSON.stringify(processingResult.data, null, 2)}</pre>
+                `;
+
+                // Check upload history after processing
+                setTimeout(() => {
+                    checkUploadHistory();
+                }, 2000);
+
+            } catch (error) {
+                console.error('❌ Workflow failed:', error);
+                resultsDiv.className = 'results error';
+                resultsDiv.innerHTML = `
+                    <h3>❌ Workflow Failed</h3>
+                    <p>${error.message}</p>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                `;
+                
+                // Mark current step as error
+                const activeStep = document.querySelector('.step.active');
+                if (activeStep) {
+                    activeStep.className = 'step error';
+                    activeStep.querySelector('span').textContent = 'Error';
+                }
+            } finally {
+                workflowInProgress = false;
+                uploadBtn.disabled = false;
+            }
+        }
+
+        function updateStep(stepId, status, message) {
+            const stepElement = document.getElementById(`step-${stepId}`);
+            const statusElement = document.getElementById(`${stepId}-status`);
+            
+            // Remove all status classes
+            stepElement.className = 'step';
+            
+            // Add new status class
+            if (status) {
+                stepElement.classList.add(status);
+            }
+            
+            // Update status text
+            statusElement.textContent = message;
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('uploadProgressBar');
+            progressBar.style.width = percent + '%';
+        }
+
+        async function parseCsvFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        const csvText = event.target.result;
+                        const lines = csvText.split('\\n').filter(line => line.trim());
+                        
+                        if (lines.length < 2) {
+                            throw new Error('CSV file must have at least a header and one data row');
+                        }
+                        
+                        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                        const loans = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                            
+                            if (values.length !== headers.length) {
+                                continue;
+                            }
+                            
+                            const loan = {};
+                            headers.forEach((header, index) => {
+                                const value = values[index];
+                                
+                                switch (header.toLowerCase()) {
+                                    case 'borrower_name':
+                                        loan.borrower_name = value;
+                                        break;
+                                    case 'loan_amount':
+                                        loan.loan_amount = parseFloat(value) || 0;
+                                        break;
+                                    case 'outstanding_balance':
+                                        loan.outstanding_balance = parseFloat(value) || 0;
+                                        break;
+                                    case 'interest_rate':
+                                        loan.interest_rate = parseFloat(value) || 0;
+                                        break;
+                                    case 'term_months':
+                                        loan.term_months = parseInt(value) || 0;
+                                        break;
+                                    case 'origination_date':
+                                        loan.origination_date = value;
+                                        break;
+                                    case 'vehicle_make':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.make = value;
+                                        break;
+                                    case 'vehicle_model':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.model = value;
+                                        break;
+                                    case 'vehicle_year':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.year = parseInt(value) || 0;
+                                        break;
+                                    case 'vehicle_type':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.type = value || 'passenger_car';
+                                        break;
+                                    case 'fuel_type':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.fuel_type = value || 'gasoline';
+                                        break;
+                                    case 'vehicle_value':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.value_at_origination = parseFloat(value) || 0;
+                                        break;
+                                    case 'efficiency_mpg':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.efficiency_mpg = parseFloat(value) || 0;
+                                        break;
+                                    case 'annual_mileage':
+                                        loan.vehicle_details = loan.vehicle_details || {};
+                                        loan.vehicle_details.annual_mileage = parseFloat(value) || 0;
+                                        break;
+                                }
+                            });
+                            
+                            loans.push(loan);
+                        }
+                        
+                        resolve(loans);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsText(file);
+            });
+        }
+
+        async function validateLoans(loans) {
+            const response = await fetch(`${API_BASE}/api/v1/loans/validate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ loans })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Validation failed: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+
+        async function processLoans(loans) {
+            const response = await fetch(`${API_BASE}/api/v1/loans/bulk-intake`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    loans,
+                    validate_only: false,
+                    batch_size: 50,
+                    calculate_emissions: true
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Processing failed: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+
+        async function testDirectAPI() {
+            const resultsDiv = document.getElementById('apiResults');
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = 'results';
+            resultsDiv.innerHTML = '🔄 Testing direct API call...';
+
+            try {
+                const testLoans = [
+                    {
+                        borrower_name: "API Test User",
+                        loan_amount: 25000,
+                        outstanding_balance: 20000,
+                        interest_rate: 0.04,
+                        term_months: 60,
+                        origination_date: "2024-01-01",
+                        vehicle_details: {
+                            make: "Toyota",
+                            model: "Prius",
+                            year: 2023,
+                            type: "passenger_car",
+                            fuel_type: "hybrid",
+                            value_at_origination: 25000,
+                            efficiency_mpg: 50,
+                            annual_mileage: 12000
+                        }
+                    }
+                ];
+
+                const result = await processLoans(testLoans);
+                
+                resultsDiv.className = 'results success';
+                resultsDiv.innerHTML = `
+                    <h3>✅ Direct API Call Successful</h3>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultsDiv.className = 'results error';
+                resultsDiv.innerHTML = `
+                    <h3>❌ Direct API Call Failed</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+
+        async function checkUploadHistory() {
+            const resultsDiv = document.getElementById('historyResults');
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = 'results';
+            resultsDiv.innerHTML = '🔄 Checking upload history...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/loans/upload-history`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsDiv.className = 'results success';
+                    resultsDiv.innerHTML = `
+                        <h3>✅ Upload History (${data.data.total} total uploads)</h3>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultsDiv.className = 'results error';
+                    resultsDiv.innerHTML = `
+                        <h3>❌ Failed to get upload history</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.className = 'results error';
+                resultsDiv.innerHTML = `
+                    <h3>❌ Upload History Error</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+
+        // Auto-load upload history on page load
+        window.onload = () => {
+            console.log('🧪 Frontend Workflow Integration Test Page Loaded');
+            checkUploadHistory();
+        };
+    </script>
+</body>
+</html>
