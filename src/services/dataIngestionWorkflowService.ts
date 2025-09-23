@@ -372,7 +372,12 @@ class DataIngestionWorkflowService {
         break;
         
       case 'processing':
-        if (!data || !data.totalLoans || !data.successfulCalculations) {
+        if (!data || !data.results) {
+          throw new Error('Processing results are incomplete');
+        }
+        // Check if results have the expected structure
+        const results = data.results;
+        if (!results.totalLoans || !results.successfulCalculations) {
           throw new Error('Processing results are incomplete');
         }
         break;

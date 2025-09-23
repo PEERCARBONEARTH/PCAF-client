@@ -814,7 +814,12 @@ function ProcessingStep({ onComplete }: { onComplete: (data: any) => void }) {
     try {
       const results = await dataIngestionWorkflowService.processEmissions({});
       setProcessingResults(results);
-      onComplete({ results, processedAt: new Date() });
+      onComplete({ 
+        results, 
+        processedAt: new Date(),
+        totalLoans: results.totalLoans,
+        successfulCalculations: results.successfulCalculations
+      });
     } catch (error) {
       console.error('Processing failed:', error);
     } finally {
